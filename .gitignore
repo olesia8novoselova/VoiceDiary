@@ -1,0 +1,6 @@
+# Virtual environment
+venv/
+.env
+
+# Machine learning testing outputs
+ml/outputs/
