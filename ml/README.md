@@ -68,3 +68,19 @@ ffmpeg -version
 ```bash
 python test_whisper.py
 ```
+
+
+# 🎤 Wav2Vec2 Speech Recognition Setup Guide
+
+## 🛠️ Installation
+
+### 1. Install Python Requirements
+```bash
+pip install speechbrain torchaudio
+```
+
+### 2. 🚀 Running Wav2Vec2
+
+```bash
+python test_Wav2Vec2.py
+```
