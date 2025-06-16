@@ -7,10 +7,10 @@ Voice Diary is an innovative application that enables users to record voice entr
 
 ### 🖥️ Frontend
 - **Framework**: React
-- **State Management**: Redux/Zustand
+- **State Management**: Redux
 - **UI/UX Design**: Figma-designed interface
-- **Audio Processing**: Web Audio API
-- **Visualization**: Chart.js/D3.js
+- **Audio Processing**: tba
+- **Visualization**: tba
 
 ### ⚙️ Backend Services
 #### 🐹 Core Service (Go)
