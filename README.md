@@ -1,42 +1,67 @@
-Voice Diary - Emotion Analysis App
+# 🎙️ Voice Diary - AI Emotion Analysis Application
 
-Overview
+## 🌟 Overview
+Voice Diary is an innovative application that enables users to record voice entries which are automatically analyzed for emotional content using advanced AI. The app provides valuable insights into the user's emotional patterns over time, along with personalized recommendations.
 
-Voice Diary is an application that allows users to record voice entries which are then analyzed for emotional content using AI. The app provides insights into the user's emotional state over time.
+## 🛠️ Tech Stack
 
-Tech Stack
+### 🖥️ Frontend
+- **Framework**: React with TypeScript
+- **State Management**: Redux/Zustand
+- **UI/UX Design**: Figma-designed interface
+- **Audio Processing**: Web Audio API
+- **Visualization**: Chart.js/D3.js
 
-Frontend 
-Framework: React with TypeScript
-State Management: Redux or Zustand
-UI: figma 
+### ⚙️ Backend Services
+#### 🐹 Core Service (Go)
+- **Web Framework**: Gin/Echo
+- **Authentication**: JWT
+- **API Development**: RESTful endpoints
 
-Backend
+#### 🐍 AI Service (Python)
+- **Emotion Analysis**:
+  - librosa
+  - OpenSMILE
+  - PyTorch/TensorFlow
+- **NLP Processing**:
+  - spaCy
+  - NLTK
+- **API Framework**: FastAPI/Flask
 
-Core Service: Go (Golang)
-HTTP server (Gin or Echo framework)
-Authentication (JWT)
-Database interactions
-AI Service: Python
-Emotion analysis (librosa, OpenSMILE, PyTorch/TensorFlow models)
-NLP processing (spaCy, NLTK)
-API: FastAPI or Flask 
+### 🗄️ Infrastructure
+- **Database**: PostgreSQL/MongoDB
+- **Storage**: AWS S3 (voice recordings)
+- **Containerization**: Docker
+- **CI/CD**: GitHub Actions
 
+## ✨ Key Features
+- 🎤 **Voice Recording & Playback**
+- 😊 **Real-time Emotion Analysis** (anger, happiness, sadness, etc.)
+- 📈 **Emotion Trend Visualization**
+- 📝 **Diary Entry Management**
+- 🔐 **Secure User Authentication**
+- ☁️ **Cross-device Cloud Sync**
+- 💡 **Special AI Recommendations** (personalized insights)
 
-Infrastructure
+## 🚀 Getting Started
 
-Database: PostgreSQL or MongoDB
-Storage: AWS S3 or similar for voice recordings
-Containerization: Docker
+### Prerequisites
+- Node.js v16+
+- Go 1.20+
+- Python 3.9+
+- Docker
 
+### Installation
+```bash
+# Clone repository
+git clone https://github.com/your-repo/voice-diary.git
+cd voice-diary
 
-Features
+# Install frontend dependencies
+cd frontend && npm install
 
-Voice recording and playback
-Emotion analysis (anger, happiness, sadness, etc.)
-Emotion trend visualization
-Diary entry management
-User authentication
-Cloud sync across devic
-Spetial recomendation
+# Setup backend
+cd ../backend/go && go mod download
 
+# Install AI service requirements
+cd ../python && pip install -r requirements.txt
