@@ -6,7 +6,7 @@ Voice Diary is an innovative application that enables users to record voice entr
 ## 🛠️ Tech Stack
 
 ### 🖥️ Frontend
-- **Framework**: React with TypeScript
+- **Framework**: React
 - **State Management**: Redux/Zustand
 - **UI/UX Design**: Figma-designed interface
 - **Audio Processing**: Web Audio API
@@ -14,28 +14,25 @@ Voice Diary is an innovative application that enables users to record voice entr
 
 ### ⚙️ Backend Services
 #### 🐹 Core Service (Go)
-- **Web Framework**: Gin/Echo
+- **Web Framework**: Gin
 - **Authentication**: JWT
 - **API Development**: RESTful endpoints
 
 #### 🐍 AI Service (Python)
 - **Emotion Analysis**:
-  - librosa
-  - OpenSMILE
-  - PyTorch/TensorFlow
+  - tba
 - **NLP Processing**:
-  - spaCy
-  - NLTK
-- **API Framework**: FastAPI/Flask
+  - tba
+- **API Framework**: FastAPI
 
 ### 🗄️ Infrastructure
-- **Database**: PostgreSQL/MongoDB
-- **Storage**: AWS S3 (voice recordings)
+- **Database**: PostgreSQL
+- **Storage**: S3 Minio (voice recordings)
 - **Containerization**: Docker
 - **CI/CD**: GitHub Actions
 
 ## ✨ Key Features
-- 🎤 **Voice Recording & Playback**
+- 🎤 **Voice Recording**
 - 😊 **Real-time Emotion Analysis** (anger, happiness, sadness, etc.)
 - 📈 **Emotion Trend Visualization**
 - 📝 **Diary Entry Management**
@@ -46,22 +43,22 @@ Voice Diary is an innovative application that enables users to record voice entr
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js v16+
-- Go 1.20+
-- Python 3.9+
+- Node.js v20.17.0
+- Go 1.23.4
+- Python 3.13
 - Docker
 
 ### Installation
 ```bash
 # Clone repository
-git clone https://github.com/your-repo/voice-diary.git
+git clone https://github.com/IU-Capstone-Project-2025/VoiceDiary.git
 cd voice-diary
 
 # Install frontend dependencies
-cd frontend && npm install
+cd frontend && npm install && npm start
 
 # Setup backend
-cd ../backend/go && go mod download
+#to be added later
 
 # Install AI service requirements
-cd ../python && pip install -r requirements.txt
+#to be added later
