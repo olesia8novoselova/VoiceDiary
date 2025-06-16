@@ -1,4 +1,4 @@
-# Этап сборки
+
 FROM node:18-alpine as builder
 WORKDIR /app
 COPY package*.json ./
@@ -6,7 +6,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# Этап запуска
+
 FROM node:18-alpine
 WORKDIR /app
 COPY --from=builder /app/package*.json ./
