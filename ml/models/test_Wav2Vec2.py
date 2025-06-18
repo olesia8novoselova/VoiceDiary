@@ -64,10 +64,7 @@ training_args = TrainingArguments(
     save_total_limit=2,
     fp16=True,
     logging_steps=50,
-<<<<<<< HEAD
-=======
     dataloader_pin_memory=False,
->>>>>>> 3067019 ([ml]: change testing of Wav2Vec2  add dusha)
     report_to="none"
 )
 
