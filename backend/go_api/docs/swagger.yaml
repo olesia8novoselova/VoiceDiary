@@ -1,0 +1,86 @@
+definitions:
+  client.AnalysisResult:
+    properties:
+      emotion:
+        type: string
+      themes:
+        items:
+          type: string
+        type: array
+      tone:
+        type: string
+    type: object
+  repository.Record:
+    properties:
+      data_url:
+        type: string
+      id:
+        type: integer
+      mood:
+        type: string
+      record_date:
+        type: string
+      user_id:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /records/{recordID}/analyze:
+    post:
+      consumes:
+      - application/json
+      description: Fetches the data_url for the record, sends it to the ML service,
+        and returns the result.
+      parameters:
+      - description: Record ID
+        in: path
+        name: recordID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/client.AnalysisResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Analyze a record
+      tags:
+      - records
+  /users/{userID}/records:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of all diary records for a specific user.
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/repository.Record'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user records
+      tags:
+      - records
+swagger: "2.0"
