@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 
-const AudioRecorder = () => {
+const AudioRecorder = ({ setIsRecording }) => {
   const [recording, setRecording] = useState(false);
   const [audioURL, setAudioURL] = useState("");
 
@@ -21,6 +21,8 @@ const AudioRecorder = () => {
 
   const startRecording = async () => {
     setRecording(true);
+    setIsRecording(true)
+    
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
@@ -39,17 +41,21 @@ const AudioRecorder = () => {
         const url = URL.createObjectURL(blob);
         setAudioURL(url);
         stream.getTracks().forEach((track) => track.stop());
+        setIsRecording(false); 
       };
 
       mediaRecorder.start();
     } catch (err) {
       console.error("Microphone error:", err);
       setRecording(false);
+      setIsRecording(false);
     }
   };
 
   const stopRecording = () => {
     setRecording(false);
+    setIsRecording(false); 
+ 
     if (mediaRecorderRef.current?.state === "recording") {
       mediaRecorderRef.current.stop();
     }
@@ -85,8 +91,6 @@ const AudioRecorder = () => {
       {audioURL && (
         <audio controls src={audioURL} style={{ marginTop: "1rem" }} />
       )}
-
-      
     </div>
   );
 };
