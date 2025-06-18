@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
 import  OnboardingPage from "./pages/OnboardingPage";
 // import "./App.css";
@@ -22,8 +22,9 @@ export default function App() {
             </div>
           )}
           <Routes>
-            <Route path="/onboarding" element={<OnboardingPage />} />
-          </Routes>
+  <Route path="/" element={<Navigate to="/onboarding" />} />
+  <Route path="/onboarding" element={<OnboardingPage />} />
+</Routes>
         </main>
       </div>
     </Router>
