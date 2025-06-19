@@ -30,7 +30,7 @@ emotion_counts = {
 class_weights = []
 for emotion in unique_emotions:
     freq = emotion_counts[emotion]
-    weight = 1.0 / freq
+    weight = np.log(1 + 1/freq)
     class_weights.append(weight)
 class_weights = torch.tensor(class_weights, dtype=torch.float)
 
