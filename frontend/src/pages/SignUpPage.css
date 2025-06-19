@@ -19,6 +19,7 @@ body {
   flex-direction: column;
   justify-content: center;
   padding: 60px;
+  
 }
 
 .login-left h2 {
@@ -81,7 +82,7 @@ body {
 
 .login-right {
   flex: 1;
-   background-image: url('/public/images/login.jpg');
+  background-image: url('/public/images/login.jpg');
   background-size: cover;
   background-position: center;
 }
