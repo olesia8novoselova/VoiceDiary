@@ -1,85 +1,50 @@
-from datasets import load_dataset, Audio
-from transformers import (
-    Wav2Vec2Processor,
-    Wav2Vec2ForSequenceClassification,
-    TrainingArguments,
-    Trainer
-)
-import evaluate
 import torch
+import torchaudio
+from transformers import Wav2Vec2Processor, Wav2Vec2ForSequenceClassification
+import numpy as np
 
-# 1. Загружаем датасет
-dataset = load_dataset("xbgoose/dusha", "default")
+# Путь к модели и аудио
+model_path = "ml/models/wav2vec2-dusha-finetuned"
+audio_path = "ml/audio_samples/gravitatsionnoe-pole.wav"  # замените на путь к вашему файлу
 
-# 2. Получаем список уникальных эмоций (строки)
-unique_emotions = sorted(set(example["emotion"] for example in dataset["train"]))
-label2id = {emotion: i for i, emotion in enumerate(unique_emotions)}
-id2label = {i: emotion for emotion, i in label2id.items()}
-num_labels = len(label2id)
+# Загрузка процессора и модели
+processor = Wav2Vec2Processor.from_pretrained(model_path)
+model = Wav2Vec2ForSequenceClassification.from_pretrained(model_path)
 
-# 3. Модель и процессор
-processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
-model = Wav2Vec2ForSequenceClassification.from_pretrained(
-    "facebook/wav2vec2-base-960h",
-    num_labels=num_labels,
-    label2id=label2id,
-    id2label=id2label,
-    problem_type="single_label_classification"
-)
+# Устройство (GPU/CPU)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model.to(device)
 
-# 4. Приводим аудио к 16кГц
-dataset = dataset.cast_column("audio", Audio(sampling_rate=16000))
+# Загрузка аудио (torchaudio автоматически читает сэмплингрейт)
+speech_array, sampling_rate = torchaudio.load(audio_path)
 
-# 5. Препроцессинг
-def preprocess_function(example):
-    audio = example["audio"]["array"]
-    inputs = processor(audio, sampling_rate=16000, return_tensors="pt", padding=True)
-    return {
-        "input_values": inputs["input_values"][0],
-        "labels": label2id[example["emotion"]]
-    }
+# Приведение к 16kHz при необходимости
+if sampling_rate != 16000:
+    resampler = torchaudio.transforms.Resample(orig_freq=sampling_rate, new_freq=16000)
+    speech_array = resampler(speech_array)
 
-encoded_dataset = dataset.map(preprocess_function, remove_columns=["audio", "emotion"])
+# Убираем второй канал, если есть
+if speech_array.shape[0] > 1:
+    speech_array = torch.mean(speech_array, dim=0, keepdim=True)
 
-# 6. Метрики
-accuracy = evaluate.load("accuracy")
+# Преобразуем в 1D
+speech = speech_array.squeeze().numpy()
 
-def compute_metrics(eval_pred):
-    logits, labels = eval_pred
-    preds = torch.from_numpy(logits).argmax(dim=-1)
-    return accuracy.compute(predictions=preds, references=labels)
+# Препроцессинг
+inputs = processor(speech, sampling_rate=16000, return_tensors="pt", padding=True)
 
-# 7.   Аргументы обучения
-training_args = TrainingArguments(
-    output_dir="./wav2vec2-dusha-finetuned",
-    do_train=True,
-    do_eval=True,
-    eval_strategy="epoch",
-    save_strategy="epoch",
-    learning_rate=1e-4,
-    per_device_train_batch_size=4,
-    per_device_eval_batch_size=4,
-    num_train_epochs=5,
-    warmup_steps=500,
-    save_total_limit=2,
-    fp16=True,
-    logging_steps=50,
-    dataloader_pin_memory=False,
-    report_to="none"
-)
+# На нужное устройство
+inputs = {k: v.to(device) for k, v in inputs.items()}
 
-# 8. Обучение
-trainer = Trainer(
-    model=model,
-    args=training_args,
-    train_dataset=encoded_dataset["train"],
-    eval_dataset=encoded_dataset["test"],
-    tokenizer=processor.feature_extractor,
-    compute_metrics=compute_metrics
-)
+# Предсказание
+with torch.no_grad():
+    logits = model(**inputs).logits
 
-trainer.train()
+# Получаем индекс класса
+predicted_class_id = torch.argmax(logits, dim=-1).item()
 
-# 9. Сохраняем
-trainer.save_model("./wav2vec2-dusha-finetuned")
-processor.save_pretrained("./wav2vec2-dusha-finetuned")
+# Получаем имя метки, если оно есть в config
+label_map = model.config.id2label
+predicted_label = label_map.get(predicted_class_id, f"Label {predicted_class_id}")
+
+print(f"Предсказанная эмоция: {predicted_label}")
