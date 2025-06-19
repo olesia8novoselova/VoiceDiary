@@ -12,7 +12,7 @@ body::after,
 body .gradient-ball,
 body .gradient-ball-2,
 body .gradient-ball-3,
-body .gradient-ball-4,
+body .gradient-ball-4 
 body .gradient-ball-5
 {
   content: '';
@@ -257,9 +257,8 @@ svg {
 }
 
 .auth-bar {
+    
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto 30px; 
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -267,38 +266,30 @@ svg {
   border-radius: 12px;
   display: flex;
   justify-content: flex-end;
+  margin-bottom: 30px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
 }
 
-
-.auth-buttons a,
-.auth-buttons .login,
-.auth-buttons .signup {
+.auth-buttons a {
+    
   text-decoration: none;
   font-size: 0.95rem;
   color: #8b5cf6;
   margin-left: 20px;
   transition: color 0.3s ease;
   font-weight: 500;
-  display: inline-block; /* Важно для правильного отображения */
-  background: none; /* Убедимся, что нет фона */
-  border: none; /* Убедимся, что нет границ */
-  cursor: pointer; /* Курсор-указатель */
-  padding: 0; /* Убираем внутренние отступы */
 }
 
-.auth-buttons .signup {
+.auth-buttons a.signup {
   color: #fff;
   border-bottom: 1px solid #8b5cf6;
-  padding-bottom: 2px; /* Добавим отступ только для нижней границы */
 }
 
-.auth-buttons a:hover,
-.auth-buttons .login:hover,
-.auth-buttons .signup:hover {
+.auth-buttons a:hover {
   color: #c084fc;
   text-decoration: underline;
 }
+
 
 
 .main-header {
