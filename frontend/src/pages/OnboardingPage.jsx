@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import AudioRecorder from "../components/AudioRecorder";
 import WaveAnimation from "../components/WaveAnimation";
 import "./OnboardingPage.css";
+import { Link } from 'react-router-dom';
+import LoginPage from "./LoginPage";  
 
 function OnboardingPage() {
   const [isRecording, setIsRecording] = useState(false);
@@ -26,13 +28,12 @@ function OnboardingPage() {
       <div className="gradient-ball third"></div>
       <div className="gradient-ball fourth"></div>
 
-      <div className="auth-bar">
-        <div className="auth-buttons">
-          <a href="/login" className="login">Login</a>
-          <a href="/signup" className="signup">Sign Up</a>
-        </div>
-      </div>
-
+  <div className="auth-bar">
+  <div className="auth-buttons">
+    <Link to="/login" className="login">Login</Link>
+    <Link to="/signup" className="signup">Sign Up</Link>
+  </div>
+</div>
       <header className="main-header">
         <p className="logo0">Understand your emotions with every word.</p>
         <h1 className="logo">Your AI Voice Diary</h1>
