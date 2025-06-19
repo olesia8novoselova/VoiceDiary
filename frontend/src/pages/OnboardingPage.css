@@ -256,42 +256,6 @@ svg {
   }
 }
 
-.auth-bar {
-    
-  width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 16px 30px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 30px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-}
-
-.auth-buttons a {
-    
-  text-decoration: none;
-  font-size: 0.95rem;
-  color: #8b5cf6;
-  margin-left: 20px;
-  transition: color 0.3s ease;
-  font-weight: 500;
-}
-
-.auth-buttons a.signup {
-  color: #fff;
-  border-bottom: 1px solid #8b5cf6;
-}
-
-.auth-buttons a:hover {
-  color: #c084fc;
-  text-decoration: underline;
-}
-
-
-
 .main-header {
   text-align: center;
   margin-bottom: 40px;

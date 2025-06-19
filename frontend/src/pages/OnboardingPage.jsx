@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import AudioRecorder from "../components/AudioRecorder";
-import WaveAnimation from "../components/WaveAnimation";
+import AudioRecorder from "../features/recordings/components/AudioRecorder";
+import WaveAnimation from "../features/recordings/components/WaveAnimation";
+import Header from "../features/Header/Header";
 import "./OnboardingPage.css";
 
 function OnboardingPage() {
@@ -21,26 +22,25 @@ function OnboardingPage() {
 
   return (
     <div className="container">
+      <Header />
       <div className="gradient-ball first"></div>
       <div className="gradient-ball second"></div>
       <div className="gradient-ball third"></div>
       <div className="gradient-ball fourth"></div>
 
-      <div className="auth-bar">
-        <div className="auth-buttons">
-          <a href="/login" className="login">Login</a>
-          <a href="/signup" className="signup">Sign Up</a>
-        </div>
-      </div>
-
       <header className="main-header">
         <p className="logo0">Understand your emotions with every word.</p>
         <h1 className="logo">Your AI Voice Diary</h1>
         <p className="subtitle">
-          listens, analyzes your tone, and helps you reflect on your feelings over time.
+          listens, analyzes your tone, and helps you reflect on your feelings
+          over time.
         </p>
         <div className="cta-button">
-          <a href="#record" className="get-started-btn" onClick={scrollToRecord}>
+          <a
+            href="#record"
+            className="get-started-btn"
+            onClick={scrollToRecord}
+          >
             Get Started
           </a>
         </div>
@@ -50,15 +50,16 @@ function OnboardingPage() {
         <div className="card">
           <h3>Voice Journaling</h3>
           <p>
-            Just talk—no typing needed. Record your thoughts in seconds, anytime.
-            VoiceDiary captures your tone, pace, and emotions naturally.
+            Just talk—no typing needed. Record your thoughts in seconds,
+            anytime. VoiceDiary captures your tone, pace, and emotions
+            naturally.
           </p>
         </div>
         <div className="card">
           <h3>Emotion Analysis</h3>
           <p>
-            Understand how you truly feel. AI detects sadness, stress, joy, and more—
-            then summarizes your emotional state.
+            Understand how you truly feel. AI detects sadness, stress, joy, and
+            more— then summarizes your emotional state.
           </p>
         </div>
         <div className="card">
@@ -74,8 +75,8 @@ function OnboardingPage() {
         <div className="Instr">
           <h4>Try It Now — No Signup Needed</h4>
           <p>
-            Get gentle, actionable suggestions. Based on your entries, VoiceDiary
-            offers self-care tips or prompts for deeper reflection.
+            Get gentle, actionable suggestions. Based on your entries,
+            VoiceDiary offers self-care tips or prompts for deeper reflection.
           </p>
         </div>
         <div className="how-works">
