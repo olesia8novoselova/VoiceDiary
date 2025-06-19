@@ -1,7 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
 import  OnboardingPage from "./pages/OnboardingPage";
-// import "./App.css";
+import  LoginPage from "./pages/LoginPage";
+import  SignUpPage from "./pages/SignUpPage";
+
+
 
 export default function App() {
   const [globalError, setGlobalError] = useState(null);
@@ -24,6 +27,10 @@ export default function App() {
           <Routes>
   <Route path="/" element={<Navigate to="/onboarding" />} />
   <Route path="/onboarding" element={<OnboardingPage />} />
+  <Route path="/" element={<Navigate to="/login" />} />
+  <Route path="/login" element={<LoginPage />} />
+   <Route path="/" element={<Navigate to="/signup" />} />
+  <Route path="/signup" element={<SignUpPage />} />
 </Routes>
         </main>
       </div>

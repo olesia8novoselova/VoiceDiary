@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import AudioRecorder from "../components/AudioRecorder";
 import WaveAnimation from "../components/WaveAnimation";
+
+
 import "./OnboardingPage.css";
 
 function OnboardingPage() {
