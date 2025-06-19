@@ -1,95 +1,269 @@
-import { useRef, useState, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import {
+  FaMicrophone,
+  FaPause,
+  FaStop,
+  FaTrash,
+  FaCheck,
+  FaExclamationTriangle,
+} from "react-icons/fa";
+import "./AudioRecorder.css";
 
 const AudioRecorder = ({ setIsRecording }) => {
-  const [recording, setRecording] = useState(false);
-  const [audioURL, setAudioURL] = useState("");
-
-  const mediaRecorderRef = useRef(null);
-  const chunksRef = useRef([]);
-  const streamRef = useRef(null);
+  const [isRecording, setRecording] = useState(false);
+  const [isPaused, setPaused] = useState(false);
+  const [recordTime, setRecordTime] = useState(0);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [permission, setPermission] = useState("prompt");
+  const mediaRecorder = useRef(null);
+  const audioChunks = useRef([]);
+  const timerRef = useRef(null);
 
   useEffect(() => {
-    return () => {
-      if (mediaRecorderRef.current?.state === "recording") {
-        mediaRecorderRef.current.stop();
-      }
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
+    const checkPermission = async () => {
+      try {
+        const permissionStatus = await navigator.permissions.query({
+          name: "microphone",
+        });
+        updatePermissionState(permissionStatus.state);
+
+        permissionStatus.onchange = () => {
+          updatePermissionState(permissionStatus.state);
+        };
+      } catch (err) {
+        console.log("Permission API not supported, using default flow");
       }
     };
+
+    checkPermission();
   }, []);
 
-  const startRecording = async () => {
-    setRecording(true);
-    setIsRecording(true)
-    
+  const updatePermissionState = (state) => {
+    setPermission(state === "granted" ? "granted" : "prompt");
+  };
+
+  const resetRecorder = useCallback(() => {
+    if (mediaRecorder.current) {
+      mediaRecorder.current.stream.getTracks().forEach((track) => track.stop());
+    }
+    mediaRecorder.current = null;
+    audioChunks.current = [];
+    clearInterval(timerRef.current);
+  }, []);
+
+  const stopRecording = useCallback(() => {
+    if (mediaRecorder.current && isRecording) {
+      if (mediaRecorder.current.state !== "inactive") {
+        mediaRecorder.current.stop();
+      }
+      clearInterval(timerRef.current);
+      setRecording(false);
+      setPaused(false);
+    }
+  }, [isRecording]);
+
+  useEffect(() => {
+    setIsRecording(isRecording);
+    return () => {
+      stopRecording();
+    };
+  }, [isRecording, setIsRecording, stopRecording]);
+
+  const requestMicrophoneAccess = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream;
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      chunksRef.current = [];
-
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          chunksRef.current.push(e.data);
-        }
-      };
-
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-        const url = URL.createObjectURL(blob);
-        setAudioURL(url);
-        stream.getTracks().forEach((track) => track.stop());
-        setIsRecording(false); 
-      };
-
-      mediaRecorder.start();
+      setPermission("granted");
+      return stream;
     } catch (err) {
-      console.error("Microphone error:", err);
-      setRecording(false);
-      setIsRecording(false);
+      console.error("Microphone access denied:", err);
+      setPermission("denied");
+      return null;
     }
   };
 
-  const stopRecording = () => {
-    setRecording(false);
-    setIsRecording(false); 
- 
-    if (mediaRecorderRef.current?.state === "recording") {
-      mediaRecorderRef.current.stop();
+  const startRecording = async () => {
+    if (permission === "denied") {
+      alert(
+        "Please enable microphone access in your browser settings to record audio."
+      );
+      return;
+    }
+
+    try {
+      resetRecorder();
+
+      let stream;
+      if (permission !== "granted") {
+        stream = await requestMicrophoneAccess();
+        if (!stream) return;
+      } else {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      }
+
+      mediaRecorder.current = new MediaRecorder(stream);
+
+      mediaRecorder.current.ondataavailable = (e) => {
+        audioChunks.current.push(e.data);
+      };
+
+      mediaRecorder.current.onstop = () => {
+        const audioBlob = new Blob(audioChunks.current, { type: "audio/wav" });
+        setAudioBlob(audioBlob);
+      };
+
+      mediaRecorder.current.start(100);
+      setRecording(true);
+      setPaused(false);
+      setRecordTime(0);
+
+      timerRef.current = setInterval(() => {
+        setRecordTime((prev) => prev + 1);
+      }, 1000);
+    } catch (err) {
+      console.error("Error accessing microphone:", err);
+      setPermission("denied");
+    }
+  };
+
+  const togglePause = () => {
+    if (!mediaRecorder.current) return;
+
+    if (isPaused) {
+      mediaRecorder.current.resume();
+      timerRef.current = setInterval(() => {
+        setRecordTime((prev) => prev + 1);
+      }, 1000);
+    } else {
+      mediaRecorder.current.pause();
+      clearInterval(timerRef.current);
+    }
+    setPaused(!isPaused);
+  };
+
+  const cancelRecording = () => {
+    stopRecording();
+    setAudioBlob(null);
+    setRecordTime(0);
+    resetRecorder();
+  };
+
+  const saveRecording = () => {
+    if (audioBlob) {
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const a = document.createElement("a");
+      a.style.display = "none";
+      a.href = audioUrl;
+      a.download = `voice-${new Date().toISOString()}.wav`;
+      document.body.appendChild(a);
+      a.click();
+
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+
+      setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(audioUrl);
+      }, 100);
+
+      setAudioBlob(null);
+      setRecordTime(0);
+      resetRecorder();
+    }
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, "0");
+    const secs = (seconds % 60).toString().padStart(2, "0");
+    return `${mins}:${secs}`;
+  };
+
+  const handleMainButtonClick = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
     }
   };
 
   return (
-    <div className="record-section" style={{ textAlign: "center", marginTop: "2rem" }}>
-      <button
-        className={`record-btn ${recording ? "active" : ""}`}
-        onMouseDown={startRecording}
-        onMouseUp={stopRecording}
-        onTouchStart={startRecording}
-        onTouchEnd={stopRecording}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="36"
-          height="36"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <rect x="9" y="2" width="6" height="12" rx="3" />
-          <path d="M5 10v2a7 7 0 0 0 14 0v-2" />
-          <line x1="12" y1="19" x2="12" y2="22" />
-          <line x1="8" y1="22" x2="16" y2="22" />
-        </svg>
-      </button>
+    <div className="audio-recorder-container">
+      {permission === "denied" && (
+        <div className="permission-denied-banner">
+          <FaExclamationTriangle className="warning-icon" />
+          <span>
+            Microphone access is blocked. Please enable it in your browser
+            settings.
+          </span>
+        </div>
+      )}
 
-      {audioURL && (
-        <audio controls src={audioURL} style={{ marginTop: "1rem" }} />
+      <div
+        className={`recorder-circle ${isRecording ? "recording" : ""} ${
+          permission === "denied" ? "disabled" : ""
+        }`}
+      >
+        <button
+          className="main-record-button"
+          onClick={handleMainButtonClick}
+          aria-label={isRecording ? "Stop recording" : "Start recording"}
+          disabled={permission === "denied"}
+        >
+          {isRecording ? <div className="pulse-animation"></div> : null}
+          <FaMicrophone className="mic-icon" />
+        </button>
+
+        {isRecording && (
+          <div className="recording-controls">
+            <span className="timer">{formatTime(recordTime)}</span>
+            <button
+              className="control-button pause-button"
+              onClick={togglePause}
+              aria-label={isPaused ? "Resume recording" : "Pause recording"}
+            >
+              <FaPause />
+            </button>
+            <button
+              className="control-button stop-button"
+              onClick={stopRecording}
+              aria-label="Stop recording"
+            >
+              <FaStop />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {permission === "prompt" && !isRecording && (
+        <div className="permission-prompt">
+          <p>Click the microphone to start recording</p>
+          <small>We'll ask for microphone permission</small>
+        </div>
+      )}
+
+      {audioBlob && !isRecording && (
+        <div className="post-recording-actions">
+          <button
+            className="action-button delete-button"
+            onClick={cancelRecording}
+            aria-label="Delete recording"
+          >
+            <FaTrash />
+          </button>
+          <button
+            className="action-button save-button"
+            onClick={saveRecording}
+            aria-label="Save recording"
+          >
+            <FaCheck />
+          </button>
+        </div>
+      )}
+
+      {showSuccess && (
+        <div className="success-message">Recording saved successfully!</div>
       )}
     </div>
   );
