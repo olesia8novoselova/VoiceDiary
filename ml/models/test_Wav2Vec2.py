@@ -4,8 +4,8 @@ from transformers import Wav2Vec2Processor, Wav2Vec2ForSequenceClassification
 import numpy as np
 
 # Путь к модели и аудио
-model_path = "ml/models/wav2vec2-dusha-finetuned"
-audio_path = "ml/audio_samples/gravitatsionnoe-pole.wav"  # замените на путь к вашему файлу
+model_path = "ml/wav2vec2-dusha-finetuned"
+audio_path = "ml/audio_samples/Back_Home.wav"  # замените на путь к вашему файлу
 
 # Загрузка процессора и модели
 processor = Wav2Vec2Processor.from_pretrained(model_path)
