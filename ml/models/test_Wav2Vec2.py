@@ -49,7 +49,7 @@ def compute_metrics(eval_pred):
     preds = torch.from_numpy(logits).argmax(dim=-1)
     return accuracy.compute(predictions=preds, references=labels)
 
-# 7. Аргументы обучения
+# 7.   Аргументы обучения
 training_args = TrainingArguments(
     output_dir="./wav2vec2-dusha-finetuned",
     do_train=True,
