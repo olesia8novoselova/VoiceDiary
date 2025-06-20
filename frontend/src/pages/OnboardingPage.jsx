@@ -91,8 +91,7 @@ function OnboardingPage() {
         {/* <div className="gradient-ball-5"></div> */}
         <AudioRecorder setIsRecording={setIsRecording} />
       </div>
-
-      <WaveAnimation isRecording={isRecording} />
+      <WaveAnimation className="wave-container" isRecording={isRecording} />
     </div>
   );
 }

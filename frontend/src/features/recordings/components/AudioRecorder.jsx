@@ -55,16 +55,17 @@ const AudioRecorder = ({ setIsRecording }) => {
   }, []);
 
   const stopRecording = useCallback(() => {
-    if (mediaRecorder.current && isRecording) {
-      if (mediaRecorder.current.state !== "inactive") {
-        mediaRecorder.current.stop();
-      }
-      clearInterval(timerRef.current);
-      setRecording(false);
-      setPaused(false);
-      setShowControls(false);
+  if (mediaRecorder.current && isRecording) {
+    if (mediaRecorder.current.state !== "inactive") {
+      mediaRecorder.current.stop();
     }
-  }, [isRecording]);
+    mediaRecorder.current.stream.getTracks().forEach(track => track.stop());
+    clearInterval(timerRef.current);
+    setRecording(false);
+    setPaused(false);
+    setShowControls(false);
+  }
+}, [isRecording]);
 
   useEffect(() => {
     setIsRecording(isRecording);
