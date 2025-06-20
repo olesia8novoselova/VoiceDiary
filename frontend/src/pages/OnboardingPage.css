@@ -249,36 +249,12 @@ header p {
   transition-duration: 0.1s;
 }
 
-.record-section {
-  text-align: center;
-  margin-top: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
+
 .record-section-container {
   position: relative;
   z-index: 1;
-  margin-top: 2rem;
+  margin-top: 10rem;
   padding-bottom: 100px;
-}
-
-.record-btn {
-  position: relative;
-  top: 150px;
-  padding: 16px 16px;
-  border: none;
-  border-radius: 50px;
-  background-color: #02143a;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.record-btn:hover {
-  background-color: #7306e7;
 }
 
 .wave-container {
@@ -377,7 +353,7 @@ svg {
 
 .how-works h4 {
   color: #fff;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 600;
   margin: 5px 0 8px;
   position: relative;
@@ -385,7 +361,7 @@ svg {
 
 .how-works p {
   color: #c7c7c7dc;
-  font-size: 1rem;
+  font-size: 0.9rem;
   margin-top: 5px;
   letter-spacing: 1px;
   font-weight: 300;

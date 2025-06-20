@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import {
   FaMicrophone,
   FaPause,
@@ -16,9 +16,11 @@ const AudioRecorder = ({ setIsRecording }) => {
   const [audioBlob, setAudioBlob] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [permission, setPermission] = useState("prompt");
+  const [showControls, setShowControls] = useState(false);
   const mediaRecorder = useRef(null);
   const audioChunks = useRef([]);
   const timerRef = useRef(null);
+  const micIconRef = useRef(null);
 
   useEffect(() => {
     const checkPermission = async () => {
@@ -60,6 +62,7 @@ const AudioRecorder = ({ setIsRecording }) => {
       clearInterval(timerRef.current);
       setRecording(false);
       setPaused(false);
+      setShowControls(false);
     }
   }, [isRecording]);
 
@@ -116,6 +119,7 @@ const AudioRecorder = ({ setIsRecording }) => {
       setRecording(true);
       setPaused(false);
       setRecordTime(0);
+      setShowControls(true);
 
       timerRef.current = setInterval(() => {
         setRecordTime((prev) => prev + 1);
@@ -128,6 +132,10 @@ const AudioRecorder = ({ setIsRecording }) => {
 
   const togglePause = () => {
     if (!mediaRecorder.current) return;
+
+    if (micIconRef.current) {
+      micIconRef.current.style.transition = "all 0.3s ease";
+    }
 
     if (isPaused) {
       mediaRecorder.current.resume();
@@ -202,8 +210,8 @@ const AudioRecorder = ({ setIsRecording }) => {
 
       <div
         className={`recorder-circle ${isRecording ? "recording" : ""} ${
-          permission === "denied" ? "disabled" : ""
-        }`}
+          isPaused ? "is-paused" : ""
+        } ${permission === "denied" ? "disabled" : ""}`}
       >
         <button
           className="main-record-button"
@@ -212,29 +220,38 @@ const AudioRecorder = ({ setIsRecording }) => {
           disabled={permission === "denied"}
         >
           {isRecording ? <div className="pulse-animation"></div> : null}
-          <FaMicrophone className="mic-icon" />
+          <FaMicrophone 
+            className="mic-icon" 
+            ref={micIconRef}
+          />
         </button>
-
-        {isRecording && (
-          <div className="recording-controls">
-            <span className="timer">{formatTime(recordTime)}</span>
-            <button
-              className="control-button pause-button"
-              onClick={togglePause}
-              aria-label={isPaused ? "Resume recording" : "Pause recording"}
-            >
-              <FaPause />
-            </button>
-            <button
-              className="control-button stop-button"
-              onClick={stopRecording}
-              aria-label="Stop recording"
-            >
-              <FaStop />
-            </button>
-          </div>
-        )}
       </div>
+
+      {isRecording && showControls && (
+        <div className="recording-controls-below">
+          <span className="timer">{formatTime(recordTime)}</span>
+          <button
+            className={`control-button pause-button ${isPaused ? "resume-state" : ""}`}
+            onClick={togglePause}
+            aria-label={isPaused ? "Resume recording" : "Pause recording"}
+          >
+            {isPaused ? (
+              <div className="play-icon-wrapper">
+                <div className="play-icon-triangle"></div>
+              </div>
+            ) : (
+              <FaPause />
+            )}
+          </button>
+          <button
+            className="control-button stop-button"
+            onClick={stopRecording}
+            aria-label="Stop recording"
+          >
+            <FaStop />
+          </button>
+        </div>
+      )}
 
       {permission === "prompt" && !isRecording && (
         <div className="permission-prompt">
@@ -263,7 +280,10 @@ const AudioRecorder = ({ setIsRecording }) => {
       )}
 
       {showSuccess && (
-        <div className="success-message">Recording saved successfully!</div>
+        <div className="success-message">
+          <FaCheck className="success-icon" />
+          Recording saved successfully!
+        </div>
       )}
     </div>
   );

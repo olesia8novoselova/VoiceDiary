@@ -88,7 +88,7 @@ function OnboardingPage() {
       </section>
 
       <div id="record" className="record-section-container">
-        <div className="gradient-ball-5"></div>
+        {/* <div className="gradient-ball-5"></div> */}
         <AudioRecorder setIsRecording={setIsRecording} />
       </div>
 
