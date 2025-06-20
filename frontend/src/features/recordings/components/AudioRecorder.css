@@ -1,0 +1,316 @@
+.audio-recorder-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 20px;
+}
+
+.recorder-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgb(101, 60, 69), #cac1f9);
+  backdrop-filter: blur(1.1rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 7px 15px rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(2, 2, 13, 0.611);
+}
+
+.recorder-circle.recording {
+  background: rgba(168, 55, 255, 0.259);
+  box-shadow: 0 4px 15px rgba(108, 50, 255, 0.542);
+}
+
+.recorder-circle.is-paused {
+  background: rgba(255, 165, 0, 0.2);
+  box-shadow: 0 4px 15px rgba(255, 165, 0, 0.3);
+}
+
+.main-record-button {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(2, 20, 58, 1), #1c163d);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 8px 20px rgba(2, 20, 58, 1);
+}
+
+.main-record-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgb(45, 5, 115);
+}
+
+.main-record-button:active {
+  transform: scale(0.95);
+}
+
+.recording .main-record-button {
+  background: linear-gradient(135deg, #ff4d4d, #e60000);
+  box-shadow: 0 4px 20px rgba(255, 50, 50, 0.6);
+}
+
+.is-paused .main-record-button {
+  background: linear-gradient(135deg, #ffa64d, #ff8000);
+  box-shadow: 0 4px 20px rgba(255, 165, 0, 0.6);
+}
+
+.mic-icon {
+  font-size: 36px;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 3;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  background: linear-gradient(to bottom, #fff, #e6e6e6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.recording-controls-below {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 30px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 15px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.timer {
+  color: white;
+  font-family: monospace;
+  font-size: 16px;
+  min-width: 45px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.control-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.control-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.control-button:active {
+  transform: scale(0.95);
+}
+
+.pause-button {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.pause-button.resume-state {
+  background: rgba(60, 233, 60, 0.5);
+}
+
+.play-icon-triangle {
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-left: 14px solid white;
+  border-bottom: 8px solid transparent;
+  margin-left: 2px;
+}
+
+.stop-button {
+  background: rgba(255, 50, 50, 0.5);
+}
+
+.stop-button:hover {
+  background: rgba(255, 50, 50, 0.7);
+}
+.post-recording-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.action-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-button {
+  background: rgba(255, 50, 50, 0.2);
+  color: #ff6b6b;
+}
+
+.delete-button:hover {
+  background: rgba(255, 50, 50, 0.3);
+}
+
+.save-button {
+  background: rgba(50, 255, 50, 0.2);
+  color: #6bff6b;
+}
+
+.save-button:hover {
+  background: rgba(50, 255, 50, 0.3);
+}
+
+.success-message {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(50, 200, 50, 0.758);
+  color: white;
+  padding: 12px 25px;
+  border-radius: 5px;
+  animation: fadeInOut 3s ease-in-out;
+  z-index: 100;
+  font-size: 16px;
+  font-weight: 500;
+  box-shadow: 0 4px 15px rgba(50, 200, 50, 0.4);
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+}
+
+.permission-denied-banner {
+  background: rgba(255, 50, 50, 0.2);
+  color: #e4b1b1;
+  padding: 10px 15px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  max-width: 300px;
+  text-align: center;
+}
+
+.warning-icon {
+  flex-shrink: 0;
+}
+
+.recorder-circle.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.recorder-circle.disabled .main-record-button {
+  background: #ccc;
+}
+
+.permission-prompt {
+  text-align: center;
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
+  max-width: 250px;
+}
+
+.permission-prompt p {
+  margin: 0 0 5px 0;
+  font-weight: 500;
+  color: white;
+}
+
+.permission-prompt small {
+  font-size: 0.75em;
+  opacity: 0.8;
+}
+
+.main-record-button:disabled {
+  cursor: not-allowed;
+  background: #ccc !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.main-record-button:disabled:hover {
+  transform: none !important;
+}
+
+@media (max-width: 600px) {
+  .recorder-circle {
+    width: 100px;
+    height: 100px;
+  }
+
+  .main-record-button {
+    width: 70px;
+    height: 70px;
+  }
+
+  .mic-icon {
+    font-size: 30px;
+  }
+
+  .recording-controls-below {
+    padding: 8px 15px;
+  }
+
+  .control-button {
+    width: 32px;
+    height: 32px;
+  }
+
+  .timer {
+    font-size: 14px;
+  }
+}
