@@ -8,8 +8,9 @@ body {
 
 .auth {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
+  overflow-y: auto;
 }
 
 .auth-left {
@@ -21,9 +22,16 @@ body {
   padding: 60px;
 }
 
-.auth-left h2 {
+.login-title {
   font-size: 2.5rem;
   margin-bottom: 40px;
+  margin-top: 60px;
+}
+
+.signup-title {
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+  margin-top: 80px;
 }
 
 .auth-right {
@@ -31,6 +39,7 @@ body {
   background-image: url('/public/images/login.jpg');
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;
 }
 
 .back-button {

@@ -1,15 +1,22 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./AuthPage.css";
 import AuthForm from "../features/auth/components/AuthForm";
 import AuthToggle from "../features/auth/components/AuthToggle";
 
 function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
+  const location = useLocation();
+  const [isLogin, setIsLogin] = useState(location.pathname === "/login");
   const navigate = useNavigate();
 
+  useEffect(() => {
+    setIsLogin(location.pathname === "/login");
+  }, [location.pathname]);
+
   const toggleAuthMode = () => {
-    setIsLogin(!isLogin);
+    const newMode = !isLogin;
+    setIsLogin(newMode);
+    navigate(newMode ? "/login" : "/signup");
   };
 
   const handleSubmit = (e) => {
@@ -22,7 +29,7 @@ function AuthPage() {
       <div className="auth-left">
         <button
           className="back-button"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/onboarding")}
           aria-label="Go back"
         >
           <svg
@@ -41,7 +48,9 @@ function AuthPage() {
             />
           </svg>
         </button>
-        <h2>{isLogin ? "Sign in" : "Sign up"}</h2>
+        <h2 className={isLogin ? "login-title" : "signup-title"}>
+          {isLogin ? "Sign in" : "Sign up"}
+        </h2>
         <AuthForm isLogin={isLogin} onSubmit={handleSubmit} />
         <AuthToggle isLogin={isLogin} onToggle={toggleAuthMode} />
       </div>

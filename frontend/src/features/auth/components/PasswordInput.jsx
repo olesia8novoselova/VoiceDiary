@@ -1,4 +1,5 @@
 import PasswordVisibilityIcon from './VisibilityIcon';
+import './Auth.css'
 
 const PasswordInput = ({
   id,

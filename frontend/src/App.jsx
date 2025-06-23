@@ -26,8 +26,8 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/onboarding" replace />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
-            <Route path="/login" element={<AuthPage initialMode="login" />} />
-            <Route path="/signup" element={<AuthPage initialMode="signup" />} />
+            <Route path="/login" element={<AuthPage />} />
+            <Route path="/signup" element={<AuthPage />} />
             <Route path="*" element={<Navigate to="/onboarding" replace />} />
           </Routes>
         </main>

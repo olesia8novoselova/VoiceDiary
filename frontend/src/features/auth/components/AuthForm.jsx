@@ -7,6 +7,7 @@ import PasswordInput from "./PasswordInput";
 const AuthForm = ({ isLogin, onSubmit }) => {
   const [formData, setFormData] = useState({
     email: "",
+    username: "",
     password: "",
     repeatPassword: "",
   });
@@ -23,6 +24,14 @@ const AuthForm = ({ isLogin, onSubmit }) => {
       newErrors.email = "Email is required";
     } else if (!emailRegex.test(formData.email)) {
       newErrors.email = "Please enter a valid email (e.g., user@example.com)";
+    }
+
+    if (!isLogin) {
+      if (!formData.username) {
+        newErrors.username = "Username is required";
+      } else if (formData.username.length < 3) {
+        newErrors.username = "Username should be at least 3 characters";
+      }
     }
 
     if (!formData.password) {
@@ -83,13 +92,18 @@ const AuthForm = ({ isLogin, onSubmit }) => {
     if (validateForm()) {
       onSubmit(e);
     } else {
-      const firstError = Object.keys(errors)[0];
-      if (firstError) {
-        document.querySelector(`[name="${firstError}"]`)?.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-      }
+      setTimeout(() => {
+        const firstError = Object.keys(errors)[0];
+        if (firstError) {
+          const element = document.querySelector(`[name="${firstError}"]`);
+          if (element) {
+            window.scrollTo({
+              top: element.offsetTop - 100,
+              behavior: "smooth",
+            });
+          }
+        }
+      }, 50);
     }
   };
 
@@ -119,6 +133,34 @@ const AuthForm = ({ isLogin, onSubmit }) => {
         )}
       </div>
 
+      {!isLogin && (
+        <div
+          className={`form-group ${hasError("username") ? "has-error" : ""}`}
+        >
+          <label htmlFor="username">Username</label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            placeholder="Choose a username"
+            value={formData.username}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            className={hasError("username") ? "error" : ""}
+            aria-describedby={
+              hasError("username") ? "username-error" : undefined
+            }
+          />
+          {hasError("username") && (
+            <div id="username-error" className="error-message">
+              <ErrorIcon />
+              <span>{errors.username}</span>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className={`form-group ${hasError("password") ? "has-error" : ""}`}>
         <label htmlFor="password">Password</label>
         <PasswordInput
@@ -143,14 +185,20 @@ const AuthForm = ({ isLogin, onSubmit }) => {
           !isLogin && (
             <div className="password-hint">
               <HintIcon />
-              <span>At least 6 characters with one number and uppercase letter</span>
+              <span>
+                At least 6 characters with one number and uppercase letter
+              </span>
             </div>
           )
         )}
       </div>
 
       {!isLogin && (
-        <div className={`form-group ${hasError("repeatPassword") ? "has-error" : ""}`}>
+        <div
+          className={`form-group ${
+            hasError("repeatPassword") ? "has-error" : ""
+          }`}
+        >
           <label htmlFor="repeatPassword">Repeat password</label>
           <PasswordInput
             id="repeatPassword"
@@ -161,7 +209,9 @@ const AuthForm = ({ isLogin, onSubmit }) => {
             onKeyDown={handleKeyDown}
             placeholder="Repeat your password"
             showPassword={showRepeatPassword}
-            togglePasswordVisibility={() => setShowRepeatPassword(!showRepeatPassword)}
+            togglePasswordVisibility={() =>
+              setShowRepeatPassword(!showRepeatPassword)
+            }
             hasError={hasError("repeatPassword")}
             errorId="repeatPassword-error"
           />

@@ -106,8 +106,51 @@
   flex-shrink: 0;
 }
 
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  padding-right: 60px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 7%;
+  transform: translateY(-50%);
+  border: none;
+  cursor: pointer;
+  color: #7c5ffce0 !important; 
+  display: flex;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: none !important;
+}
+
+.password-toggle:hover {
+  background: transparent;
+  color: #ffffff !important;
+}
+
+.password-toggle:focus {
+  outline: none;
+  background: transparent;
+}
+
 .error-message, .password-hint {
   animation: fadeIn 0.3s ease;
+}
+
+.password-toggle::before,
+.password-toggle::after {
+  background: transparent !important;
 }
 
 .auth-form input:-webkit-autofill,
