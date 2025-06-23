@@ -1,17 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
 import AudioRecorder from "../features/recordings/components/AudioRecorder";
 import WaveAnimation from "../features/recordings/components/WaveAnimation";
 import Header from "../features/Header/Header";
 import "./OnboardingPage.css";
 
+
+const prompts = [
+  "How was your day?",
+  "What did you feel today?",
+  "What made you happy or upset?",
+  "What are you thinking about right now?",
+  "What events were important to you today?",
+  "Is there anything you'd like to let go of?",
+  "What are you proud of today?",
+  "What caused you stress or anxiety?",
+];
+
+
+
 function OnboardingPage() {
   const [isRecording, setIsRecording] = useState(false);
 
+  const [currentPrompt, setCurrentPrompt] = useState("");
   const scrollToRecord = (e) => {
     e.preventDefault();
     const recordSection = document.getElementById("record");
     recordSection?.scrollIntoView({ behavior: "smooth" });
   };
+    useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * prompts.length);
+    setCurrentPrompt(prompts[randomIndex]);
+  }, [])
 
   return (
     <div className="container">
@@ -81,6 +101,9 @@ function OnboardingPage() {
       </section>
 
       <div id="record" className="record-section-container">
+        <div className="prompt-message">
+          <p>{currentPrompt}</p>
+        </div>
         <AudioRecorder setIsRecording={setIsRecording} />
       </div>
       <WaveAnimation className="wave-container" isRecording={isRecording} />
