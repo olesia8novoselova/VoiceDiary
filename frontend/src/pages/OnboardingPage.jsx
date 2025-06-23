@@ -10,14 +10,7 @@ function OnboardingPage() {
   const scrollToRecord = (e) => {
     e.preventDefault();
     const recordSection = document.getElementById("record");
-    if (recordSection) {
-      recordSection.scrollIntoView({ behavior: "smooth" });
-    } else {
-      window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: "smooth",
-      });
-    }
+    recordSection?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -40,7 +33,7 @@ function OnboardingPage() {
       <section className="features">
         <div className="card">
           <h3>Voice Journaling</h3>
-          <p>Just talk—no typing needed. </p>
+          <p>Just talk—no typing needed.</p>
           <p>
             Record your thoughts in seconds, anytime. VoiceDiary captures your
             tone, pace, and emotions naturally.
@@ -65,9 +58,9 @@ function OnboardingPage() {
       </section>
 
       <div className="cta-button">
-        <a href="#record" className="try-now-btn" onClick={scrollToRecord}>
+        <button className="try-now-btn" onClick={scrollToRecord}>
           Get started
-        </a>
+        </button>
       </div>
 
       <section className="try-block">
@@ -88,7 +81,6 @@ function OnboardingPage() {
       </section>
 
       <div id="record" className="record-section-container">
-        {/* <div className="gradient-ball-5"></div> */}
         <AudioRecorder setIsRecording={setIsRecording} />
       </div>
       <WaveAnimation className="wave-container" isRecording={isRecording} />
