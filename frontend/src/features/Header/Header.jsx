@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Header.css";
 
 function Header() {
@@ -6,12 +7,12 @@ function Header() {
     <header className="sticky-header">
       <div className="header-content">
         <div className="auth-buttons">
-          <a href="/login" className="login-btn">
+          <Link to="/login" className="login-btn">
             Login
-          </a>
-          <a href="/signup" className="signup-btn">
+          </Link>
+          <Link to="/signup" className="signup-btn">
             Sign Up
-          </a>
+          </Link>
         </div>
       </div>
     </header>

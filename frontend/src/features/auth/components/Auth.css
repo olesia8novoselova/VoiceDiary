@@ -1,0 +1,167 @@
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.auth-form label {
+  font-size: 0.95rem;
+  color: #ccc;
+  margin-bottom: 5px;
+}
+
+.auth-form input {
+  padding: 14px 16px;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: transparent;
+  color: #fff;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.auth-form input:focus {
+  border-color: #8b5cf6;
+}
+
+.auth-form button {
+  margin-top: 20px;
+  padding: 14px;
+  background: linear-gradient(to right, #2b1a789e, #8b5cf6);
+  border: none;
+  color: white;
+  font-weight: 500;
+  font-size: 1.1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.auth-form button:hover {
+  background: linear-gradient(to right, #8b5cf6, #2b1a78);
+}
+
+.auth-toggle-text {
+  margin-top: 30px;
+  font-size: 0.9rem;
+  color: #ccc;
+  text-align: center;
+}
+
+.auth-toggle-btn {
+  background: none;
+  border: none;
+  color: #8b5cf6;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.auth-toggle-btn:hover {
+  text-decoration: underline;
+}
+
+.form-group {
+  position: flex;
+  flex-direction: column;
+  gap: 5px;
+  display: flex;
+}
+
+.error {
+  border-color: #ff4d4f !important;
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ff4d4f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 8V12M12 16H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z' /%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #ff4d4f;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
+.error-message svg {
+  flex-shrink: 0;
+}
+
+.password-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #8b8b8b;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
+.password-hint svg {
+  flex-shrink: 0;
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  padding-right: 60px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 7%;
+  transform: translateY(-50%);
+  border: none;
+  cursor: pointer;
+  color: #7c5ffce0 !important; 
+  display: flex;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: none !important;
+}
+
+.password-toggle:hover {
+  background: transparent;
+  color: #ffffff !important;
+}
+
+.password-toggle:focus {
+  outline: none;
+  background: transparent;
+}
+
+.error-message, .password-hint {
+  animation: fadeIn 0.3s ease;
+}
+
+.password-toggle::before,
+.password-toggle::after {
+  background: transparent !important;
+}
+
+.auth-form input:-webkit-autofill,
+.auth-form input:-webkit-autofill:hover, 
+.auth-form input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff !important;
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
