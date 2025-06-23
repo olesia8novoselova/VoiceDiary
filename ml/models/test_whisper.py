@@ -1,74 +1,92 @@
-import whisper
-import json
 import os
+import json
 import time
+import whisper
 from datetime import datetime
-import pandas as pd
-import numpy as np
 
-def create_output_directory():
-    output_dir = os.path.abspath(f"ml/outputs/whisper/test_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
-    os.makedirs(output_dir, exist_ok=True)
-    return output_dir
-
-def load_models():
-    return {'small': whisper.load_model('small')}
-
-def process_audio_file(models, audio_path, output_dir):
-    results = []
+def transcribe_audio(model, model_name, audio_path, task="transcribe", language=None):
+    start_time = time.time()
     
-    try:
-        audio = whisper.load_audio(audio_path)
-        audio = whisper.pad_or_trim(audio)
-        mel = whisper.log_mel_spectrogram(audio).to(models['small'].device)
+    # Для turbo модели явно указываем язык, если он известен
+    if language and model_name == "large":
+        result = model.transcribe(
+            audio_path, 
+            task=task,
+            language=language,
+            fp16=False  # Обязательно для CPU
+        )
+    else:
+        result = model.transcribe(audio_path, task=task, language=language)
+    
+    elapsed_time = time.time() - start_time
+    return {
+        "text": result["text"],
+        "language": result["language"],
+        "time_seconds": round(elapsed_time, 2)
+    }
+
+def process_audio_files(audio_dir, output_dir):
+    models = {
+        # "small": "small", # - быстрая, но слишком плохая
+        "medium": "medium", # норм английский, по времени ок, иногда стрельнет русский, но доверять не стоит, определение языка неточное
+        "large": "large-v3", # долго грузит, понимает русский, ошибается на редко встечающихся словах, умеет переводить с правильными настройками
+        # "turbo": "large-v3-turbo" # не умеет переводить - или я не нашла настройки, иногда читает быстрее медиума, ингода медленнее
+    }
+    
+    audio_files = [f for f in os.listdir(audio_dir) if f.lower().endswith('.wav')]
+    results = {}
+    
+    for audio_file in audio_files:
+        audio_path = os.path.join(audio_dir, audio_file)
+        file_results = {}
         
-        for model_name, model in models.items():
-            start_time = time.time()
-            result = model.transcribe(audio_path)
-            
+        for model_name, model_size in models.items():
+            print(f"Processing {audio_file} with {model_name} model...")
+            model = whisper.load_model(model_size)
+
+            # препроц для определения языка - нужно для перевода
+            lang_det_snippet = whisper.load_audio(audio_path)
+            lang_det_snippet = whisper.pad_or_trim(lang_det_snippet) # pad to 30 seconds for language detection
+            n_mels = model.dims.n_mels  # автоматически определит 128 для large-v3
+            mel = whisper.log_mel_spectrogram(lang_det_snippet, n_mels=n_mels).to(model.device)
+
+            # определение языка - нужно для перевода  
             _, lang_probs = model.detect_language(mel)
             detected_lang = max(lang_probs, key=lang_probs.get)
             
-            res = {
-                'audio_file': audio_path,
-                'model': model_name,
-                'detected_language': detected_lang,
-                'transcription': result["text"],
-                'transcription_time_sec': time.time() - start_time,
-                'timestamp': datetime.now().isoformat()
-            }
+            # Транскрибация полного файла - основой функционал
+            transcription = transcribe_audio(model, model_name, audio_path, language=detected_lang)
+            file_results[model_name] = transcription
             
-            results.append(res)
-            
-            with open(os.path.join(output_dir, f"{os.path.basename(audio_path)}_{model_name}_result.json"), 'w') as f:
-                json.dump(res, f, ensure_ascii=False, indent=2)
-                
-    except Exception as e:
-        print(f"Error processing {audio_path}: {str(e)}")
+            # Перевод (особая обработка для large)
+            if detected_lang != "en":
+                if model_name == "large":
+                    # Для large явно указываем исходный язык и задачу перевода
+                    translation = transcribe_audio(
+                        model, model_name, audio_path,
+                        task="translate",
+                        language=detected_lang
+                    )
+                else:
+                    translation = transcribe_audio(
+                        model, model_name, audio_path,
+                        task="translate"
+                    )
+                file_results[f"{model_name}_translation"] = translation
+        
+        results[audio_file] = file_results
     
-    return results
-
-def main():
-    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
-    audio_dir = os.path.join(project_root, "ml", "audio_samples")
+    # Сохраняем результаты
+    output_file = os.path.join(output_dir, "transcription_results.json")
+    with open(output_file, "w", encoding="utf-8") as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)
     
-    audio_files = [os.path.join(audio_dir, f) for f in os.listdir(audio_dir) if f.lower().endswith('.wav')]
-    
-    if not audio_files:
-        print("No WAV files found in audio directory")
-        return
-    
-    output_dir = create_output_directory()
-    models = load_models()
-    all_results = []
-    
-    for audio_file in audio_files:
-        all_results.extend(process_audio_file(models, audio_file, output_dir))
-    
-    if all_results:
-        pd.DataFrame(all_results).to_csv(os.path.join(output_dir, "all_results.csv"), index=False)
-    
-    print("Processing completed")
+    print(f"Results saved to {output_file}")
 
 if __name__ == "__main__":
-    main()
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+    audio_dir = os.path.join(project_root, "ml", "audio_samples")
+    output_dir = os.path.join(project_root, "ml", "outputs", "whisper", f"test_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+    
+    os.makedirs(output_dir, exist_ok=True)
+    process_audio_files(audio_dir, output_dir)
