@@ -23,6 +23,8 @@ const AudioRecorder = ({ setIsRecording }) => {
   const audioChunks = useRef([]);
   const timerRef = useRef(null);
   const micIconRef = useRef(null);
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const checkPermission = async () => {
@@ -42,32 +44,10 @@ const AudioRecorder = ({ setIsRecording }) => {
 
     checkPermission();
   }, []);
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-
 
   const updatePermissionState = (state) => {
     setPermission(state === "granted" ? "granted" : "prompt");
   };
-  const sendAudioToBackend = async (audioBlob) => {
-  const formData = new FormData();
-  formData.append("file", audioBlob, "recording.wav");
-
-  try {
-    const response = await fetch("http://localhost:8000/analyze", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) throw new Error("Failed to analyze audio");
-
-    const result = await response.json();
-    return result;
-  } catch (error) {
-    console.error("Error sending audio:", error);
-    throw error;
-  }
-};
 
   const resetRecorder = useCallback(() => {
     if (mediaRecorder.current) {
@@ -79,17 +59,17 @@ const AudioRecorder = ({ setIsRecording }) => {
   }, []);
 
   const stopRecording = useCallback(() => {
-  if (mediaRecorder.current && isRecording) {
-    if (mediaRecorder.current.state !== "inactive") {
-      mediaRecorder.current.stop();
+    if (mediaRecorder.current && isRecording) {
+      if (mediaRecorder.current.state !== "inactive") {
+        mediaRecorder.current.stop();
+      }
+      mediaRecorder.current.stream.getTracks().forEach(track => track.stop());
+      clearInterval(timerRef.current);
+      setRecording(false);
+      setPaused(false);
+      setShowControls(false);
     }
-    mediaRecorder.current.stream.getTracks().forEach(track => track.stop());
-    clearInterval(timerRef.current);
-    setRecording(false);
-    setPaused(false);
-    setShowControls(false);
-  }
-}, [isRecording]);
+  }, [isRecording]);
 
   useEffect(() => {
     setIsRecording(isRecording);
@@ -180,59 +160,58 @@ const AudioRecorder = ({ setIsRecording }) => {
     setRecordTime(0);
     resetRecorder();
   };
- const saveRecording = async () => {
-  if (audioBlob) {
-    try {
-      setIsLoading(true); 
 
-      const result = await sendAudioToBackend(audioBlob);
+  const saveRecording = async () => {
+    if (audioBlob) {
+      try {
+        setIsLoading(true);
+        
+        // Сохраняем аудио на компьютер
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = audioUrl;
+        a.download = `voice-${new Date().toISOString()}.wav`;
+        document.body.appendChild(a);
+        a.click();
+        
+        setShowSuccess(true);
+        setTimeout(() => {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(audioUrl);
+          setShowSuccess(false);
+        }, 3000);
 
-      setIsLoading(false); 
+  
+        await new Promise(resolve => setTimeout(resolve, 2000)); 
+        
+        
+        navigate("/result", {
+          state: {
+            result: {
+              emotion: "happy", 
+              confidence: 0.85,
+              text: "Фиктивный текст расшифровки",
+              analysis: {
+                positive: 0.8,
+                negative: 0.1,
+                neutral: 0.1
+              }
+            }
+          }
+        });
 
- 
-      navigate("/result", {
-        state: {
-          result,
-        },
-      });
-
-
-      setAudioBlob(null);
-      setRecordTime(0);
-      resetRecorder();
-    } catch (error) {
-      console.error("Error during result processing:", error);
-      setIsLoading(false); 
-      alert("Failed to analyze the audio. Please try again.");
+        setAudioBlob(null);
+        setRecordTime(0);
+        resetRecorder();
+      } catch (error) {
+        console.error("Error during processing:", error);
+        alert("Произошла ошибка при обработке записи");
+      } finally {
+        setIsLoading(false);
+      }
     }
-  }
-};
-
-
-
-  // const saveRecording = () => {
-  //   if (audioBlob) {
-  //     const audioUrl = URL.createObjectURL(audioBlob);
-  //     const a = document.createElement("a");
-  //     a.style.display = "none";
-  //     a.href = audioUrl;
-  //     a.download = `voice-${new Date().toISOString()}.wav`;
-  //     document.body.appendChild(a);
-  //     a.click();
-
-  //     setShowSuccess(true);
-  //     setTimeout(() => setShowSuccess(false), 3000);
-
-  //     setTimeout(() => {
-  //       document.body.removeChild(a);
-  //       window.URL.revokeObjectURL(audioUrl);
-  //     }, 100);
-
-  //     setAudioBlob(null);
-  //     setRecordTime(0);
-  //     resetRecorder();
-  //   }
-  // };
+  };
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)
@@ -251,102 +230,102 @@ const AudioRecorder = ({ setIsRecording }) => {
   };
 
   return (
-      <div>
-    {isLoading && (
-      <div className="loading-overlay">
-        <div className="spinner"></div>
-        <p>Analyzing your mood...</p>
-      </div>
-    )}
-    <div className="audio-recorder-container">
-      {permission === "denied" && (
-        <div className="permission-denied-banner">
-          <FaExclamationTriangle className="warning-icon" />
-          <span>
-            Microphone access is blocked. Please enable it in your browser
-            settings.
-          </span>
+    <div>
+      {isLoading && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+          <p>Analyzing your mood...</p>
         </div>
       )}
+      <div className="audio-recorder-container">
+        {permission === "denied" && (
+          <div className="permission-denied-banner">
+            <FaExclamationTriangle className="warning-icon" />
+            <span>
+              Microphone access is blocked. Please enable it in your browser
+              settings.
+            </span>
+          </div>
+        )}
 
-      <div
-        className={`recorder-circle ${isRecording ? "recording" : ""} ${
-          isPaused ? "is-paused" : ""
-        } ${permission === "denied" ? "disabled" : ""}`}
-      >
-        <button
-          className="main-record-button"
-          onClick={handleMainButtonClick}
-          aria-label={isRecording ? "Stop recording" : "Start recording"}
-          disabled={permission === "denied"}
+        <div
+          className={`recorder-circle ${isRecording ? "recording" : ""} ${
+            isPaused ? "is-paused" : ""
+          } ${permission === "denied" ? "disabled" : ""}`}
         >
-          {isRecording ? <div className="pulse-animation"></div> : null}
-          <FaMicrophone 
-            className="mic-icon" 
-            ref={micIconRef}
-          />
-        </button>
+          <button
+            className="main-record-button"
+            onClick={handleMainButtonClick}
+            aria-label={isRecording ? "Stop recording" : "Start recording"}
+            disabled={permission === "denied"}
+          >
+            {isRecording ? <div className="pulse-animation"></div> : null}
+            <FaMicrophone 
+              className="mic-icon" 
+              ref={micIconRef}
+            />
+          </button>
+        </div>
+
+        {isRecording && showControls && (
+          <div className="recording-controls-below">
+            <span className="timer">{formatTime(recordTime)}</span>
+            <button
+              className={`control-button pause-button ${isPaused ? "resume-state" : ""}`}
+              onClick={togglePause}
+              aria-label={isPaused ? "Resume recording" : "Pause recording"}
+            >
+              {isPaused ? (
+                <div className="play-icon-wrapper">
+                  <div className="play-icon-triangle"></div>
+                </div>
+              ) : (
+                <FaPause />
+              )}
+            </button>
+            <button
+              className="control-button stop-button"
+              onClick={stopRecording}
+              aria-label="Stop recording"
+            >
+              <FaStop />
+            </button>
+          </div>
+        )}
+
+        {permission === "prompt" && !isRecording && (
+          <div className="permission-prompt">
+            <p>Click the microphone to start recording</p>
+            <small>We'll ask for microphone permission</small>
+          </div>
+        )}
+
+        {audioBlob && !isRecording && (
+          <div className="post-recording-actions">
+            <button
+              className="action-button delete-button"
+              onClick={cancelRecording}
+              aria-label="Delete recording"
+            >
+              <FaTrash />
+            </button>
+            <button
+              className="action-button save-button"
+              onClick={saveRecording}
+              aria-label="Save recording"
+            >
+              <FaCheck />
+            </button>
+          </div>
+        )}
+
+        {showSuccess && (
+          <div className="success-message">
+            <FaCheck className="success-icon" />
+            Recording saved successfully!
+          </div>
+        )}
       </div>
-
-      {isRecording && showControls && (
-        <div className="recording-controls-below">
-          <span className="timer">{formatTime(recordTime)}</span>
-          <button
-            className={`control-button pause-button ${isPaused ? "resume-state" : ""}`}
-            onClick={togglePause}
-            aria-label={isPaused ? "Resume recording" : "Pause recording"}
-          >
-            {isPaused ? (
-              <div className="play-icon-wrapper">
-                <div className="play-icon-triangle"></div>
-              </div>
-            ) : (
-              <FaPause />
-            )}
-          </button>
-          <button
-            className="control-button stop-button"
-            onClick={stopRecording}
-            aria-label="Stop recording"
-          >
-            <FaStop />
-          </button>
-        </div>
-      )}
-
-      {permission === "prompt" && !isRecording && (
-        <div className="permission-prompt">
-          <p>Click the microphone to start recording</p>
-          <small>We'll ask for microphone permission</small>
-        </div>
-      )}
-
-      {audioBlob && !isRecording && (
-        <div className="post-recording-actions">
-          <button
-            className="action-button delete-button"
-            onClick={cancelRecording}
-            aria-label="Delete recording"
-          >
-            <FaTrash />
-          </button>
-          <button
-            className="action-button save-button"
-            onClick={saveRecording}
-            aria-label="Save recording"
-          >
-            <FaCheck />
-          </button>
-        </div>
-      )}
-
-      {showSuccess && (
-        <div className="success-message">
-          <FaCheck className="success-icon" />
-          Recording saved successfully!
-        </div>
-      )}
-    </div>
     </div>
   );
 };
