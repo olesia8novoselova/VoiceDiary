@@ -39,21 +39,41 @@ We use a **fine-tuned Whisper Large V3** model to classify emotions from raw voi
 
 ### 2. 📝 Transcription (Voice to Text)
 
-We use **Whisper Small**, **Whisper Medium** or **Whisper Turbo** models to transcribe voice entries into text.
+We use **Whisper** models for transcribing user voice recordings into text. The choice of model depends on the language and desired balance between speed and accuracy.
 
-- These models provide accurate transcription even in noisy or accented speech.
-- Transcriptions are forwarded to a text-based analysis module for further understanding of the content.
+#### 🧪 Experimental Findings
 
-| Model     | Parameters | Multilingual | Notes                      |
-|-----------|------------|--------------|----------------------------|
-| tiny      | 39M        | ✅            |                            |
-| base      | 74M        | ✅            |                            |
-| small     | 244M       | ✅            | Used for transcription     |
-| medium    | 769M       | ✅            | Used for transcription     |
-| large-v3  | 1550M      | ✅            | Used for emotion analysis  |
-| turbo     | 798M       | ✅            | Optimized for speed, possibly used for transcription      |
+- **Whisper Small**: Very fast, but low accuracy. Suitable only for quick English transcriptions where quality is not critical.
+- **Whisper Medium**: Good for English. Decent speed and reliable transcriptions. Sometimes picks up other languages, but language detection is often inaccurate.
+- **Whisper Large V3**: High accuracy. Supports proper translation with the right settings. Slower, but offers robust multilingual capabilities.
+- **Whisper Large V3 Turbo**: Optimized for speed, but translation support is limited or unavailable. Inconsistent speed – sometimes faster or slower than Medium. Our experiments show that it is not reliable for multilingual use.
 
-> These models are trained on over **680,000 hours** of multilingual audio data.
+> **Official multilingual support** is only available in **Large V3** and **Turbo** models.
+
+#### 🚀 Current Strategy
+
+To balance transcription **speed** and **quality**:
+1. **Use Whisper Large V3** for **language detection**.
+2. If the language is **English**, use **Whisper Medium** for faster transcription.
+3. If the language is **not English**, use **Whisper Large V3** to **transcribe and translate** to English.
+
+This hybrid approach ensures reliable language handling while keeping performance efficient.
+
+---
+
+#### 📊 Model Comparison
+
+| Model       | Parameters | Multilingual | Recommended Use                         |
+|-------------|------------|--------------|------------------------------------------|
+| small       | 244M       | ❌           | Very fast but inaccurate, English only   |
+| medium      | 769M       | ❌           | Good for English, unreliable for others  |
+| large-v3    | 1550M      | ✅           | High-quality multilingual transcription and translation |
+| large-v3-turbo | 798M    | ✅           | Fast but limited translation, inconsistent results |
+
+> All Whisper models are trained on over **680,000 hours** of multilingual and multitask supervised data collected from the web.
+
+
+The transcribed text is then forwarded to a text-based analysis module for tasks such as emotion extraction, summarization, and supportive feedback (currently under development).
 
 
 ### 3. 💬 Text-Based Emotion & Insight Generation (In Development)
