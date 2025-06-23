@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
   FaMicrophone,
   FaPause,
@@ -40,10 +42,32 @@ const AudioRecorder = ({ setIsRecording }) => {
 
     checkPermission();
   }, []);
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const updatePermissionState = (state) => {
     setPermission(state === "granted" ? "granted" : "prompt");
   };
+  const sendAudioToBackend = async (audioBlob) => {
+  const formData = new FormData();
+  formData.append("file", audioBlob, "recording.wav");
+
+  try {
+    const response = await fetch("http://localhost:8000/analyze", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error("Failed to analyze audio");
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Error sending audio:", error);
+    throw error;
+  }
+};
 
   const resetRecorder = useCallback(() => {
     if (mediaRecorder.current) {
@@ -156,30 +180,59 @@ const AudioRecorder = ({ setIsRecording }) => {
     setRecordTime(0);
     resetRecorder();
   };
+ const saveRecording = async () => {
+  if (audioBlob) {
+    try {
+      setIsLoading(true); 
 
-  const saveRecording = () => {
-    if (audioBlob) {
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = audioUrl;
-      a.download = `voice-${new Date().toISOString()}.wav`;
-      document.body.appendChild(a);
-      a.click();
+      const result = await sendAudioToBackend(audioBlob);
 
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
+      setIsLoading(false); 
 
-      setTimeout(() => {
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(audioUrl);
-      }, 100);
+ 
+      navigate("/result", {
+        state: {
+          result,
+        },
+      });
+
 
       setAudioBlob(null);
       setRecordTime(0);
       resetRecorder();
+    } catch (error) {
+      console.error("Error during result processing:", error);
+      setIsLoading(false); 
+      alert("Failed to analyze the audio. Please try again.");
     }
-  };
+  }
+};
+
+
+
+  // const saveRecording = () => {
+  //   if (audioBlob) {
+  //     const audioUrl = URL.createObjectURL(audioBlob);
+  //     const a = document.createElement("a");
+  //     a.style.display = "none";
+  //     a.href = audioUrl;
+  //     a.download = `voice-${new Date().toISOString()}.wav`;
+  //     document.body.appendChild(a);
+  //     a.click();
+
+  //     setShowSuccess(true);
+  //     setTimeout(() => setShowSuccess(false), 3000);
+
+  //     setTimeout(() => {
+  //       document.body.removeChild(a);
+  //       window.URL.revokeObjectURL(audioUrl);
+  //     }, 100);
+
+  //     setAudioBlob(null);
+  //     setRecordTime(0);
+  //     resetRecorder();
+  //   }
+  // };
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)
@@ -198,6 +251,13 @@ const AudioRecorder = ({ setIsRecording }) => {
   };
 
   return (
+      <div>
+    {isLoading && (
+      <div className="loading-overlay">
+        <div className="spinner"></div>
+        <p>Analyzing your mood...</p>
+      </div>
+    )}
     <div className="audio-recorder-container">
       {permission === "denied" && (
         <div className="permission-denied-banner">
@@ -286,6 +346,7 @@ const AudioRecorder = ({ setIsRecording }) => {
           Recording saved successfully!
         </div>
       )}
+    </div>
     </div>
   );
 };
