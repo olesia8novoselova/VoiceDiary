@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"strconv"
-	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/repository"
+
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/client"
+	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/repository"
 )
 
 type RecordService struct {
@@ -28,11 +29,14 @@ func (s *RecordService) FetchUserRecords(ctx context.Context, userIDParam string
 	return repository.GetRecordsByUser(ctx, s.db, userID)
 }
 
-func (s *RecordService) AnalyzeRecord(ctx context.Context, recordIDParam string) (*client.AnalysisResult, error) {
-	recs, err := repository.GetRecordsByUser(ctx, s.db, 0) // 0 - userID
+func (s *RecordService) AnalyzeRawAudio(ctx context.Context, fileBytes []byte) (string, error) {
+	result, err := client.CallMLService(ctx, s.mlURL, fileBytes)
 	if err != nil {
-		return nil, err
+	return "", err
 	}
-	dataURL := recs[0].DataURL
-	return client.CallMLService(ctx, s.mlURL, dataURL)
+	return result.Emotion, nil
+}
+
+func (s *RecordService) SaveRecord(ctx context.Context, userID int, emotion string) (int, error) {
+	return repository.SaveRecord(ctx, s.db, userID, emotion)
 }

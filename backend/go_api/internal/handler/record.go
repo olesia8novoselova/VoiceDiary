@@ -1,8 +1,12 @@
 package handler
 
 import (
+	"bytes"
 	"database/sql"
+	"io"
 	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/service"
@@ -17,6 +21,61 @@ func NewRecordHandler(db  *sql.DB, mlURL string) *RecordHandler {
   		svc: service.NewRecordService(db, mlURL),
  	}
 }
+
+// UploadRecord handles voice file upload, sends it to ML service, and saves record metadata.
+// @Summary Upload  a new voice record
+// @Description Uploads a voice file, sends it to the ML service for analysis, and saves the record.
+// @Tags records
+// @Accept  multipart/form-data
+// @Produce json
+// @Param userID formData int true "User ID"
+// @Param file formData file true "Voice file"
+// @Success 200 {object} map[string]int
+// @Failure 400 {object} map[string]string
+// @Router /records/upload [post]
+func (h *RecordHandler) UploadRecord(c *gin.Context) {
+	userIDStr := c.PostForm("userID")
+	userID , err := strconv.Atoi(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return 
+	}
+	file, _, err := c.Request.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No file is recieved"})
+		return 
+	}
+	defer file.Close()
+
+	// Read file into memory
+	buf := bytes.NewBuffer(nil)
+	if _, err := io.Copy(buf, file); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read file"})
+		return
+	}
+
+	// Send file to ML service
+	emotion, err := h.svc.AnalyzeRawAudio(c.Request.Context(), buf.Bytes())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze audio"})
+		return
+	}
+
+	// Save record in DB
+	recordID, err := h.svc.SaveRecord(c.Request.Context(), userID, emotion)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save record"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"user_id": userID,
+		"record_id": recordID,
+		"emotion": emotion,
+	})
+}
+
+
 
 // GetRecords returns all records for a given user.
 // @Summary      Get user records
@@ -40,24 +99,3 @@ func (h *RecordHandler) GetRecords(c *gin.Context) {
 	c.JSON(http.StatusOK, records)
 }
 
-// AnalyzeRecord runs ML analysis on a single record.
-// @Summary      Analyze a record
-// @Description  Fetches the data_url for the record, sends it to the ML service, and returns the result.
-// @Tags         records
-// @Accept       json
-// @Produce      json
-// @Param        recordID  path      int  true  "Record ID"
-// @Success      200       {object}  client.AnalysisResult
-// @Failure      500       {object}  map[string]string
-// @Router       /records/{recordID}/analyze [post]
-func (h *RecordHandler) AnalyzeRecord(c *gin.Context) {
-	ctx := c.Request.Context()
-	recordID := c.Param("recordID")
-
-	result, err := h.svc.AnalyzeRecord(ctx, recordID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, result)
-}

@@ -1,10 +1,12 @@
 package client
 
 import (
-	"net/http"
+	"bytes"
 	"context"
 	"encoding/json"
-	"bytes"
+	"io"
+	"mime/multipart"
+	"net/http"
 )
 
 type AnalysisResult struct {
@@ -13,24 +15,27 @@ type AnalysisResult struct {
 	Themes []string `json:"themes"`
 }
 
-func CallMLService(ctx context.Context, mlURL string, dataURL string) (*AnalysisResult, error) {
-	// request body
-	payload := map[string]string{
-		"data_url": dataURL,
-	}
-	body, err := json.Marshal(payload)
+func CallMLService(ctx context.Context, mlURL string, fileBytes []byte) (*AnalysisResult, error) {
+	// Create a new multipart writer
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("file", "audio.wav")
 	if err != nil {
 		return nil, err
 	}
+	if _, err := io.Copy(part, bytes.NewReader(fileBytes)); err != nil {
+		return nil, err
+	}
+	writer.Close()
 
-	// create HTTP POST-request
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, mlURL+"/analyze", bytes.NewBuffer(body))
+	// Create HTTP POST-request
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, mlURL+"/analyze", body)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	// send request
+	// Send request
  	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
