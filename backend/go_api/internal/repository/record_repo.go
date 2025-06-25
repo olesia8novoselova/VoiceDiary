@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"time"
+
 	_ "github.com/lib/pq"
 )
 
@@ -10,16 +12,32 @@ type Record struct {
 	ID int `json:"id"`
 	UserID int `json:"user_id"`
 	RecordDate string `json:"record_date"`
-	DataURL string `json:"data_url"`
-	Mood string `json:"mood"`
+	Emotion string `json:"emotion"`
+	Summary string `json:"summary"`
 }
 
 const getRecordsByUserSQL = `
-    SELECT id, user_id, record_date, data_url, mood
+    SELECT id, user_id, record_date, emotion
 	FROM records
 	WHERE user_id = $1
 	ORDER BY record_date DESC
 `
+func SaveRecord(ctx context.Context, db *sql.DB, userID int, emotion string, summary string) (int, error) {
+	recordDate := time.Now()
+
+	query := `
+	INSERT INTO records (user_id, emotion, record_date)
+	VALUES ($1, $2, $3)
+	RETURNING id
+	`
+	var recordID int
+	err := db.QueryRowContext(ctx, query, userID, emotion, recordDate).Scan(&recordID)
+	if err != nil {
+		return 0, err
+	}
+	return recordID, nil
+}
+
 func GetRecordsByUser(ctx context.Context, db *sql.DB, userID int) ([]Record, error) {
 	rows, err := db.QueryContext(ctx, getRecordsByUserSQL, userID)
 	if err != nil {
@@ -30,7 +48,7 @@ func GetRecordsByUser(ctx context.Context, db *sql.DB, userID int) ([]Record, er
 	var records []Record
 	for rows.Next() {
 		var r Record
-		if err := rows.Scan(&r.ID, &r.UserID, &r.RecordDate, &r.DataURL, &r.Mood); err != nil {
+		if err := rows.Scan(&r.ID, &r.UserID, &r.RecordDate, &r.Emotion); err != nil {
 			return nil, err
 		}
 		records = append(records, r)
@@ -41,4 +59,14 @@ func GetRecordsByUser(ctx context.Context, db *sql.DB, userID int) ([]Record, er
 	}
 
 	return records, nil
+}
+
+func GetRecordByID(ctx context.Context, db *sql.DB, recordID int) (*Record, error) {
+	query := `SELECT id, user_id, record_date, emotion, summary FROM records WHERE id = $1`
+	var rec Record
+	err := db.QueryRowContext(ctx, query, recordID).Scan(&rec.ID, &rec.UserID, &rec.RecordDate, &rec.Emotion, &rec.Summary)
+	if err != nil {
+		return nil, err
+	}
+	return &rec, nil
 }

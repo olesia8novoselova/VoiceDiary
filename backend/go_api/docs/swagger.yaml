@@ -1,24 +1,26 @@
 definitions:
-  client.AnalysisResult:
+  handler.RegisterRequest:
     properties:
-      emotion:
+      login:
         type: string
-      themes:
-        items:
-          type: string
-        type: array
-      tone:
+      nickname:
         type: string
+      password:
+        type: string
+    required:
+    - login
+    - nickname
+    - password
     type: object
   repository.Record:
     properties:
-      data_url:
+      emotion:
         type: string
       id:
         type: integer
-      mood:
-        type: string
       record_date:
+        type: string
+      summary:
         type: string
       user_id:
         type: integer
@@ -26,32 +28,69 @@ definitions:
 info:
   contact: {}
 paths:
-  /records/{recordID}/analyze:
-    post:
-      consumes:
-      - application/json
-      description: Fetches the data_url for the record, sends it to the ML service,
-        and returns the result.
+  /records/{recordID}:
+    get:
+      description: Returns emotion and summary for a specific record.
       parameters:
-      - description: Record ID
-        in: path
-        name: recordID
+      - description: User ID
+        in: formData
+        name: userID
         required: true
         type: integer
+      - description: Voice file
+        in: formData
+        name: file
+        required: true
+        type: file
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/client.AnalysisResult'
-        "500":
-          description: Internal Server Error
+            $ref: '#/definitions/repository.Record'
+        "400":
+          description: Bad Request
           schema:
             additionalProperties:
               type: string
             type: object
-      summary: Analyze a record
+      summary: Get analysis result for a record.
+      tags:
+      - records
+  /records/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads a voice file, sends it to the ML service for analysis,
+        and saves the record.
+      parameters:
+      - description: User ID
+        in: formData
+        name: userID
+        required: true
+        type: integer
+      - description: Voice file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Upload  a new voice record
       tags:
       - records
   /users/{userID}/records:
@@ -83,4 +122,31 @@ paths:
       summary: Get user records
       tags:
       - records
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handler.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
 swagger: "2.0"

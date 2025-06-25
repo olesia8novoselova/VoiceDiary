@@ -4,15 +4,16 @@ import (
 	"database/sql"
 	"log"
 
-	_ "github.com/lib/pq"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 
-	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/config"
-    "github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/handler"
 	_ "github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/docs"
+	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/config"
+	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/handler"
+	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/service"
+	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-    swaggerFiles "github.com/swaggo/files"
 )
 
 func main() {
@@ -34,8 +35,14 @@ func main() {
 	r := gin.Default()
 
 	recordHandler := handler.NewRecordHandler(db, cfg.MLServiceURL)
+
+	userService := service.NewUserService(db)
+	userHandler := handler.NewUserHandler(userService)
+
+	r.GET("/records/:recordID", recordHandler.GetRecordAnalysis)
 	r.GET("/users/:userID/records", recordHandler.GetRecords)
-	r.POST("/records/:recordID/analyze", recordHandler.AnalyzeRecord)
+	r.POST("/records/upload", recordHandler.UploadRecord)
+	r.POST("/users/register", userHandler.Register)
 
 	r.GET("/swagger/*any",
     ginSwagger.WrapHandler(swaggerFiles.Handler, 

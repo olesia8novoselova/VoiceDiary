@@ -15,11 +15,11 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/records/{recordID}/analyze": {
+        "/records/upload": {
             "post": {
-                "description": "Fetches the data_url for the record, sends it to the ML service, and returns the result.",
+                "description": "Uploads a voice file, sends it to the ML service for analysis, and saves the record.",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -27,13 +27,20 @@ const docTemplate = `{
                 "tags": [
                     "records"
                 ],
-                "summary": "Analyze a record",
+                "summary": "Upload  a new voice record",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Record ID",
-                        "name": "recordID",
-                        "in": "path",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Voice file",
+                        "name": "file",
+                        "in": "formData",
                         "required": true
                     }
                 ],
@@ -41,11 +48,103 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/client.AnalysisResult"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "integer"
+                            }
                         }
                     },
-                    "500": {
-                        "description": "Internal Server Error",
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/records/{recordID}": {
+            "get": {
+                "description": "Returns emotion and summary for a specific record.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "records"
+                ],
+
+                "summary": "Get analysis result for a record.",
+
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Voice file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/repository.Record"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/register": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Register a new user",
+                "parameters": [
+                    {
+                        "description": "User info",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -102,19 +201,21 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "client.AnalysisResult": {
+        "handler.RegisterRequest": {
             "type": "object",
+            "required": [
+                "login",
+                "nickname",
+                "password"
+            ],
             "properties": {
-                "emotion": {
+                "login": {
                     "type": "string"
                 },
-                "themes": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "nickname": {
+                    "type": "string"
                 },
-                "tone": {
+                "password": {
                     "type": "string"
                 }
             }
@@ -122,16 +223,16 @@ const docTemplate = `{
         "repository.Record": {
             "type": "object",
             "properties": {
-                "data_url": {
+                "emotion": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "mood": {
+                "record_date": {
                     "type": "string"
                 },
-                "record_date": {
+                "summary": {
                     "type": "string"
                 },
                 "user_id": {
