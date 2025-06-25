@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import AudioRecorder from "../features/recordings/components/AudioRecorder";
 import WaveAnimation from "../features/recordings/components/WaveAnimation";
@@ -46,7 +44,8 @@ function OnboardingPage() {
         <p className="logo0">Understand your emotions with every word.</p>
         <h1 className="logo">Your AI Voice Diary</h1>
         <p className="subtitle">
-          listens, analyzes your tone, and helps you reflect on your feelings over time.
+          listens, analyzes your tone, and helps you reflect on your feelings
+          over time.
         </p>
       </header>
 
@@ -110,10 +109,14 @@ function OnboardingPage() {
           onResult={(result) => setAnalysisResult(result)}
         />
 
-   
-        {analysisResult && <RecordingCard result={analysisResult} />}
+        {analysisResult && (
+          <RecordingCard
+            result={analysisResult}
+            recordTimestamp={analysisResult.timestamp}
+            recordDuration={analysisResult.duration}
+          />
+        )}
       </div>
-
       <WaveAnimation className="wave-container" isRecording={isRecording} />
     </div>
   );
