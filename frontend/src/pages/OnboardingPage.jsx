@@ -111,7 +111,11 @@ function OnboardingPage() {
         />
 
    
-        {analysisResult && <RecordingCard result={analysisResult} />}
+        {analysisResult && <RecordingCard
+    result={analysisResult}
+    recordTimestamp={analysisResult.timestamp}
+    recordDuration={analysisResult.duration}
+  />}
       </div>
 
       <WaveAnimation className="wave-container" isRecording={isRecording} />
