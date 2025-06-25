@@ -29,14 +29,18 @@ func (s *RecordService) FetchUserRecords(ctx context.Context, userIDParam string
 	return repository.GetRecordsByUser(ctx, s.db, userID)
 }
 
-func (s *RecordService) AnalyzeRawAudio(ctx context.Context, fileBytes []byte) (string, error) {
+func (s *RecordService) AnalyzeRawAudio(ctx context.Context, fileBytes []byte) (string, string, error) {
 	result, err := client.CallMLService(ctx, s.mlURL, fileBytes)
 	if err != nil {
-	return "", err
+		return "", "", err
 	}
-	return result.Emotion, nil
+	return result.Emotion, result.Summary, nil
 }
 
-func (s *RecordService) SaveRecord(ctx context.Context, userID int, emotion string) (int, error) {
-	return repository.SaveRecord(ctx, s.db, userID, emotion)
+func (s *RecordService) SaveRecord(ctx context.Context, userID int, emotion string, summary string) (int, error) {
+	return repository.SaveRecord(ctx, s.db, userID, emotion, summary)
+}
+
+func (s *RecordService) FetchRecordByID(ctx context.Context, recordID int) (*repository.Record, error) {
+    return repository.GetRecordByID(ctx, s.db, recordID)
 }

@@ -55,14 +55,14 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 	}
 
 	// Send file to ML service
-	emotion, err := h.svc.AnalyzeRawAudio(c.Request.Context(), buf.Bytes())
+	emotion, summary, err := h.svc.AnalyzeRawAudio(c.Request.Context(), buf.Bytes())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze audio"})
 		return
 	}
 
 	// Save record in DB
-	recordID, err := h.svc.SaveRecord(c.Request.Context(), userID, emotion)
+	recordID, err := h.svc.SaveRecord(c.Request.Context(), userID, emotion, summary)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save record"})
 		return
@@ -72,21 +72,22 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 		"user_id": userID,
 		"record_id": recordID,
 		"emotion": emotion,
+		"summary": summary,
 	})
 }
 
 
 
 // GetRecords returns all records for a given user.
-// @Summary      Get user records
+// @Summary Get user records
 // @Description  Returns a list of all diary records for a specific user.
-// @Tags         records
-// @Accept       json
-// @Produce      json
-// @Param        userID   path      int  true  "User ID"
-// @Success      200      {array}   repository.Record
-// @Failure      400      {object}  map[string]string
-// @Router       /users/{userID}/records [get]
+// @Tags records
+// @Accept json
+// @Produce json
+// @Param userID path int true "User ID"
+// @Success 200 {array} repository.Record
+// @Failure 400 {object} map[string]string
+// @Router /users/{userID}/records [get]
 func (h *RecordHandler) GetRecords(c *gin.Context) {
 	ctx := c.Request.Context()
 	userID := c.Param("userID")
@@ -99,3 +100,25 @@ func (h *RecordHandler) GetRecords(c *gin.Context) {
 	c.JSON(http.StatusOK, records)
 }
 
+// @Summary  Get analysis result for a record.
+// @Description Returns emotion and summary for a specific record.
+// @Tags records
+// @Produce json
+// @Param recordID path int true "Record ID"
+// @Success 200 {object} repository.Record
+// @Failure 400 {object} map[string]string	
+// @Router /records/{recordID} [get]
+func (h *RecordHandler) GetRecordAnalysis(c *gin.Context) {
+	recordIDStr := c.Param("recordID")
+	recordID, err := strconv.Atoi(recordIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid record ID"})
+		return
+	}
+	record, err := h.svc.FetchRecordByID(c.Request.Context(), recordID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Record not found"})
+		return
+	}
+	c.JSON(http.StatusOK, record)
+}

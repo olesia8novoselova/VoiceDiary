@@ -13,6 +13,7 @@ type Record struct {
 	UserID int `json:"user_id"`
 	RecordDate string `json:"record_date"`
 	Emotion string `json:"emotion"`
+	Summary string `json:"summary"`
 }
 
 const getRecordsByUserSQL = `
@@ -21,7 +22,7 @@ const getRecordsByUserSQL = `
 	WHERE user_id = $1
 	ORDER BY record_date DESC
 `
-func SaveRecord(ctx context.Context, db *sql.DB, userID int, emotion string) (int, error) {
+func SaveRecord(ctx context.Context, db *sql.DB, userID int, emotion string, summary string) (int, error) {
 	recordDate := time.Now()
 
 	query := `
@@ -58,4 +59,14 @@ func GetRecordsByUser(ctx context.Context, db *sql.DB, userID int) ([]Record, er
 	}
 
 	return records, nil
+}
+
+func GetRecordByID(ctx context.Context, db *sql.DB, recordID int) (*Record, error) {
+	query := `SELECT id, user_id, record_date, emotion, summary FROM records WHERE id = $1`
+	var rec Record
+	err := db.QueryRowContext(ctx, query, recordID).Scan(&rec.ID, &rec.UserID, &rec.RecordDate, &rec.Emotion, &rec.Summary)
+	if err != nil {
+		return nil, err
+	}
+	return &rec, nil
 }

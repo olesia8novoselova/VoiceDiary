@@ -66,6 +66,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/records/{recordID}": {
+            "get": {
+                "description": "Returns emotion and summary for a specific record.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "records"
+                ],
+
+                "summary": "Get analysis result for a record.",
+
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Voice file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/repository.Record"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users/register": {
             "post": {
                 "consumes": [
@@ -183,6 +230,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "record_date": {
+                    "type": "string"
+                },
+                "summary": {
                     "type": "string"
                 },
                 "user_id": {

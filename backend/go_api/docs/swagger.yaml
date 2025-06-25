@@ -20,12 +20,44 @@ definitions:
         type: integer
       record_date:
         type: string
+      summary:
+        type: string
       user_id:
         type: integer
     type: object
 info:
   contact: {}
 paths:
+  /records/{recordID}:
+    get:
+      description: Returns emotion and summary for a specific record.
+      parameters:
+      - description: User ID
+        in: formData
+        name: userID
+        required: true
+        type: integer
+      - description: Voice file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/repository.Record'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get analysis result for a record.
+      tags:
+      - records
   /records/upload:
     post:
       consumes:

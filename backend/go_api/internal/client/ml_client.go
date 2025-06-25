@@ -11,8 +11,7 @@ import (
 
 type AnalysisResult struct {
 	Emotion string `json:"emotion"`
-	Tone string `json:"tone"`
-	Themes []string `json:"themes"`
+	Summary string `json:"summary"`
 }
 
 func CallMLService(ctx context.Context, mlURL string, fileBytes []byte) (*AnalysisResult, error) {
