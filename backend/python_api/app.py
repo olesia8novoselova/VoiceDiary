@@ -26,7 +26,7 @@ async def analyze_record(record: Annotated[bytes, File()]) -> dict[str, str]:
 
     res = {
         "emotion": emotion_recognition_model.get_emotion(audio_path),
-        "summary": transcription_model.get_transcription(audio_path),
+        "summary": transcription_model.get_summarization(audio_path),
     }
 
     os.remove(audio_path)
