@@ -15,17 +15,17 @@ services:
 
   go_api:
     build:
-      context: .
+      context: ./go_api
       dockerfile: Dockerfile
     depends_on:
       - db
     environment:
       DATABASE_URL: postgres://voicediary_user:voicediary_password@db:5432/voicedb?sslmode=disable
     ports:
-      - "8080:8080"
+      - "8081:8080"
     volumes:
       - .:/app
-    command: go run main.go
+    command: ./go_api
 
 volumes:
   pgdata:

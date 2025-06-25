@@ -32,16 +32,11 @@ paths:
     get:
       description: Returns emotion and summary for a specific record.
       parameters:
-      - description: User ID
-        in: formData
-        name: userID
+      - description: Record ID
+        in: path
+        name: recordID
         required: true
         type: integer
-      - description: Voice file
-        in: formData
-        name: file
-        required: true
-        type: file
       produces:
       - application/json
       responses:
