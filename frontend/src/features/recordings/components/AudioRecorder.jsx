@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa";
 import "./AudioRecorder.css";
 
-const AudioRecorder = ({ setIsRecording }) => {
+const AudioRecorder = ({ setIsRecording, onResult  }) => {
   const [isRecording, setRecording] = useState(false);
   const [isPaused, setPaused] = useState(false);
   const [recordTime, setRecordTime] = useState(0);
@@ -162,56 +162,41 @@ const AudioRecorder = ({ setIsRecording }) => {
   };
 
   const saveRecording = async () => {
-    if (audioBlob) {
-      try {
-        setIsLoading(true);
-        
-        // Сохраняем аудио на компьютер
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const a = document.createElement("a");
-        a.style.display = "none";
-        a.href = audioUrl;
-        a.download = `voice-${new Date().toISOString()}.wav`;
-        document.body.appendChild(a);
-        a.click();
-        
-        setShowSuccess(true);
-        setTimeout(() => {
-          document.body.removeChild(a);
-          window.URL.revokeObjectURL(audioUrl);
-          setShowSuccess(false);
-        }, 3000);
+  if (audioBlob) {
+    try {
+      setIsLoading(true);
 
+   
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      if (onResult) {
+        onResult({
+          emotion: "happy",
+          confidence: 0.85,
+          Summary: "labubulabublabubu",
+          analysis: {
+            positive: 0.8,
+            negative: 0.1,
+            neutral: 0.1
+          },
+           timestamp: new Date(),
   
-        await new Promise(resolve => setTimeout(resolve, 2000)); 
-        
-        
-        navigate("/result", {
-          state: {
-            result: {
-              emotion: "happy", 
-              confidence: 0.85,
-              text: "Фиктивный текст расшифровки",
-              analysis: {
-                positive: 0.8,
-                negative: 0.1,
-                neutral: 0.1
-              }
-            }
-          }
+          
         });
-
-        setAudioBlob(null);
-        setRecordTime(0);
-        resetRecorder();
-      } catch (error) {
-        console.error("Error during processing:", error);
-        alert("Произошла ошибка при обработке записи");
-      } finally {
-        setIsLoading(false);
       }
+
+      setAudioBlob(null);
+      setRecordTime(0);
+      resetRecorder();
+    } catch (error) {
+      console.error("Error during processing:", error);
+      alert("Произошла ошибка при обработке записи");
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }
+};
+
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)

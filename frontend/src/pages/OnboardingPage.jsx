@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
 
+
+import React, { useState, useEffect } from "react";
 import AudioRecorder from "../features/recordings/components/AudioRecorder";
 import WaveAnimation from "../features/recordings/components/WaveAnimation";
 import Header from "../features/Header/Header";
 import "./OnboardingPage.css";
-
+import RecordingCard from "../features/recordings/components/RecordingCard";
 
 const prompts = [
   "How was your day?",
@@ -17,21 +18,21 @@ const prompts = [
   "What caused you stress or anxiety?",
 ];
 
-
-
 function OnboardingPage() {
   const [isRecording, setIsRecording] = useState(false);
-
+  const [analysisResult, setAnalysisResult] = useState(null);
   const [currentPrompt, setCurrentPrompt] = useState("");
+
   const scrollToRecord = (e) => {
     e.preventDefault();
     const recordSection = document.getElementById("record");
     recordSection?.scrollIntoView({ behavior: "smooth" });
   };
-    useEffect(() => {
+
+  useEffect(() => {
     const randomIndex = Math.floor(Math.random() * prompts.length);
     setCurrentPrompt(prompts[randomIndex]);
-  }, [])
+  }, []);
 
   return (
     <div className="container">
@@ -45,8 +46,7 @@ function OnboardingPage() {
         <p className="logo0">Understand your emotions with every word.</p>
         <h1 className="logo">Your AI Voice Diary</h1>
         <p className="subtitle">
-          listens, analyzes your tone, and helps you reflect on your feelings
-          over time.
+          listens, analyzes your tone, and helps you reflect on your feelings over time.
         </p>
       </header>
 
@@ -104,8 +104,16 @@ function OnboardingPage() {
         <div className="prompt-message">
           <p>{currentPrompt}</p>
         </div>
-        <AudioRecorder setIsRecording={setIsRecording} />
+
+        <AudioRecorder
+          setIsRecording={setIsRecording}
+          onResult={(result) => setAnalysisResult(result)}
+        />
+
+   
+        {analysisResult && <RecordingCard result={analysisResult} />}
       </div>
+
       <WaveAnimation className="wave-container" isRecording={isRecording} />
     </div>
   );
