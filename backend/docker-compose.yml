@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: voicediary_user
+      POSTGRES_PASSWORD: voicediary_password
+      POSTGRES_DB: voicedb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  go_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://voicediary_user:voicediary_password@db:5432/voicedb?sslmode=disable
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    command: go run main.go
+
+volumes:
+  pgdata:
