@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 
 import {
   FaMicrophone,
@@ -11,19 +10,17 @@ import {
 } from "react-icons/fa";
 import "./AudioRecorder.css";
 
-const AudioRecorder = ({ setIsRecording, onResult  }) => {
+const AudioRecorder = ({ setIsRecording, onResult }) => {
   const [isRecording, setRecording] = useState(false);
   const [isPaused, setPaused] = useState(false);
   const [recordTime, setRecordTime] = useState(0);
   const [audioBlob, setAudioBlob] = useState(null);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [permission, setPermission] = useState("prompt");
   const [showControls, setShowControls] = useState(false);
   const mediaRecorder = useRef(null);
   const audioChunks = useRef([]);
   const timerRef = useRef(null);
   const micIconRef = useRef(null);
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -63,7 +60,7 @@ const AudioRecorder = ({ setIsRecording, onResult  }) => {
       if (mediaRecorder.current.state !== "inactive") {
         mediaRecorder.current.stop();
       }
-      mediaRecorder.current.stream.getTracks().forEach(track => track.stop());
+      mediaRecorder.current.stream.getTracks().forEach((track) => track.stop());
       clearInterval(timerRef.current);
       setRecording(false);
       setPaused(false);
@@ -162,41 +159,58 @@ const AudioRecorder = ({ setIsRecording, onResult  }) => {
   };
 
   const saveRecording = async () => {
-  if (audioBlob) {
-    try {
-      setIsLoading(true);
+    if (audioBlob) {
+      try {
+        setIsLoading(true);
 
-   
-      await new Promise(resolve => setTimeout(resolve, 2000));
+        const formData = new FormData();
+        formData.append(
+          "file",
+          audioBlob,
+          `voice-${new Date().toISOString()}.wav`
+        );
+        formData.append("userID", "1");
 
-      if (onResult) {
-        onResult({
-          emotion: "happy",
-          confidence: 0.85,
-          Summary: "labubulabublabubu",
-          analysis: {
-            positive: 0.8,
-            negative: 0.1,
-            neutral: 0.1
-          },
-           timestamp: new Date(),
-  
-          
+        const response = await fetch("http://localhost:8080/records/upload", {
+          method: "POST",
+          body: formData,
         });
+
+        const result = await response.json();
+        const recordID = result.record_id;
+
+        if (!response.ok) {
+          throw new Error("Upload failed");
+        }
+
+        const analysisResponse = await fetch(
+          `http://localhost:8080/records/${recordID}`
+        );
+        if (!analysisResponse.ok) {
+          throw new Error("Analysis failed");
+        }
+
+        const analysisData = await analysisResponse.json();
+
+        if (onResult) {
+          onResult({
+            emotion: analysisData.emotion,
+            summary: analysisData.summary,
+            timestamp: new Date(),
+          });
+        }
+
+        setAudioBlob(null);
+        setRecordTime(0);
+        resetRecorder();
+      } catch (error) {
+        console.error("Error during processing:", error);
+        alert("Error during processing:", error);
+      } finally {
+        setIsLoading(false);
       }
-
-      setAudioBlob(null);
-      setRecordTime(0);
-      resetRecorder();
-    } catch (error) {
-      console.error("Error during processing:", error);
-      alert("Произошла ошибка при обработке записи");
-    } finally {
-      setIsLoading(false);
     }
-  }
-};
-
+  };
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)
@@ -245,10 +259,7 @@ const AudioRecorder = ({ setIsRecording, onResult  }) => {
             disabled={permission === "denied"}
           >
             {isRecording ? <div className="pulse-animation"></div> : null}
-            <FaMicrophone 
-              className="mic-icon" 
-              ref={micIconRef}
-            />
+            <FaMicrophone className="mic-icon" ref={micIconRef} />
           </button>
         </div>
 
@@ -256,7 +267,9 @@ const AudioRecorder = ({ setIsRecording, onResult  }) => {
           <div className="recording-controls-below">
             <span className="timer">{formatTime(recordTime)}</span>
             <button
-              className={`control-button pause-button ${isPaused ? "resume-state" : ""}`}
+              className={`control-button pause-button ${
+                isPaused ? "resume-state" : ""
+              }`}
               onClick={togglePause}
               aria-label={isPaused ? "Resume recording" : "Pause recording"}
             >
@@ -301,13 +314,6 @@ const AudioRecorder = ({ setIsRecording, onResult  }) => {
             >
               <FaCheck />
             </button>
-          </div>
-        )}
-
-        {showSuccess && (
-          <div className="success-message">
-            <FaCheck className="success-icon" />
-            Recording saved successfully!
           </div>
         )}
       </div>
