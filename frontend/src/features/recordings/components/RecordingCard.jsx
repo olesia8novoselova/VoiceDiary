@@ -4,7 +4,7 @@ import "./RecordingCard.css";
 function RecordingCard({ result, recordTimestamp }) {
   if (!result) return null;
 
-  const formattedDate = new Date(recordTimestamp).toLocaleDateString("en-GB");
+  const formattedDate = new Date(result.record_date).toLocaleDateString("en-GB");
 
   const fullText = `Dzhamilya, your mood today is ${result.emotion}.
 Summary: ${result.summary}`;
