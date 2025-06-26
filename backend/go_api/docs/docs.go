@@ -75,22 +75,13 @@ const docTemplate = `{
                 "tags": [
                     "records"
                 ],
-
                 "summary": "Get analysis result for a record.",
-
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
-                        "name": "userID",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "Voice file",
-                        "name": "file",
-                        "in": "formData",
+                        "description": "Record ID",
+                        "name": "recordID",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -253,8 +244,6 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
-	LeftDelim:        "{{",
-	RightDelim:       "}}",
 }
 
 func init() {

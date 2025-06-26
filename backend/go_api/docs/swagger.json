@@ -68,16 +68,9 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
-                        "name": "userID",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "Voice file",
-                        "name": "file",
-                        "in": "formData",
+                        "description": "Record ID",
+                        "name": "recordID",
+                        "in": "path",
                         "required": true
                     }
                 ],

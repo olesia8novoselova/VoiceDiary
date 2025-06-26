@@ -1,31 +1,34 @@
-from typing import Any
+import os
+from typing import Annotated
+from uuid import uuid4
 
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, File
 
-from backend.python_api.model import Model
+from backend.python_api.emotion_recognition_model import EmotionRecognitionModel
+from backend.python_api.transcription_model import TranscriptionModel
 
-model = Model()
+emotion_recognition_model = EmotionRecognitionModel()
+transcription_model = TranscriptionModel()
 
-# Создаем экземпляр приложения FastAPI
 app = FastAPI(
-    title="My FastAPI App",
-    description="This is a sample FastAPI application with Swagger documentation",
+    title="VoiceDiaryML",
+    description="ML part for emotion recognition",
     version="0.1.0",
     openapi_url="/api/v1/openapi.json",
     docs_url="/api/v1/docs",
     redoc_url="/api/v1/redoc",
 )
 
-class Record(BaseModel):
-    record_id: str
-    record: str | None = None
-    #TODO: описание объекта
+@app.post("/analyze")
+async def analyze_record(record: Annotated[bytes, File()]) -> dict[str, str]:
+    audio_path = f"{uuid4()}.mp3"
+    open(audio_path, "w").write(record)
 
-@app.get("/", tags=["Root"])
-async def read_root():
-    return {"message": "Welcome to FastAPI with Swagger"}
+    res = {
+        "emotion": emotion_recognition_model.get_emotion(audio_path),
+        "summary": transcription_model.get_summarization(audio_path),
+    }
 
-@app.get("/items/{item_id}", tags=["Items"])
-async def read_item(record_id: str, record: Any):
-    return {"record_id": record_id, "emotion": model.get_emotion(record)}
+    os.remove(audio_path)
+
+    return res
