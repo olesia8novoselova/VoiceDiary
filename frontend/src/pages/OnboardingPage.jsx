@@ -109,13 +109,7 @@ function OnboardingPage() {
           onResult={(result) => setAnalysisResult(result)}
         />
 
-        {analysisResult && (
-          <RecordingCard
-            result={analysisResult}
-            recordTimestamp={analysisResult.timestamp}
-            recordDuration={analysisResult.duration}
-          />
-        )}
+        {analysisResult && <RecordingCard result={analysisResult} />}
       </div>
       <WaveAnimation className="wave-container" isRecording={isRecording} />
     </div>

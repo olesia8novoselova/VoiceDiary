@@ -196,7 +196,7 @@ const AudioRecorder = ({ setIsRecording, onResult }) => {
           onResult({
             emotion: analysisData.emotion,
             summary: analysisData.summary,
-            timestamp: new Date(),
+            record_date: analysisData.record_date,
           });
         }
 
