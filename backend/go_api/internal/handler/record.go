@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"log"
 
 	"github.com/gin-gonic/gin"
 
@@ -34,14 +35,18 @@ func NewRecordHandler(db  *sql.DB, mlURL string) *RecordHandler {
 // @Failure 400 {object} map[string]string
 // @Router /records/upload [post]
 func (h *RecordHandler) UploadRecord(c *gin.Context) {
+	log.Printf("UploadRecord: received request")
+
 	userIDStr := c.PostForm("userID")
 	userID , err := strconv.Atoi(userIDStr)
 	if err != nil {
+		log.Printf("UploadRecord: invalid userID %s, error: %v", userIDStr, err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return 
 	}
 	file, _, err := c.Request.FormFile("file")
 	if err != nil {
+		log.Printf("UploadRecord: failed to get file from form, error: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No file is recieved"})
 		return 
 	}
@@ -50,6 +55,7 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 	// Read file into memory
 	buf := bytes.NewBuffer(nil)
 	if _, err := io.Copy(buf, file); err != nil {
+		log.Printf("UploadRecord: failed to read file into buffer, error:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read file"})
 		return
 	}
@@ -57,6 +63,7 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 	// Send file to ML service
 	emotion, summary, err := h.svc.AnalyzeRawAudio(c.Request.Context(), buf.Bytes())
 	if err != nil {
+		log.Printf("UploadRecord: failed to analyze audio, error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze audio"})
 		return
 	}
@@ -64,6 +71,7 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 	// Save record in DB
 	recordID, err := h.svc.SaveRecord(c.Request.Context(), userID, emotion, summary)
 	if err != nil {
+		log.Printf("UploadRecord: failed to save record, error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save record"})
 		return
 	}
@@ -74,6 +82,8 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 		"emotion": emotion,
 		"summary": summary,
 	})
+
+	log.Printf("UploadRecord: successfully processed record for user %d with ID %d", userID, recordID)
 }
 
 
@@ -89,15 +99,20 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Router /users/{userID}/records [get]
 func (h *RecordHandler) GetRecords(c *gin.Context) {
+	log.Printf("GetRecords: received request")
+
 	ctx := c.Request.Context()
 	userID := c.Param("userID")
 
 	records, err := h.svc.FetchUserRecords(ctx, userID)
 	if err != nil {
+		log.Printf("GetRecords: failed to fetch records for userID %s, error: %v", userID, err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, records)
+
+	log.Printf("GetRecords: successfully fetched %d records for userID %s", len(records), userID)
 }
 
 // @Summary  Get analysis result for a record.
@@ -109,16 +124,22 @@ func (h *RecordHandler) GetRecords(c *gin.Context) {
 // @Failure 400 {object} map[string]string	
 // @Router /records/{recordID} [get]
 func (h *RecordHandler) GetRecordAnalysis(c *gin.Context) {
+	log.Printf("GetRecordAnalysis: received request")
+
 	recordIDStr := c.Param("recordID")
 	recordID, err := strconv.Atoi(recordIDStr)
 	if err != nil {
+		log.Printf("GetRecordAnalysis: invalid recordID %s, error: %v", recordIDStr, err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid record ID"})
 		return
 	}
 	record, err := h.svc.FetchRecordByID(c.Request.Context(), recordID)
 	if err != nil {
+		log.Printf("GetRecordAnalysis: failed to fetch record with ID %d, error: %v", recordID, err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Record not found"})
 		return
 	}
 	c.JSON(http.StatusOK, record)
+
+	log.Printf("GetRecordAnalysis: successfully fetched record with ID %d", recordID)
 }
