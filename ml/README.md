@@ -254,5 +254,5 @@ python test_Wav2Vec2.py
 
 If testing with Samsum models:
 ```bash
-python twhisper_transcription_translation.py
+python samsum_text_summary.py
 ```
