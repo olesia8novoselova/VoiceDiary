@@ -152,6 +152,7 @@ We are actively working to enhance the ML component of the Voice Diary app:
 |------------------|---------------------------|----------------------------------|---------------|
 | Emotion from Voice | Whisper Large V3 (fine-tuned) | Audio emotion classification     | ✅ In Use      |
 | Transcription     | Whisper Small/Medium      | Speech-to-text                   | ✅ In Use      |
+| Summary     | Samsum     | Text summary                   | ✅ In Use      |
 | Emotional feedback | TBD               | Summary, emotion, psychologist reply | 🔄 In Progress |
 | Emotion from Text | XLM-T (fine-tuned)      | Text emotion classification | 🚧 In Testing |
 
@@ -247,4 +248,11 @@ If testing with Wav2Vec2-based models:
 ```bash
 pip install speechbrain
 python test_Wav2Vec2.py
+```
+
+#### 4. 📝 Samsum
+
+If testing with Samsum models:
+```bash
+python twhisper_transcription_translation.py
 ```
