@@ -22,6 +22,13 @@ const AudioRecorder = ({ setIsRecording, onResult }) => {
   const timerRef = useRef(null);
   const micIconRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
+  const today = new Date().toISOString().split("T")[0]; // формат YYYY-MM-DD
+const storedDays = JSON.parse(localStorage.getItem("recordedDays") || "[]");
+
+if (!storedDays.includes(today)) {
+  storedDays.push(today);
+  localStorage.setItem("recordedDays", JSON.stringify(storedDays));
+}
 
   useEffect(() => {
     const checkPermission = async () => {
@@ -159,58 +166,91 @@ const AudioRecorder = ({ setIsRecording, onResult }) => {
   };
 
   const saveRecording = async () => {
-    if (audioBlob) {
-      try {
-        setIsLoading(true);
+  if (audioBlob) {
+    try {
+      setIsLoading(true);
 
-        const formData = new FormData();
-        formData.append(
-          "file",
-          audioBlob,
-          `voice-${new Date().toISOString()}.wav`
-        );
-        formData.append("userID", "1");
+      // Заглушка: подождем 2 секунды и вернём фейковые данные
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        const response = await fetch("http://localhost:8080/records/upload", {
-          method: "POST",
-          body: formData,
-        });
+      const fakeResult = {
+        emotion: "happy",
+        summary: "You talked about your day and seemed relaxed.",
+        themes: ["work", "relationships", "self-reflection"],
+        timestamp: new Date(),
+        duration: recordTime,
+      };
 
-        const result = await response.json();
-        const recordID = result.record_id;
-
-        if (!response.ok) {
-          throw new Error("Upload failed");
-        }
-
-        const analysisResponse = await fetch(
-          `http://localhost:8080/records/${recordID}`
-        );
-        if (!analysisResponse.ok) {
-          throw new Error("Analysis failed");
-        }
-
-        const analysisData = await analysisResponse.json();
-
-        if (onResult) {
-          onResult({
-            emotion: analysisData.emotion,
-            summary: analysisData.summary,
-            timestamp: new Date(),
-          });
-        }
-
-        setAudioBlob(null);
-        setRecordTime(0);
-        resetRecorder();
-      } catch (error) {
-        console.error("Error during processing:", error);
-        alert("Error during processing:", error);
-      } finally {
-        setIsLoading(false);
+      if (onResult) {
+        onResult(fakeResult); // <-- передаём результат в родителя (например, для перехода на другую страницу)
       }
+
+      setAudioBlob(null);
+      setRecordTime(0);
+      resetRecorder();
+    } catch (error) {
+      console.error("Mocked processing error:", error);
+      alert("Something went wrong in mock mode.");
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }
+};
+
+
+  // const saveRecording = async () => {
+  //   if (audioBlob) {
+  //     try {
+  //       setIsLoading(true);
+
+  //       const formData = new FormData();
+  //       formData.append(
+  //         "file",
+  //         audioBlob,
+  //         `voice-${new Date().toISOString()}.wav`
+  //       );
+  //       formData.append("userID", "1");
+
+  //       const response = await fetch("http://localhost:8080/records/upload", {
+  //         method: "POST",
+  //         body: formData,
+  //       });
+
+  //       const result = await response.json();
+  //       const recordID = result.record_id;
+
+  //       if (!response.ok) {
+  //         throw new Error("Upload failed");
+  //       }
+
+  //       const analysisResponse = await fetch(
+  //         `http://localhost:8080/records/${recordID}`
+  //       );
+  //       if (!analysisResponse.ok) {
+  //         throw new Error("Analysis failed");
+  //       }
+
+  //       const analysisData = await analysisResponse.json();
+
+  //       if (onResult) {
+  //         onResult({
+  //           emotion: analysisData.emotion,
+  //           summary: analysisData.summary,
+  //           timestamp: new Date(),
+  //         });
+  //       }
+
+  //       setAudioBlob(null);
+  //       setRecordTime(0);
+  //       resetRecorder();
+  //     } catch (error) {
+  //       console.error("Error during processing:", error);
+  //       alert("Error during processing:", error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   }
+  // };
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)
