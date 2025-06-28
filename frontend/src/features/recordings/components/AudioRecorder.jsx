@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import "./AudioRecorder.css";
 
-const AudioRecorder = ({ setIsRecording, onResult }) => {
+const AudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
   const [isRecording, setRecording] = useState(false);
   const [isPaused, setPaused] = useState(false);
   const [recordTime, setRecordTime] = useState(0);
@@ -95,6 +95,10 @@ const AudioRecorder = ({ setIsRecording, onResult }) => {
       return;
     }
 
+    if (onRecordingStart) {
+      onRecordingStart();
+    }
+
     try {
       resetRecorder();
 
@@ -171,32 +175,71 @@ const AudioRecorder = ({ setIsRecording, onResult }) => {
         );
         formData.append("userID", "1");
 
-        const response = await fetch("http://localhost:8080/records/upload", {
-          method: "POST",
-          body: formData,
-        });
+        // const response = await fetch(
+        //   "https://68b0-2a0b-4140-d5a0-00-2.ngrok-free.app/records/upload",
+        //   {
+        //     method: "POST",
+        //     body: formData,
+        //   }
+        // );
 
-        const result = await response.json();
-        const recordID = result.record_id;
+        // const result = await response.json();
+        // // const recordID = result.record_id;
 
-        if (!response.ok) {
-          throw new Error("Upload failed");
-        }
+        // if (!response.ok) {
+        //   throw new Error("Upload failed");
+        // }
 
-        const analysisResponse = await fetch(
-          `http://localhost:8080/records/${recordID}`
-        );
-        if (!analysisResponse.ok) {
-          throw new Error("Analysis failed");
-        }
+        //         const analysisResponse = await fetch(
+        //           `http://localhost:8080/records/${recordID}`
+        //         );
+        //         if (!analysisResponse.ok) {
+        //           throw new Error("Analysis failed");
+        //         }
+        //
+        //         const analysisData = await analysisResponse.json();
 
-        const analysisData = await analysisResponse.json();
+        // if (onResult) {
+        //   onResult({
+        //     emotion: result.emotion,
+        //     summary: result.summary,
+        //     record_date: new Date(),
+        //     insights: result.insights,
+        //   });
+        // }
 
         if (onResult) {
           onResult({
-            emotion: analysisData.emotion,
-            summary: analysisData.summary,
-            record_date: analysisData.record_date,
+            emotion: "happy",
+            summary:
+              "Today was a dynamic and emotionally complex day. In the morning, I received unexpected news about a promotion at work, which sparked intense joy. However, after lunch, an email about urgent quarterly budget revisions triggered mild anxiety. Despite the mixed emotions, I managed to unwind during a family dinner in the evening, which brought a sense of balance.",
+            record_date: new Date(),
+            insights: {
+              emotional_dynamics:
+                "Sharp mood elevation in the morning followed by a moderate dip in the afternoon",
+              key_triggers: [
+                "Positive: Career advancement notification",
+                "Negative: Financial responsibility pressure",
+              ],
+              physical_reactions: {
+                morning: "Increased energy levels (noted at 10:15 AM)",
+                afternoon: "Brief tension headache (around 4:30 PM)",
+              },
+              coping_effectiveness: {
+                successful: "Sharing news with colleagues (reinforced joy)",
+                unsuccessful:
+                  "Compulsively checking emails (amplified anxiety)",
+              },
+              behavioral_patterns: {
+                productivity: "Focused work in the morning (3h deep work)",
+                social_interaction: "Initiated 2 meaningful conversations",
+              },
+              recommendations: [
+                "Celebration: Schedule a team lunch to acknowledge achievement",
+                "Stress management: Practice box breathing before high-stakes meetings",
+                "Future planning: Allocate 30min daily for financial planning to reduce anxiety triggers",
+              ],
+            },
           });
         }
 

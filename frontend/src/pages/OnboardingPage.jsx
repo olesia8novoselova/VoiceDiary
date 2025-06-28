@@ -4,6 +4,7 @@ import WaveAnimation from "../features/recordings/components/WaveAnimation";
 import Header from "../features/Header/Header";
 import "./OnboardingPage.css";
 import RecordingCard from "../features/recordings/components/RecordingCard";
+import FeedbackWidget from "../features/recordings/components/FeedbackWidget";
 
 const prompts = [
   "How was your day?",
@@ -20,11 +21,23 @@ function OnboardingPage() {
   const [isRecording, setIsRecording] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [currentPrompt, setCurrentPrompt] = useState("");
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const scrollToRecord = (e) => {
     e.preventDefault();
     const recordSection = document.getElementById("record");
     recordSection?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleRecordingStart = () => {
+    setAnalysisResult(null);
+    setShowFeedback(false);
+    setIsRecording(true);
+  };
+
+  const handleFeedbackSubmit = (rating) => {
+    console.log("Feedback submitted:", rating);
+    // send the rating to your backend
   };
 
   useEffect(() => {
@@ -106,10 +119,16 @@ function OnboardingPage() {
 
         <AudioRecorder
           setIsRecording={setIsRecording}
-          onResult={(result) => setAnalysisResult(result)}
+          onRecordingStart={handleRecordingStart}
+          onResult={(result) => {
+            setAnalysisResult(result);
+            setShowFeedback(true);
+          }}
         />
 
         {analysisResult && <RecordingCard result={analysisResult} />}
+
+        {showFeedback && <FeedbackWidget onSubmit={handleFeedbackSubmit} />}
       </div>
       <WaveAnimation className="wave-container" isRecording={isRecording} />
     </div>

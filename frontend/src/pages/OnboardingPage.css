@@ -88,6 +88,7 @@ body::after {
   padding: 40px 20px;
   position: relative;
   padding-bottom: 150px;
+  padding-top: 10px;
 }
 
 header h1 {
