@@ -22,6 +22,7 @@ function OnboardingPage() {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [currentPrompt, setCurrentPrompt] = useState("");
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showScrollToRecord, setShowScrollToRecord] = useState(false);
 
   const scrollToRecord = (e) => {
     e.preventDefault();
@@ -44,6 +45,34 @@ function OnboardingPage() {
     const randomIndex = Math.floor(Math.random() * prompts.length);
     setCurrentPrompt(prompts[randomIndex]);
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const feedbackElement = document.querySelector(".feedback-container");
+      const recordSection = document.getElementById("record");
+
+      if (feedbackElement && recordSection) {
+        const feedbackRect = feedbackElement.getBoundingClientRect();
+        const isFeedbackVisible =
+          feedbackRect.top < window.innerHeight && feedbackRect.bottom >= 0;
+        const recordRect = recordSection.getBoundingClientRect();
+        setShowScrollToRecord(isFeedbackVisible && recordRect.top < 0);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToRecordSection = () => {
+    const recordSection = document.getElementById("record");
+    if (recordSection) {
+      recordSection.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
 
   return (
     <div className="container">
@@ -123,6 +152,15 @@ function OnboardingPage() {
           onResult={(result) => {
             setAnalysisResult(result);
             setShowFeedback(true);
+            setTimeout(() => {
+              const cardElement = document.querySelector(".recording-card");
+              if (cardElement) {
+                cardElement.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+              }
+            }, 300);
           }}
         />
 
@@ -131,6 +169,29 @@ function OnboardingPage() {
         {showFeedback && <FeedbackWidget onSubmit={handleFeedbackSubmit} />}
       </div>
       <WaveAnimation className="wave-container" isRecording={isRecording} />
+
+      {showScrollToRecord && (
+        <button
+          className="scroll-to-record-button"
+          onClick={scrollToRecordSection}
+          aria-label="Scroll to microphone"
+        >
+          <svg
+            className="up-arrow-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 15L12 9L6 15"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }

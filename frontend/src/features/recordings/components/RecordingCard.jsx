@@ -104,6 +104,7 @@ function RecordingCard({ result }) {
       <div className="card-footer">
         <p className="record-date">Recorded: {formattedDate}</p>
       </div>
+      <div className="watermark">AI-generated, for reference only</div>
     </div>
   );
 }
