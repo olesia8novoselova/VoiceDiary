@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: voicediary_user
+      POSTGRES_PASSWORD: voicediary_password
+      POSTGRES_DB: voicedb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    volumes:
+      - .:/app/frontend
+    command: nginx -g "daemon off;"
+
+  go_api:
+    build:
+      context: ./backend/go_api
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://voicediary_user:voicediary_password@db:5432/voicedb?sslmode=disable
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    command: ./go_api
+
+  python_api:
+    build:
+      context: ./backend/python_api
+      dockerfile: Dockerfile
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    command: uvicorn backend.python_api.app:app --host python_api --port 5000 --log-level debug
+
+volumes:
+  pgdata:
