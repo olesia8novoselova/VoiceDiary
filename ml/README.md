@@ -76,14 +76,46 @@ This hybrid approach ensures reliable language handling while keeping performanc
 The transcribed text is then forwarded to a text-based analysis module for tasks such as emotion extraction, summarization, and supportive feedback (currently under development).
 
 
-### 3. 💬 Text-Based Emotion & Insight Generation (In Development)
+### 3. 💬 Text-Based summary
+We use a **fine-tuned BART-based model** to generate short summaries from transcribed user voice recordings. This helps distill lengthy or unstructured speech into clear, meaningful insights — ideal for daily reflection and psychological tracking.
 
-We are currently experimenting with **LLM-based processing** of transcribed entries to:
-- Summarize the diary entry
-- Extract the emotional tone from text
-- Generate supportive and psychologist-like responses
+#### 🧪 Experimental Findings
 
-> ⚠️ This component is still under development. Final model choice is pending experimentation and tuning.
+We tested multiple summarization approaches and found that dialogue-optimized models provide significantly better results on spoken diary content.
+
+- **BART Large (CNN)**: Trained for news articles — too formal, often misses conversational nuance.
+- **T5**: Lightweight and fast, but inconsistent output for long or emotional speech.
+- **BART SAMSum**: Specifically fine-tuned on conversational dialogues; excellent at summarizing emotional, informal, or reflective speech.
+
+> `philschmid/bart-large-cnn-samsum` provided the best quality-to-speed tradeoff and handled diary-like entries very naturally.
+
+#### 🚀 Current Strategy
+
+To ensure **reliable summarization of user entries**, we follow this pipeline:
+1. Transcribe audio using Whisper (see above).
+2. Clean and normalize the resulting text.
+3. Run the text through `philschmid/bart-large-cnn-samsum` to generate a concise 1–3 sentence summary.
+4. Store/display this summary as the primary daily insight.
+
+This ensures every diary entry receives a structured, emotionally-relevant summary — even when the original voice content is long or repetitive.
+
+---
+
+#### 📊 Model Comparison
+
+| Model                          | Parameters | Trained For     | Summary Quality     | Suitable For Speech |
+|-------------------------------|------------|------------------|----------------------|----------------------|
+| bart-large-cnn                | 406M       | News articles    | Formal, often dry    | ❌                   |
+| t5-small                      | 60M        | General purpose  | Fast, but weak       | ❌                   |
+| **bart-large-cnn-samsum**     | 406M       | Dialogues        | ✅ Natural & concise | ✅ Yes               |
+
+> SAMSum-trained BART is fine-tuned on thousands of real human conversations and summaries, making it ideal for user voice journals.
+
+---
+
+The generated summary is later used in downstream modules (e.g., LLM-based reflection, emotional feedback, future search/indexing).
+
+> This summarization step is already **fully deployed and in active use** as part of the Voice Diary MVP.
 
 
 ### 4. 🧾 Emotion Recognition from Text (In Testing)
@@ -120,6 +152,7 @@ We are actively working to enhance the ML component of the Voice Diary app:
 |------------------|---------------------------|----------------------------------|---------------|
 | Emotion from Voice | Whisper Large V3 (fine-tuned) | Audio emotion classification     | ✅ In Use      |
 | Transcription     | Whisper Small/Medium      | Speech-to-text                   | ✅ In Use      |
+| Summary     | Samsum     | Text summary                   | ✅ In Use      |
 | Emotional feedback | TBD               | Summary, emotion, psychologist reply | 🔄 In Progress |
 | Emotion from Text | XLM-T (fine-tuned)      | Text emotion classification | 🚧 In Testing |
 
@@ -215,4 +248,11 @@ If testing with Wav2Vec2-based models:
 ```bash
 pip install speechbrain
 python test_Wav2Vec2.py
+```
+
+#### 4. 📝 Samsum
+
+If testing with Samsum models:
+```bash
+python samsum_text_summary.py
 ```
