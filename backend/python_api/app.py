@@ -1,8 +1,7 @@
 import os
-from typing import Annotated
 from uuid import uuid4
 
-from fastapi import FastAPI, File
+from fastapi import FastAPI, File, UploadFile
 
 from backend.python_api.emotion_recognition_model import EmotionRecognitionModel
 from backend.python_api.transcription_model import TranscriptionModel
@@ -20,9 +19,11 @@ app = FastAPI(
 )
 
 @app.post("/analyze")
-async def analyze_record(record: Annotated[bytes, File()]) -> dict[str, str]:
-    audio_path = f"{uuid4()}.mp3"
-    open(audio_path, "w").write(record)
+async def analyze_record(file: UploadFile = File(...)) -> dict[str, str]:
+    audio_path = f"{uuid4()}.wav"
+    with open(audio_path, "wb") as f:
+        content = await file.read()
+        f.write(content)
 
     res = {
         "emotion": emotion_recognition_model.get_emotion(audio_path),

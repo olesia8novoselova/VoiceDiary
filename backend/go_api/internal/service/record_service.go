@@ -38,7 +38,7 @@ func (s *RecordService) FetchUserRecords(ctx context.Context, userIDParam string
 func (s *RecordService) AnalyzeRawAudio(ctx context.Context, fileBytes []byte) (string, string, error) {
 	log.Printf("AnalyzeRawAudio: sending file to ML service at %s", s.mlURL)
 	
-	result, err := client.CallMLService(ctx, s.mlURL, fileBytes)
+	result, err := client.CallMLService(ctx, "http://python_api:5000", fileBytes)
 	if err != nil {
 		log.Printf("AnalyzeRawAudio: failed to call ML service, error: %v", err)
 		return "", "", err
