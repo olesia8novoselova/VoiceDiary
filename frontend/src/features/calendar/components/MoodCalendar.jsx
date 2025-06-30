@@ -29,7 +29,7 @@ const Calendar = () => {
     weeks.push(calendarDays.slice(i, i + 7));
   }
 
-  const monthName = today.toLocaleString('default', { month: 'long' });
+  const monthName = today.toLocaleString('en-US', { month: 'long' });
 
   const handleDayClick = (day) => {
     if (!day) return;

@@ -32,7 +32,14 @@ const SettingsPage = () => {
           <div className="settings-content">
             <div className="settings-main">
               <div className="settings-info">
-                <div className="avatar" />
+                <div className="avatar-wrapper">
+  <img
+    src="https://ui-avatars.com/api/?name=Dzhamila&background=672f94&color=fff"
+    alt="avatar"
+    className="avatar"
+  />
+  <button className="change-avatar-btn">Change</button>
+</div>
                 <div className="settings-details">
                   <h2>Edit Your Information</h2>
                   <p className="settings-status">Update your profile details</p>
@@ -72,6 +79,7 @@ const SettingsPage = () => {
                       className="settings-input"
                     />
                   </div>
+                  
 
                   <div className="settings-actions">
                     <button className="cancel-button" onClick={handleBack}>

@@ -4,10 +4,26 @@
   align-items: center;
   gap: 2rem;
   color: white;
-}
 
+}
+.calendar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 10, 10, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; 
+  z-index: 999;
+  padding: 4rem 2rem 2rem; 
+  box-sizing: border-box;
+  overflow: auto;
+}
 .calendar {
   text-align: center;
+
 }
 
 .month {

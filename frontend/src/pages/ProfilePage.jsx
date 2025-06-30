@@ -15,7 +15,7 @@ const ProfilePage = () => {
   };
 
   const handleEditProfile = () => {
-    navigate('/profile/settings'); // Добавлен новый обработчик
+    navigate('/profile/settings'); 
   };
 
   return (
@@ -36,7 +36,11 @@ const ProfilePage = () => {
           <div className="profile-content">
             <div className="profile-main">
               <div className="profile-info">
-                <div className="avatar" />
+                <img
+    src="https://ui-avatars.com/api/?name=Dzhamila&background=672f94&color=fff"
+    alt="User avatar"
+    className="avatar"
+  />
                 <div className="profile-details">
                   <h2>Dzhamila</h2>
                   <p className="record-status">You haven't recorded anything</p>
