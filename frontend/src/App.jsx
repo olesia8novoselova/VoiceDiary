@@ -10,6 +10,8 @@ import AuthPage from "./pages/AuthPage";
 import ResultPage from "./pages/ResultPage"; 
 import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
+import SettingsPage from "./pages/SettingsPage"; 
+
 export default function App() {
   const [globalError, setGlobalError] = useState(null);
 
@@ -29,8 +31,8 @@ export default function App() {
             <Route path="/" element={<Navigate to="/homepage" replace />} />
             <Route path="/homepage" element={<HomePage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/settings" element={<SettingsPage />} />
 
-            <Route path="/" element={<Navigate to="/onboarding" replace />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/login" element={<AuthPage />} />
             <Route path="/signup" element={<AuthPage />} />

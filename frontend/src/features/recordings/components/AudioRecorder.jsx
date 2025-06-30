@@ -22,7 +22,7 @@ const AudioRecorder = ({ setIsRecording, onResult }) => {
   const timerRef = useRef(null);
   const micIconRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
-  const today = new Date().toISOString().split("T")[0]; // формат YYYY-MM-DD
+  const today = new Date().toISOString().split("T")[0]; 
 const storedDays = JSON.parse(localStorage.getItem("recordedDays") || "[]");
 
 if (!storedDays.includes(today)) {
@@ -170,7 +170,7 @@ if (!storedDays.includes(today)) {
     try {
       setIsLoading(true);
 
-      // Заглушка: подождем 2 секунды и вернём фейковые данные
+ 
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const fakeResult = {
@@ -182,7 +182,7 @@ if (!storedDays.includes(today)) {
       };
 
       if (onResult) {
-        onResult(fakeResult); // <-- передаём результат в родителя (например, для перехода на другую страницу)
+        onResult(fakeResult); 
       }
 
       setAudioBlob(null);

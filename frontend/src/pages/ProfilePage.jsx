@@ -14,18 +14,21 @@ const ProfilePage = () => {
     navigate('/homepage');
   };
 
+  const handleEditProfile = () => {
+    navigate('/profile/settings'); // Добавлен новый обработчик
+  };
+
   return (
     <div className="profile-page">
       <div className="gradient-ball"></div>
       <div className="gradient-ball-2"></div>
       <div className="gradient-ball-3"></div>
-       <a className="back-link" onClick={handleBack}>
-  Back to Home
-</a>
+      <a className="back-link" onClick={handleBack}>
+        Back to Home
+      </a>
       <div className="profile-container">
         <div className="profile-card">
           <div className="top-bar">
-            
             <h1>Your Profile</h1>
             <button className="logout-button" onClick={handleLogout}>Log out</button>
           </div>
@@ -48,7 +51,12 @@ const ProfilePage = () => {
                     <div className="input-value">******</div>
                   </div>
 
-                  <button className="edit-button">Edit Profile</button>
+                  <button 
+                    className="edit-button" 
+                    onClick={handleEditProfile} 
+                  >
+                    Edit Profile
+                  </button>
                 </div>
               </div>
 
