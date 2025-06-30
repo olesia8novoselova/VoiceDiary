@@ -8,7 +8,8 @@ import { useState } from "react";
 import OnboardingPage from "./pages/OnboardingPage";
 import AuthPage from "./pages/AuthPage";
 import ResultPage from "./pages/ResultPage"; 
-import HomePage from "./pages/HomePage"
+import HomePage from "./pages/HomePage";
+import ProfilePage from "./pages/ProfilePage";
 export default function App() {
   const [globalError, setGlobalError] = useState(null);
 
@@ -27,6 +28,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/homepage" replace />} />
             <Route path="/homepage" element={<HomePage />} />
+            <Route path="/profile" element={<ProfilePage />} />
 
             <Route path="/" element={<Navigate to="/onboarding" replace />} />
             <Route path="/onboarding" element={<OnboardingPage />} />

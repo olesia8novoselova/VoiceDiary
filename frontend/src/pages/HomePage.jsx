@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+
 import AudioRecorder from "../features/recordings/components/AudioRecorder";
 import WaveAnimation from "../features/recordings/components/WaveAnimation";
 import RecordingCard from "../features/recordings/components/RecordingCard";
-import Calendar from "../features/calendar/components/MoodCalendar"; // ✅ Импорт календаря
+import Calendar from "../features/calendar/components/MoodCalendar"; 
 import "./HomePage.css";
 
 const prompts = [
@@ -23,6 +25,8 @@ function HomePage() {
   const [showCalendar, setShowCalendar] = useState(false);
   const resultRef = useRef(null);
   const [currentDay, setCurrentDay] = useState(1);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const storedDays = JSON.parse(localStorage.getItem("recordedDays") || "[]");
@@ -63,9 +67,9 @@ function HomePage() {
           <small>Click to see calendar</small>
         </div>
 
-        <div className="profile-box">
-          <p>Your profile</p>
-        </div>
+       <div className="profile-box" onClick={() => navigate("/profile")}>
+  <p>Your profile</p>
+</div>
       </div>
 
       <div className="home-content">
