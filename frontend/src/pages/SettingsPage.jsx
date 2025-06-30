@@ -5,92 +5,79 @@ import './SettingsPage.css';
 const SettingsPage = () => {
   const navigate = useNavigate();
 
-  const handleBack = () => {
-    navigate('/profile');
-  };
-
-  const handleSave = () => {
-    // эт надо ну сохранять и на бэк
-    navigate('/profile');
-  };
+  const handleBack = () => navigate('/profile');
+  const handleSave = () => navigate('/profile');
 
   return (
-    <div className="profile-settings-page">
-      <div className="gradient-ball"></div>
-      <div className="gradient-ball-2"></div>
-      <div className="gradient-ball-3"></div>
-      <a className="back-link" onClick={handleBack}>
-        Back to Profile
-      </a>
+    <div className="settings-page">
+      <button className="back-button" onClick={handleBack}>
+        ← Back
+      </button>
       
       <div className="settings-container">
+        <div className="settings-header">
+          <h1>Account Settings</h1>
+          <p>Manage your profile information</p>
+        </div>
+
         <div className="settings-card">
-          <div className="top-bar">
-            <h1>Profile Settings</h1>
+          <div className="avatar-section">
+            <div className="avatar-wrapper">
+              <img
+                src="https://ui-avatars.com/api/?name=Dzhamila&background=8b5cf6&color=fff"
+                alt="Profile"
+                className="avatar"
+              />
+              <button className="avatar-edit-button">
+                Change Photo
+              </button>
+            </div>
           </div>
 
-          <div className="settings-content">
-            <div className="settings-main">
-              <div className="settings-info">
-                <div className="avatar-wrapper">
-  <img
-    src="https://ui-avatars.com/api/?name=Dzhamila&background=672f94&color=fff"
-    alt="avatar"
-    className="avatar"
-  />
-  <button className="change-avatar-btn">Change</button>
-</div>
-                <div className="settings-details">
-                  <h2>Edit Your Information</h2>
-                  <p className="settings-status">Update your profile details</p>
+          <div className="settings-form">
+            <div className="form-group">
+              <label>Full Name</label>
+              <input
+                type="text"
+                defaultValue="Dzhamila"
+                className="form-input"
+              />
+            </div>
 
-                  <div className="settings-field">
-                    <label>Name</label>
-                    <input 
-                      type="text" 
-                      defaultValue="Dzhamila" 
-                      className="settings-input"
-                    />
-                  </div>
+            <div className="form-group">
+              <label>Email Address</label>
+              <input
+                type="email"
+                defaultValue="dopoine@gmail.com"
+                className="form-input"
+              />
+            </div>
 
-                  <div className="settings-field">
-                    <label>Email</label>
-                    <input 
-                      type="email" 
-                      defaultValue="dopoine@gmail.com" 
-                      className="settings-input"
-                    />
-                  </div>
+            <div className="form-group">
+              <label>New Password</label>
+              <input
+                type="password"
+                placeholder="Enter new password"
+                className="form-input"
+              />
+            </div>
 
-                  <div className="settings-field">
-                    <label>New Password</label>
-                    <input 
-                      type="password" 
-                      placeholder="Enter new password" 
-                      className="settings-input"
-                    />
-                  </div>
+            <div className="form-group">
+              <label>Confirm Password</label>
+              <input
+                type="password"
+                placeholder="Confirm new password"
+                className="form-input"
+              />
+            </div>
 
-                  <div className="settings-field">
-                    <label>Confirm Password</label>
-                    <input 
-                      type="password" 
-                      placeholder="Confirm new password" 
-                      className="settings-input"
-                    />
-                  </div>
-                  
-
-                  <div className="settings-actions">
-                    <button className="cancel-button" onClick={handleBack}>
-                      Cancel
-                    </button>
-                    <button className="save-button" onClick={handleSave}>
-                      Save Changes
-                    </button>
-                  </div>
-                </div>
-              </div>
+            <div className="form-actions">
+              <button className="cancel-btn" onClick={handleBack}>
+                Cancel
+              </button>
+              <button className="save-btn" onClick={handleSave}>
+                Save Changes
+              </button>
             </div>
           </div>
         </div>

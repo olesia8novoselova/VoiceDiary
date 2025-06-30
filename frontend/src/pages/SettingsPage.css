@@ -1,282 +1,179 @@
-.profile-settings-page {
-  position: relative;
-  min-height: 100vh;
+.settings-page {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
   color: white;
-  font-family: 'Segoe UI', sans-serif;
-  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 2rem;
-  background-color: #000;
-  z-index: 0;
+  gap: 0.3rem;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s ease;
 }
 
-/* Шары — улучшенный стиль и анимация */
-.gradient-ball,
-.gradient-ball-2,
-.gradient-ball-3 {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.4;
-  z-index: 0;
-  animation: float 12s ease-in-out infinite alternate;
+.back-button:hover {
+  color: #8b5cf6;
 }
 
-.gradient-ball {
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle at center, #a855f7, #9333ea, transparent 80%);
-  top: 45%;
-  left: 65%;
-  transform: translate(-50%, -50%);
-}
-
-.gradient-ball-2 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle at center, #4f46e5, #7c3aed, transparent 70%);
-  top: 15%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.gradient-ball-3 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle at center, #ff2d55, #ff6b81, transparent 80%);
-  bottom: 0;
-  left: 20%;
-}
-
-/* Анимация */
-@keyframes float {
-  0% {
-    transform: translateY(0) scale(1);
-  }
-  100% {
-    transform: translateY(-20px) scale(1.05);
-  }
-}
-
-/* Карточка настроек */
 .settings-container {
-  width: 100%;
-  max-width: 1100px;
-  display: flex;
-  justify-content: center;
-  z-index: 1;
-}
-
-.settings-card {
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(15px);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Верхняя панель */
-.top-bar {
+.settings-header {
   margin-bottom: 2rem;
   text-align: center;
 }
 
-.top-bar h1 {
-  font-size: 2rem;
-  font-weight: 700;
+.settings-header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
-/* Контент */
-.settings-main {
-  display: flex;
-  gap: 2rem;
-  align-items: flex-start;
-  flex-wrap: wrap;
+.settings-header p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
 }
 
-.settings-info {
+.settings-card {
   display: flex;
+  flex-direction: column;
   gap: 2rem;
-  flex: 1;
+}
+
+.avatar-section {
+  display: flex;
+  justify-content: center;
 }
 
 .avatar-wrapper {
-  position: relative;
-  width: 100px;
-  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 .avatar {
   width: 100px;
   height: 100px;
-  object-fit: cover;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 0 12px rgba(160, 66, 244, 0.3);
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.change-avatar-btn {
-  position: absolute;
-  bottom: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.75rem;
-  background: #a042f4;
-  color: white;
-  padding: 0.4rem 0.8rem;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.change-avatar-btn:hover {
-  background: #c780e8;
-}
-
-.settings-details {
-  flex: 1;
-  max-width: 500px;
-}
-
-.settings-details h2 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.settings-status {
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 1rem;
-  font-style: italic;
-  font-size: 0.95rem;
-}
-
-/* Поля */
-.settings-field {
-  margin-bottom: 1.5rem;
-}
-
-.settings-field label {
-  display: block;
-  color: rgba(255, 255, 255, 0.7);
+.avatar-edit-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
   font-size: 0.85rem;
-  margin-bottom: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.settings-input {
+.avatar-edit-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.settings-form {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.form-input {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 0.8rem 1rem;
   color: white;
   font-size: 0.95rem;
-  width: 100%;
-  transition: all 0.3s ease;
-}
-
-.settings-input:focus {
-  outline: none;
-  border-color: #a042f4;
-  box-shadow: 0 0 0 2px rgba(160, 66, 244, 0.2);
-}
-
-.settings-input:hover {
-  border-color: rgba(160, 66, 244, 0.3);
-}
-
-/* Кнопки */
-.settings-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.cancel-button,
-.save-button {
-  padding: 0.7rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.cancel-button {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-.cancel-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.save-button {
-  background: linear-gradient(to right, #a042f4, #c780e8);
-  border: none;
-  color: white;
-}
-
-.save-button:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
-}
-
-/* Назад */
-.back-link {
-  position: fixed;
-  top: 25px;
-  left: 25px;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 15px;
-  font-weight: 400;
-  text-decoration: none;
-  z-index: 2;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
   transition: all 0.2s ease;
 }
 
-.back-link:hover {
+.form-input:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cancel-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
-  transform: translateX(-2px);
+  padding: 0.8rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.back-link::before {
-  content: "←";
-  font-size: 18px;
+.cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
-/* Mobile responsive */
+.save-btn {
+  flex: 1;
+  background: #8b5cf6;
+  border: none;
+  color: white;
+  padding: 0.8rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-btn:hover {
+  background: #7c4dff;
+}
+
 @media (max-width: 768px) {
-  .settings-main {
-    flex-direction: column;
-    align-items: center;
+  .settings-page {
+    padding: 1rem;
   }
-
-  .settings-card {
-    padding: 1.5rem 1rem;
+  
+  .settings-container {
+    padding: 1.5rem;
   }
-
-  .settings-details {
-    width: 100%;
-  }
-
-  .settings-actions {
+  
+  .form-actions {
     flex-direction: column;
   }
-
-  .cancel-button, .save-button {
+  
+  .cancel-btn,
+  .save-btn {
     width: 100%;
-  }
-
-  .avatar-wrapper {
-    margin: 0 auto;
   }
 }
