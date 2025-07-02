@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { useNavigate } from 'react-router-dom';
-import HomePage from './HomePage';
+import HomePage from '../src/pages/HomePage';
 import '@testing-library/jest-dom';
 
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import RecordingCard from './RecordingCard';
+import RecordingCard from '../src/features/recordings/components/RecordingCard';
 import '@testing-library/jest-dom';
 
 describe('RecordingCard Component', () => {

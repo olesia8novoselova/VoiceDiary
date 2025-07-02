@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom'; 
-import FeedbackWidget from './FeedbackWidget';
+import FeedbackWidget from '../src/features/recordings/components/FeedbackWidget';
 
 describe('FeedbackWidget', () => {
   const mockOnSubmit = jest.fn();
