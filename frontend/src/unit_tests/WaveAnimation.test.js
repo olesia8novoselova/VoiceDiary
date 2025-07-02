@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, act } from '@testing-library/react';
-import WaveAnimation from '../src/features/recordings/components/WaveAnimation';
+import WaveAnimation from '../features/recordings/components/WaveAnimation';
 import '@testing-library/jest-dom';
 
 // Mock implementations
