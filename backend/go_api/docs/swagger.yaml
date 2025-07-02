@@ -1,4 +1,14 @@
 definitions:
+  handler.LoginRequest:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    required:
+    - login
+    - password
+    type: object
   handler.RegisterRequest:
     properties:
       login:
@@ -24,6 +34,17 @@ definitions:
         type: string
       user_id:
         type: integer
+    type: object
+  repository.User:
+    properties:
+      id:
+        type: integer
+      login:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
     type: object
 info:
   contact: {}
@@ -117,6 +138,50 @@ paths:
       summary: Get user records
       tags:
       - records
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handler.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login a user
+  /users/me:
+    get:
+      description: Returns the current user's info based on the session token.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/repository.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get current user info
   /users/register:
     post:
       consumes:
