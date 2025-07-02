@@ -93,15 +93,18 @@ function HomePage() {
         </div>
       )}
 
-      {/* 📅 Fullscreen calendar modal */}
-      {showCalendar && (
-        <div className="calendar-overlay">
-          <button className="close-btn" onClick={() => setShowCalendar(false)}>
-            ✕
-          </button>
-          <Calendar />
-        </div>
-      )}
+    
+     {showCalendar && (
+  <div className="calendar-overlay">
+    <button className="close-btn" onClick={() => setShowCalendar(false)}>✕</button>
+    
+    <div className="calendar-container-homepage">
+      <Calendar />
+    </div>
+  </div>
+)}
+
+ 
     </div>
   );
 }
