@@ -24,6 +24,7 @@ const WaveAnimation = ({ isRecording }) => {
     window.addEventListener("resize", resizeCanvas);
 
     const initAudioAnalyzer = async () => {
+      
       try {
         if (
           audioContextRef.current &&
@@ -37,9 +38,16 @@ const WaveAnimation = ({ isRecording }) => {
         });
         mediaStreamRef.current = stream;
 
-        audioContextRef.current = new (window.AudioContext ||
-          window.webkitAudioContext)();
-        analyserRef.current = audioContextRef.current.createAnalyser();
+       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+
+if (
+  !audioContextRef.current ||
+  typeof audioContextRef.current.createAnalyser !== 'function'
+) {
+  throw new Error("Invalid AudioContext instance");
+}
+
+analyserRef.current = audioContextRef.current.createAnalyser();
         analyserRef.current.fftSize = 256;
         analyserRef.current.smoothingTimeConstant = 0.6;
 

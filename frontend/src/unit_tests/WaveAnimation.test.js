@@ -3,7 +3,7 @@ import { render, act } from '@testing-library/react';
 import WaveAnimation from '../features/recordings/components/WaveAnimation';
 import '@testing-library/jest-dom';
 
-// Mock implementations
+
 class MockAnalyserNode {
   constructor() {
     this.fftSize = 256;
@@ -53,8 +53,9 @@ class MockCanvasContext {
   }
 }
 
-// Mock globals
+
 beforeAll(() => {
+  console.error = jest.fn();
   global.AudioContext = jest.fn(() => new MockAudioContext());
   global.webkitAudioContext = jest.fn(() => new MockAudioContext());
   
@@ -130,8 +131,9 @@ describe('WaveAnimation Component', () => {
     expect(consoleError).toHaveBeenCalledWith(
       'Error initializing audio analyzer:',
       expect.any(Error)
+      
     );
-    consoleError.mockRestore();
+    console.error = jest.fn()
   });
 
 
