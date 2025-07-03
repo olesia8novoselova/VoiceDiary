@@ -18,7 +18,7 @@ func CreateUser(ctx context.Context, db *sql.DB, login, password, nickname strin
 	log.Printf("CreateUser: creating user with login %s", login)
 
 	query := `
-		INSERT INTO users (login, password, nickname)
+		INSERT INTO user (login, password, nickname)
 		VALUES ($1, $2, $3)
 		RETURNING id
 	`
@@ -38,7 +38,7 @@ func GetUserByLogin(ctx context.Context, db *sql.DB, login string) (*User, error
 
 	query := `
 		SELECT id, login, password, nickname
-		FROM users
+		FROM user
 		WHERE login = $1
 	`
 	var user User
@@ -56,7 +56,7 @@ func SaveSession(ctx context.Context, db *sql.DB, userID int, token string) erro
 	log.Printf("SaveSession: saving session for userID %d", userID)
 
 	query := `
-		INSERT INTO sessions (user_id, token)
+		INSERT INTO session (user_id, token)
 		VALUES ($1, $2)
 	`
 	_, err := db.ExecContext(ctx, query, userID, token)
@@ -74,8 +74,8 @@ func GetUserBySession(ctx context.Context, db *sql.DB, token string) (*User, err
 
 	query := `
 		SELECT u.id, u.login, u.password, u.nickname
-		FROM users u
-		JOIN sessions s ON u.id = s.user_id
+		FROM user u
+		JOIN session s ON u.id = s.user_id
 		WHERE s.token = $1
 	`
 	var user User
