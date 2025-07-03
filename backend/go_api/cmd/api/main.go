@@ -13,6 +13,7 @@ import (
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/config"
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/handler"
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/service"
+	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/middleware"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -45,6 +46,8 @@ func main() {
 	r.GET("/users/:userID/records", recordHandler.GetRecords)
 	r.POST("/records/upload", recordHandler.UploadRecord)
 	r.POST("/users/register", userHandler.Register)
+	r.POST("/users/login", userHandler.Login)
+	r.GET("/me", middleware.AuthMiddleware(userService), userHandler.Me)
 
 	r.GET("/swagger/*any",
     ginSwagger.WrapHandler(swaggerFiles.Handler, 

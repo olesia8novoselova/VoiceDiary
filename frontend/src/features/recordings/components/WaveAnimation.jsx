@@ -79,12 +79,12 @@ const WaveAnimation = ({ isRecording }) => {
 
       const waves = [
         {
-          color: "rgba(180, 70, 255, 0.9)", // Основная волна
-          baseAmplitude: 90, // Увеличенная амплитуда
+          color: "rgba(180, 70, 255, 0.9)", 
+          baseAmplitude: 90, 
           frequency: 0.02,
           speed: 0.3,
           offset: 0,
-          audioResponse: 1.8, // Коэффициент реакции на звук
+          audioResponse: 1.8, 
           smoothing: 0.2,
         },
         {

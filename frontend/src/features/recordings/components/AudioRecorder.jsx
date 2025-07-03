@@ -13,6 +13,7 @@ import useAudioRecorder from "../hooks/useAudioRecorder";
 
 const AudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
   const micIconRef = useRef(null);
+
   const [showTooltip, setShowTooltip] = useState(false);
 
   const {
@@ -34,6 +35,7 @@ const AudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
     handleMainButtonClick,
     stopRecording,
   } = useAudioRecorder({ setIsRecording, onRecordingStart, onResult });
+
 
   return (
     <div className="audio-recorder-wrapper">
