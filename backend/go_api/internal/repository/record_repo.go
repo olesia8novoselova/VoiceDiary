@@ -19,7 +19,7 @@ type Record struct {
 
 const getRecordsByUserSQL = `
     SELECT id, user_id, record_date, emotion
-	FROM records
+	FROM record
 	WHERE user_id = $1
 	ORDER BY record_date DESC
 `
@@ -29,7 +29,7 @@ func SaveRecord(ctx context.Context, db *sql.DB, userID int, emotion string, sum
 	recordDate := time.Now()
 
 	query := `
-	INSERT INTO records (user_id, emotion, record_date)
+	INSERT INTO record (user_id, emotion, record_date)
 	VALUES ($1, $2, $3)
 	RETURNING id
 	`
@@ -76,7 +76,11 @@ func GetRecordsByUser(ctx context.Context, db *sql.DB, userID int) ([]Record, er
 func GetRecordByID(ctx context.Context, db *sql.DB, recordID int) (*Record, error) {
 	log.Printf("GetRecordByID: fetching record with ID %d", recordID)
 
-	query := `SELECT id, user_id, record_date, emotion, summary FROM records WHERE id = $1`
+	query := `
+	SELECT id, user_id, record_date, emotion, summary 
+	FROM record 
+	WHERE id = $1
+	`
 	var rec Record
 	err := db.QueryRowContext(ctx, query, recordID).Scan(&rec.ID, &rec.UserID, &rec.RecordDate, &rec.Emotion, &rec.Summary)
 	if err != nil {
