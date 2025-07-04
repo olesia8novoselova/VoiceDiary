@@ -3,14 +3,13 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"time"
 	"log"
 
 	_ "github.com/lib/pq"
 )
 
 type Record struct {
-	ID int `json:"id"`
+	ID int `json:"record_id"`
 	UserID int `json:"user_id"`
 	RecordDate string `json:"record_date"`
 	Emotion string `json:"emotion"`
@@ -18,23 +17,21 @@ type Record struct {
 }
 
 const getRecordsByUserSQL = `
-    SELECT id, user_id, record_date, emotion
+    SELECT record_id, user_id, record_date, emotion, summary
 	FROM record
 	WHERE user_id = $1
 	ORDER BY record_date DESC
 `
 func SaveRecord(ctx context.Context, db *sql.DB, userID int, emotion string, summary string) (int, error) {
 	log.Printf("SaveRecord: saving record for userID %d with emotion %s", userID, emotion)
-	
-	recordDate := time.Now()
 
 	query := `
-	INSERT INTO record (user_id, emotion, record_date)
+	INSERT INTO record (user_id, emotion, summary)
 	VALUES ($1, $2, $3)
-	RETURNING id
+	RETURNING record_id
 	`
 	var recordID int
-	err := db.QueryRowContext(ctx, query, userID, emotion, recordDate).Scan(&recordID)
+	err := db.QueryRowContext(ctx, query, userID, emotion, summary).Scan(&recordID)
 	if err != nil {
 		log.Printf("SaveRecord: failed to save record, error: %v", err)
 		return 0, err
@@ -57,7 +54,7 @@ func GetRecordsByUser(ctx context.Context, db *sql.DB, userID int) ([]Record, er
 	var records []Record
 	for rows.Next() {
 		var r Record
-		if err := rows.Scan(&r.ID, &r.UserID, &r.RecordDate, &r.Emotion); err != nil {
+		if err := rows.Scan(&r.ID, &r.UserID, &r.RecordDate, &r.Emotion, &r.Summary); err != nil {
 			log.Printf("GetRecordsByUser: failed to scan record for userID %d, error: %v", userID, err)
 			return nil, err
 		}
@@ -77,9 +74,9 @@ func GetRecordByID(ctx context.Context, db *sql.DB, recordID int) (*Record, erro
 	log.Printf("GetRecordByID: fetching record with ID %d", recordID)
 
 	query := `
-	SELECT id, user_id, record_date, emotion, summary 
-	FROM record 
-	WHERE id = $1
+	SELECT record_id, user_id, record_date, emotion, summary 
+	FROM record
+	WHERE record_id = $1
 	`
 	var rec Record
 	err := db.QueryRowContext(ctx, query, recordID).Scan(&rec.ID, &rec.UserID, &rec.RecordDate, &rec.Emotion, &rec.Summary)

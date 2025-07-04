@@ -20,8 +20,8 @@ func setupTestDB(t *testing.T) *sql.DB {
         t.Fatalf("failed to connect to test db: %v", err)
     }
     // Clean up tables before each test
-    db.Exec("DELETE FROM sessions")
-    db.Exec("DELETE FROM users")
+    db.Exec("DELETE FROM session")
+    db.Exec(`DELETE FROM "user"`)
     return db
 }
 
