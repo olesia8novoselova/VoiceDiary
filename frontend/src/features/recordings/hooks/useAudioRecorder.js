@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { API_CONFIG } from "../../../config";
 
 const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
   const [isRecording, setRecording] = useState(false);
@@ -176,44 +177,70 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
           audioBlob,
           `voice-${new Date().toISOString()}.wav`
         );
-        formData.append("userID", "1");
+        formData.append("userID", "29");
 
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        const response = await fetch(
+          `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.RECORDS.UPLOAD}`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        if (!response.ok) {
+          setAudioBlob(null);
+          setRecordTime(0);
+          resetRecorder();
+          setIsActionInProgress(false);
+          throw new Error("Upload failed");
+        }
+
+        const result = await response.json();
 
         if (onResult) {
           onResult({
-            emotion: "happy",
-            summary:
-              "Today was a dynamic and emotionally complex day. In the morning, I received unexpected news about a promotion at work, which sparked intense joy. However, after lunch, an email about urgent quarterly budget revisions triggered mild anxiety. Despite the mixed emotions, I managed to unwind during a family dinner in the evening, which brought a sense of balance.",
+            emotion: result.emotion,
+            summary: result.summary,
             record_date: new Date(),
-            insights: {
-              emotional_dynamics:
-                "Sharp mood elevation in the morning followed by a moderate dip in the afternoon",
-              key_triggers: [
-                "Positive: Career advancement notification",
-                "Negative: Financial responsibility pressure",
-              ],
-              physical_reactions: {
-                morning: "Increased energy levels (noted at 10:15 AM)",
-                afternoon: "Brief tension headache (around 4:30 PM)",
-              },
-              coping_effectiveness: {
-                successful: "Sharing news with colleagues (reinforced joy)",
-                unsuccessful:
-                  "Compulsively checking emails (amplified anxiety)",
-              },
-              behavioral_patterns: {
-                productivity: "Focused work in the morning (3h deep work)",
-                social_interaction: "Initiated 2 meaningful conversations",
-              },
-              recommendations: [
-                "Celebration: Schedule a team lunch to acknowledge achievement",
-                "Stress management: Practice box breathing before high-stakes meetings",
-                "Future planning: Allocate 30min daily for financial planning to reduce anxiety triggers",
-              ],
-            },
           });
         }
+
+        // await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        // if (onResult) {
+        //   onResult({
+        //     emotion: "happy",
+        //     summary:
+        //       "Today was a dynamic and emotionally complex day. In the morning, I received unexpected news about a promotion at work, which sparked intense joy. However, after lunch, an email about urgent quarterly budget revisions triggered mild anxiety. Despite the mixed emotions, I managed to unwind during a family dinner in the evening, which brought a sense of balance.",
+        //     record_date: new Date(),
+        //     insights: {
+        //       emotional_dynamics:
+        //         "Sharp mood elevation in the morning followed by a moderate dip in the afternoon",
+        //       key_triggers: [
+        //         "Positive: Career advancement notification",
+        //         "Negative: Financial responsibility pressure",
+        //       ],
+        //       physical_reactions: {
+        //         morning: "Increased energy levels (noted at 10:15 AM)",
+        //         afternoon: "Brief tension headache (around 4:30 PM)",
+        //       },
+        //       coping_effectiveness: {
+        //         successful: "Sharing news with colleagues (reinforced joy)",
+        //         unsuccessful:
+        //           "Compulsively checking emails (amplified anxiety)",
+        //       },
+        //       behavioral_patterns: {
+        //         productivity: "Focused work in the morning (3h deep work)",
+        //         social_interaction: "Initiated 2 meaningful conversations",
+        //       },
+        //       recommendations: [
+        //         "Celebration: Schedule a team lunch to acknowledge achievement",
+        //         "Stress management: Practice box breathing before high-stakes meetings",
+        //         "Future planning: Allocate 30min daily for financial planning to reduce anxiety triggers",
+        //       ],
+        //     },
+        //   });
+        // }
 
         setAudioBlob(null);
         setRecordTime(0);
@@ -268,95 +295,94 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
 
 export default useAudioRecorder;
 
-  //     const saveRecording = async () => {
-  //   if (audioBlob) {
-  //     try {
-  //       setIsLoading(true);
+// const saveRecording = async () => {
+//   if (audioBlob) {
+//     try {
+//       setIsLoading(true);
 
-  //       const formData = new FormData();
-  //       formData.append(
-  //         "file",
-  //         audioBlob,
-  //         `voice-${new Date().toISOString()}.wav`
-  //       );
-  //       formData.append("userID", "1");
+//       const formData = new FormData();
+//       formData.append(
+//         "file",
+//         audioBlob,
+//         `voice-${new Date().toISOString()}.wav`
+//       );
+//       formData.append("userID", "1");
 
-  //       // const response = await fetch(
-  //       //   "https://68b0-2a0b-4140-d5a0-00-2.ngrok-free.app/records/upload",
-  //       //   {
-  //       //     method: "POST",
-  //       //     body: formData,
-  //       //   }
-  //       // );
+//       // const response = await fetch(
+//       //   "https://68b0-2a0b-4140-d5a0-00-2.ngrok-free.app/records/upload",
+//       //   {
+//       //     method: "POST",
+//       //     body: formData,
+//       //   }
+//       // );
 
-  //       // const result = await response.json();
-  //       // // const recordID = result.record_id;
+//       // const result = await response.json();
+//       // // const recordID = result.record_id;
 
-  //       // if (!response.ok) {
-  //       //   throw new Error("Upload failed");
-  //       // }
+//       // if (!response.ok) {
+//       //   throw new Error("Upload failed");
+//       // }
 
-  //       //         const analysisResponse = await fetch(
-  //       //           `http://localhost:8080/records/${recordID}`
-  //       //         );
-  //       //         if (!analysisResponse.ok) {
-  //       //           throw new Error("Analysis failed");
-  //       //         }
-  //       //
-  //       //         const analysisData = await analysisResponse.json();
+//       //         const analysisResponse = await fetch(
+//       //           `http://localhost:8080/records/${recordID}`
+//       //         );
+//       //         if (!analysisResponse.ok) {
+//       //           throw new Error("Analysis failed");
+//       //         }
+//       //
+//       //         const analysisData = await analysisResponse.json();
 
-  //       // if (onResult) {
-  //       //   onResult({
-  //       //     emotion: result.emotion,
-  //       //     summary: result.summary,
-  //       //     record_date: new Date(),
-  //       //     insights: result.insights,
-  //       //   });
-  //       // }
+//       // if (onResult) {
+//       //   onResult({
+//       //     emotion: result.emotion,
+//       //     summary: result.summary,
+//       //     record_date: new Date(),
+//       //     insights: result.insights,
+//       //   });
+//       // }
 
-  //       if (onResult) {
-  //         onResult({
-  //           emotion: "happy",
-  //           summary:
-  //             "Today was a dynamic and emotionally complex day. In the morning, I received unexpected news about a promotion at work, which sparked intense joy. However, after lunch, an email about urgent quarterly budget revisions triggered mild anxiety. Despite the mixed emotions, I managed to unwind during a family dinner in the evening, which brought a sense of balance.",
-  //           record_date: new Date(),
-  //           insights: {
-  //             emotional_dynamics:
-  //               "Sharp mood elevation in the morning followed by a moderate dip in the afternoon",
-  //             key_triggers: [
-  //               "Positive: Career advancement notification",
-  //               "Negative: Financial responsibility pressure",
-  //             ],
-  //             physical_reactions: {
-  //               morning: "Increased energy levels (noted at 10:15 AM)",
-  //               afternoon: "Brief tension headache (around 4:30 PM)",
-  //             },
-  //             coping_effectiveness: {
-  //               successful: "Sharing news with colleagues (reinforced joy)",
-  //               unsuccessful:
-  //                 "Compulsively checking emails (amplified anxiety)",
-  //             },
-  //             behavioral_patterns: {
-  //               productivity: "Focused work in the morning (3h deep work)",
-  //               social_interaction: "Initiated 2 meaningful conversations",
-  //             },
-  //             recommendations: [
-  //               "Celebration: Schedule a team lunch to acknowledge achievement",
-  //               "Stress management: Practice box breathing before high-stakes meetings",
-  //               "Future planning: Allocate 30min daily for financial planning to reduce anxiety triggers",
-  //             ],
-  //           },
-  //         });
-  //       }
+//       if (onResult) {
+//         onResult({
+//           emotion: "happy",
+//           summary:
+//             "Today was a dynamic and emotionally complex day. In the morning, I received unexpected news about a promotion at work, which sparked intense joy. However, after lunch, an email about urgent quarterly budget revisions triggered mild anxiety. Despite the mixed emotions, I managed to unwind during a family dinner in the evening, which brought a sense of balance.",
+//           record_date: new Date(),
+//           insights: {
+//             emotional_dynamics:
+//               "Sharp mood elevation in the morning followed by a moderate dip in the afternoon",
+//             key_triggers: [
+//               "Positive: Career advancement notification",
+//               "Negative: Financial responsibility pressure",
+//             ],
+//             physical_reactions: {
+//               morning: "Increased energy levels (noted at 10:15 AM)",
+//               afternoon: "Brief tension headache (around 4:30 PM)",
+//             },
+//             coping_effectiveness: {
+//               successful: "Sharing news with colleagues (reinforced joy)",
+//               unsuccessful: "Compulsively checking emails (amplified anxiety)",
+//             },
+//             behavioral_patterns: {
+//               productivity: "Focused work in the morning (3h deep work)",
+//               social_interaction: "Initiated 2 meaningful conversations",
+//             },
+//             recommendations: [
+//               "Celebration: Schedule a team lunch to acknowledge achievement",
+//               "Stress management: Practice box breathing before high-stakes meetings",
+//               "Future planning: Allocate 30min daily for financial planning to reduce anxiety triggers",
+//             ],
+//           },
+//         });
+//       }
 
-  //       setAudioBlob(null);
-  //       setRecordTime(0);
-  //       resetRecorder();
-  //     } catch (error) {
-  //       console.error("Error during processing:", error);
-  //       alert("Error during processing:", error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   }
-  // };
+//       setAudioBlob(null);
+//       setRecordTime(0);
+//       resetRecorder();
+//     } catch (error) {
+//       console.error("Error during processing:", error);
+//       alert("Error during processing:", error);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   }
+// };

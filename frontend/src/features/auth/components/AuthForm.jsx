@@ -4,7 +4,7 @@ import ErrorIcon from "./ErrorIcon";
 import HintIcon from "./HintIcon";
 import PasswordInput from "./PasswordInput";
 
-const AuthForm = ({ isLogin, onSubmit }) => {
+const AuthForm = ({ isLogin, onSubmit, authError }) => {
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -90,7 +90,7 @@ const AuthForm = ({ isLogin, onSubmit }) => {
     setTouched(allTouched);
 
     if (validateForm()) {
-      onSubmit(e);
+      onSubmit(e, formData);
     } else {
       setTimeout(() => {
         const firstError = Object.keys(errors)[0];
@@ -111,6 +111,12 @@ const AuthForm = ({ isLogin, onSubmit }) => {
 
   return (
     <form className="auth-form" onSubmit={handleSubmit} noValidate>
+      {authError && (
+        <div className="auth-error-message">
+          <ErrorIcon />
+          <span>{authError}</span>
+        </div>
+      )}
       <div className={`form-group ${hasError("email") ? "has-error" : ""}`}>
         <label htmlFor="email">Your email</label>
         <input

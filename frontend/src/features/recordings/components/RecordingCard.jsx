@@ -39,7 +39,7 @@ function RecordingCard({ result }) {
         <p className="summary-text">{result.summary}</p>
       </div>
 
-      <div className="card-section">
+      {/* <div className="card-section">
         <h3>Emotional Analysis</h3>
         <div className="insights-grid">
           <div className="insight-item">
@@ -99,7 +99,7 @@ function RecordingCard({ result }) {
             </li>
           ))}
         </ol>
-      </div>
+      </div> */}
 
       <div className="card-footer">
         <p className="record-date">Recorded: {formattedDate}</p>
