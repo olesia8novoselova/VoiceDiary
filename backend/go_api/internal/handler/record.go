@@ -55,7 +55,7 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 	// Read file into memory
 	buf := bytes.NewBuffer(nil)
 	if _, err := io.Copy(buf, file); err != nil {
-		log.Printf("UploadRecord: failed to read file into buffer, error:", err)
+		log.Printf("UploadRecord: failed to read file into buffer, error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read file"})
 		return
 	}

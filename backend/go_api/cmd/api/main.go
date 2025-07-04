@@ -35,7 +35,13 @@ func main() {
 	}
 
 	r := gin.Default()
-	r.Use(cors.Default())
+	r.Use(cors.New(cors.Config{
+    AllowOrigins:     []string{"http://178.205.96.163:80"}, 
+    AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+    AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+    ExposeHeaders:    []string{"Content-Length"},
+    AllowCredentials: true,
+}))
 
 	recordHandler := handler.NewRecordHandler(db, cfg.MLServiceURL)
 

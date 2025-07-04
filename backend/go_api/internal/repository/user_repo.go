@@ -8,8 +8,8 @@ import (
 )
 
 type User struct {
-	ID int `db:"id"`
-	Login string `db:"login"`
+	ID   int    `db:"user_id"`
+	Login    string `db:"login"`
 	Password string `db:"password"`
 	Nickname string `db:"nickname"`
 }
@@ -18,9 +18,9 @@ func CreateUser(ctx context.Context, db *sql.DB, login, password, nickname strin
 	log.Printf("CreateUser: creating user with login %s", login)
 
 	query := `
-		INSERT INTO user (login, password, nickname)
+		INSERT INTO "user" (login, password, nickname)
 		VALUES ($1, $2, $3)
-		RETURNING id
+		RETURNING user_id
 	`
 	var userID int
 	err := db.QueryRowContext(ctx, query, login, password, nickname).Scan(&userID)
@@ -37,8 +37,8 @@ func GetUserByLogin(ctx context.Context, db *sql.DB, login string) (*User, error
 	log.Printf("GetUserByLogin: fetching user with login %s", login)
 
 	query := `
-		SELECT id, login, password, nickname
-		FROM user
+		SELECT user_id, login, password, nickname
+		FROM "user"
 		WHERE login = $1
 	`
 	var user User
@@ -73,9 +73,9 @@ func GetUserBySession(ctx context.Context, db *sql.DB, token string) (*User, err
 	log.Printf("GetUserBySession: fetching user by session token %s", token)
 
 	query := `
-		SELECT u.id, u.login, u.password, u.nickname
-		FROM user u
-		JOIN session s ON u.id = s.user_id
+		SELECT u.user_id, u.login, u.password, u.nickname
+		FROM "user" u
+		JOIN session s ON u.user_id = s.user_id
 		WHERE s.token = $1
 	`
 	var user User
