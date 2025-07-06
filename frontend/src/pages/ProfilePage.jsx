@@ -12,12 +12,11 @@ const ProfilePage = () => {
   const [logoutApi] = useLogoutMutation();
 
   const handleLogout = async () => {
-    console.log("Attempting logout...");
     try {
       const response = await logoutApi().unwrap();
       console.log("Logout API response:", response);
       dispatch(logout());
-      navigate("/onboarding");
+      navigate("/onboarding", { state: { fromLogout: true } });
     } catch (err) {
       console.error("Logout failed:", {
         error: err,

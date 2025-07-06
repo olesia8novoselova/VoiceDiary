@@ -73,6 +73,9 @@ export const authApi = createApi({
         url: API_CONFIG.ENDPOINTS.AUTH.LOGOUT,
         method: "POST",
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
       }),
       transformResponse: (response) => {
         console.log("[LOGOUT] Success:", response);
