@@ -13,13 +13,16 @@ export const authApi = createApi({
         url: API_CONFIG.ENDPOINTS.AUTH.REGISTER,
         method: "POST",
         body: credentials,
+        headers: {
+          "Content-Type": "application/json",
+        },
       }),
       transformResponse: (response) => {
-        console.log("Server response:", response);
+        console.log("[REGISTER] Server response:", response);
         return response;
       },
       transformErrorResponse: (response) => {
-        console.error("Server error:", response);
+        console.error("[REGISTER] Server error:", response);
         return response;
       },
     }),
@@ -28,12 +31,67 @@ export const authApi = createApi({
         url: API_CONFIG.ENDPOINTS.AUTH.LOGIN,
         method: "POST",
         body: credentials,
+        headers: {
+          "Content-Type": "application/json",
+        },
       }),
+      transformResponse: (response) => {
+        console.log("[LOGIN] Success:", {
+          endpoint: API_CONFIG.ENDPOINTS.AUTH.LOGIN,
+          response,
+        });
+        return response;
+      },
+      transformErrorResponse: (response) => {
+        console.error("[LOGIN] Error:", {
+          endpoint: API_CONFIG.ENDPOINTS.AUTH.LOGIN,
+          status: response.status,
+          data: response.data,
+        });
+        return response;
+      },
     }),
     getMe: builder.query({
-      query: () => API_CONFIG.ENDPOINTS.AUTH.ME,
+      query: () => ({
+        url: API_CONFIG.ENDPOINTS.AUTH.ME,
+        credentials: "include",
+      }),
+      transformResponse: (response) => {
+        console.log("[ME] User data:", response);
+        return response;
+      },
+      transformErrorResponse: (response) => {
+        console.error("[ME] Error fetching user:", {
+          status: response.status,
+          data: response.data,
+        });
+        return response;
+      },
+    }),
+    logout: builder.mutation({
+      query: () => ({
+        url: API_CONFIG.ENDPOINTS.AUTH.LOGOUT,
+        method: "POST",
+        credentials: "include",
+      }),
+      transformResponse: (response) => {
+        console.log("[LOGOUT] Success:", response);
+        return response;
+      },
+      transformErrorResponse: (response) => {
+        console.error("[LOGOUT] Error:", {
+          status: response.status,
+          data: response.data,
+        });
+        return response;
+      },
     }),
   }),
 });
 
-export const { useRegisterMutation, useLoginMutation, useGetMeQuery } = authApi;
+export const {
+  useRegisterMutation,
+  useLoginMutation,
+  useGetMeQuery,
+  useLogoutMutation,
+} = authApi;
