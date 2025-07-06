@@ -36,7 +36,11 @@ func main() {
 
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-    AllowOrigins:     []string{"http://178.205.96.163:80"}, 
+    AllowOrigins:     []string{ 
+		"http://178.205.96.163:80",
+        "http://localhost:3000",      
+        "http://127.0.0.1:3000",
+		}, 
     AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
     AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
     ExposeHeaders:    []string{"Content-Length"},
@@ -54,6 +58,8 @@ func main() {
 	r.POST("/users/register", userHandler.Register)
 	r.POST("/users/login", userHandler.Login)
 	r.GET("/me", middleware.AuthMiddleware(userService), userHandler.Me)
+	r.POST("/users/logout", middleware.AuthMiddleware(userService), userHandler.Logout)
+	//r.GET("/records/:recordID/dominant_emotion", recordHandler.GetDominantEmotion)
 
 	r.GET("/swagger/*any",
     ginSwagger.WrapHandler(swaggerFiles.Handler, 

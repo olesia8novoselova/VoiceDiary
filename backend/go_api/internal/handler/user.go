@@ -120,3 +120,38 @@ func (h *UserHandler) Me(c *gin.Context) {
     user, _ := c.Get("user")
     c.JSON(http.StatusOK, user)
 }
+
+// @Summary Logout a user
+// @Description Logs out the user by deleting the session token.
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Router /users/logout [post]
+func (h *UserHandler) Logout(c *gin.Context) {
+	log.Printf("Logout: received request")
+
+    cookie, err := c.Request.Cookie("session_token")
+    if err != nil {
+        c.JSON(http.StatusOK, gin.H{"message": "Logged out"})
+        return
+    }
+
+    if err := h.svc.DeleteSession(c.Request.Context(), cookie.Value); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not revoke session"})
+        return
+    }
+
+    // expire the cookie in the browser
+    http.SetCookie(c.Writer, &http.Cookie{
+        Name:     "session_token",
+        Value:    "",
+        Path:     "/",
+        Expires:  time.Unix(0, 0),
+        MaxAge:   -1,
+        HttpOnly: true,
+        SameSite: http.SameSiteLaxMode,
+    })
+
+    c.JSON(http.StatusOK, gin.H{"message": "Logged out"})
+	log.Printf("Logout: user logged out successfully")
+}
