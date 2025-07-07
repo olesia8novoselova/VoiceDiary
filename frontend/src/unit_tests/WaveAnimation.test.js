@@ -53,7 +53,6 @@ class MockCanvasContext {
   }
 }
 
-// Mock globals
 beforeAll(() => {
   global.AudioContext = jest.fn(() => new MockAudioContext());
   global.webkitAudioContext = jest.fn(() => new MockAudioContext());

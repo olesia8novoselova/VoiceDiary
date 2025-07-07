@@ -1,9 +1,10 @@
+
+
 import React, { useState } from 'react';
-import { FaPlay, FaStop, FaMusic, FaLightbulb } from 'react-icons/fa';
+import { FaMusic, FaLightbulb } from 'react-icons/fa';
 import './MoodCalendar.css';
 
 const dayNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-
 
 const mockVoiceNotes = {
   3: {
@@ -19,26 +20,27 @@ const mockVoiceNotes = {
   [new Date().getDate()]: {
     note: 'Just recorded my thoughts',
     recommendation: 'Practice gratitude by listing 3 things you appreciate.',
-    mood: 'neutral'
+    mood: 'neutral',
+    summary: 'Today was fairly average, but productive.'
   }
 };
 
-
 const MoodIcon = ({ mood }) => {
   const moodIcons = {
-    happy: { emoji: '😊', color: '#4CAF50' }, 
-    sad: { emoji: '😢', color: '#2196F3' },
-    angry: { emoji: '😠', color: '#F44336' }, 
-    neutral: { emoji: '😐', color: '#9E9E9E' }, 
-    excited: { emoji: '🤩', color: '#FFC107' }, 
-    tired: { emoji: '😴', color: '#673AB7' } 
+    happy: { emoji: '😊', label: 'Happy', color: '#4CAF50' },
+    sad: { emoji: '😢', label: 'Sad', color: '#2196F3' },
+    angry: { emoji: '😠', label: 'Angry', color: '#F44336' },
+    neutral: { emoji: '😐', label: 'Neutral', color: '#9E9E9E' },
+    excited: { emoji: '🤩', label: 'Excited', color: '#FFC107' },
+    tired: { emoji: '😴', label: 'Tired', color: '#673AB7' }
   };
-  
+
   const currentMood = moodIcons[mood] || moodIcons.neutral;
-  
+
   return (
-    <span 
+    <span
       className="mood-icon"
+      title={currentMood.label}
       style={{ backgroundColor: currentMood.color }}
     >
       {currentMood.emoji}
@@ -53,7 +55,6 @@ const Calendar = () => {
   const currentDate = today.getDate();
 
   const [selectedDay, setSelectedDay] = useState(currentDate);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   const firstDay = new Date(year, month, 1);
   const startDay = (firstDay.getDay() + 6) % 7;
@@ -70,10 +71,6 @@ const Calendar = () => {
     if (day) setSelectedDay(day);
   };
 
-  const togglePlayback = () => {
-    setIsPlaying(!isPlaying);
-  };
-
   const currentNote = mockVoiceNotes[selectedDay];
 
   return (
@@ -81,7 +78,7 @@ const Calendar = () => {
       <div className="calendar-header">
         <h2>{monthName} {year}</h2>
       </div>
-      
+
       <div className="day-names">
         {dayNames.map((name, i) => (
           <div key={i} className="day-name">{name}</div>
@@ -110,25 +107,25 @@ const Calendar = () => {
 
       <div className="voice-note-panel">
         <h3>Daily Reflection</h3>
-        
+
         {currentNote ? (
           <>
             <div className="note-section">
               <p className="note-content">{currentNote.note}</p>
-              <button 
-                className={`play-button ${isPlaying ? 'playing' : ''}`}
-                onClick={togglePlayback}
-              >
-                {isPlaying ? (
-                  <>
-                    <FaStop /> Stop Listening
-                  </>
-                ) : (
-                  <>
-                    <FaPlay /> Play Recording
-                  </>
-                )}
-              </button>
+
+              <div className="mood-summary">
+                <strong>Your mood today:</strong>{' '}
+                <span className="mood-emoji">
+                  <MoodIcon mood={currentNote.mood} />{' '}
+                  {currentNote.mood?.charAt(0).toUpperCase() + currentNote.mood?.slice(1)}
+                </span>
+              </div>
+
+              {currentNote.summary && (
+                <div className="summary-section" style={{ marginTop: '1rem' }}>
+                  <strong>Summary:</strong> <span>{currentNote.summary}</span>
+                </div>
+              )}
             </div>
 
             <div className="recommendation-section">
