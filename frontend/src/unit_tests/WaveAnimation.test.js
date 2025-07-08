@@ -53,7 +53,6 @@ class MockCanvasContext {
   }
 }
 
-
 beforeAll(() => {
   console.error = jest.fn();
   global.AudioContext = jest.fn(() => new MockAudioContext());

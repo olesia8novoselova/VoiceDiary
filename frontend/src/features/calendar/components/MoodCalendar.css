@@ -1,9 +1,67 @@
+
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+z-index: 0; 
+}
+
+.gradient-ball,
+.gradient-ball-2,
+.gradient-ball-3,
+.gradient-ball-4{
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 0;
+}
+
+.gradient-ball {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle at center, #672f94 0%, transparent 30%);
+  top: 50%;
+  left: 700px;
+}
+
+.gradient-ball-2 {
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle at center, #4f46e5 0%, transparent 50%);
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.gradient-ball-3 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle at center, #3210b9 0%, transparent 50%);
+  bottom: 10px;
+  left: 300px;
+  transform: translateX(-50%);
+}
+
+.gradient-ball-4 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle at center, #b53636 0%, transparent 55%);
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+}
 .calendar-wrapper {
   max-width: 100%;
   color: white;
   font-family: 'Inter', sans-serif;
+  padding: 1rem;
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
-
 .calendar-header {
   text-align: center;
   margin-bottom: 1.5rem;
@@ -32,17 +90,26 @@
 }
 
 .day-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   aspect-ratio: 1;
+  padding: 0.2rem;
+  border-radius: 50%;
+   background: rgba(255, 255, 255, 0.05);
+   
+}
+.day-cell-content {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  cursor: pointer;
   font-size: 0.9rem;
-  transition: all 0.2s ease;
-  position: relative;
-  background: rgba(255, 255, 255, 0.05);
 }
+
+
 
 .day-cell:hover {
   background: rgba(255, 255, 255, 0.1);
@@ -56,14 +123,54 @@
 
 .day-cell.has-note {
   border: 2px solid #8b5cf6;
+  position: relative;
+  font-size: 1rem;
 }
 
 .note-icon {
   position: absolute;
-  bottom: 3px;
-  right: 3px;
-  font-size: 0.7rem;
+  bottom: 2px;
+  right: 2px;
+  font-size: 0.9rem;
   color: #8b5cf6;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+.mood-note-icons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  padding: 0 4px;
+  box-sizing: border-box;
+}
+.note-icon,
+.mood-icon {
+  font-size: 1rem;
+  width: 1.5rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  line-height: 1;
+}
+
+.mood-icon {
+  color: white;
 }
 
 .voice-note-panel {
@@ -75,48 +182,9 @@
 }
 
 .voice-note-panel h3 {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   margin-bottom: 1rem;
   color: #fff;
-}
-
-.voice-note-panel p {
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-}
-
-.play-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.7rem 1.5rem;
-  background: #8b5cf6;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.play-button:hover {
-  background: #7c4dff;
-}
-
-.play-button.playing {
-  background: #ef4444;
-}
-
-.empty-note {
-  color: rgba(255, 255, 255, 0.5);
-  font-style: italic;
-}
-.voice-note-panel {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .note-section {
@@ -125,7 +193,23 @@
 
 .note-content {
   line-height: 1.6;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.mood-summary {
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.mood-summary .mood-emoji {
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.summary-section {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .recommendation-section {
@@ -159,44 +243,8 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-
-.mood-icon {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  font-size: 1rem; 
-  background: rgba(0, 0, 0, 0.4); 
-  border-radius: 50%;
-  width: 22px; 
-  height: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  color: white; 
-  border: 1px solid rgba(255, 255, 255, 0.2); 
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.day-cell.has-note {
-  position: relative;
-  border: 2px solid #8b5cf6;
-font-size: 1rem;
-}
-
-.note-icon {
-  position: absolute;
-  bottom: 2px;
-  right: 2px;
-  font-size: 0.9rem; 
-  color: #8b5cf6;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px; 
-  border: 1px solid rgba(255, 255, 255, 0.2);
+.empty-note {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  text-align: center;
 }

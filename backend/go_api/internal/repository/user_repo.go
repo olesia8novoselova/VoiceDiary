@@ -88,3 +88,18 @@ func GetUserBySession(ctx context.Context, db *sql.DB, token string) (*User, err
 	log.Printf("GetUserBySession: successfully fetched user with ID %d", user.ID)
 	return &user, nil
 }
+
+func DeleteSession(ctx context.Context, db *sql.DB, token string) error {
+	log.Printf("DeleteSession: deleting session token %s", token)
+	query := `
+		DELETE FROM session
+		WHERE token = $1
+	`
+	_, err := db.ExecContext(ctx, query, token)
+	if err != nil {
+		log.Printf("DeleteSession: failed to delete session token %s, error: %v", token, err)
+		return err
+	}
+	log.Printf("DeleteSession: successfully deleted session token %s", token)
+	return nil
+}

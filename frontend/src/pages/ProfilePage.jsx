@@ -1,25 +1,61 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useLogoutMutation } from "../features/auth/authApi";
+import { logout } from "../features/auth/authSlice";
 import Calendar from "../features/calendar/components/MoodCalendar";
-import './ProfilePage.css';
+import "./ProfilePage.css";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [logoutApi] = useLogoutMutation();
+
+  const handleLogout = async () => {
+    try {
+      const response = await logoutApi().unwrap();
+      console.log("Logout API response:", response);
+      dispatch(logout());
+      navigate("/onboarding", { state: { fromLogout: true } });
+    } catch (err) {
+      console.error("Logout failed:", {
+        error: err,
+        status: err.status,
+        data: err.data,
+        originalError: err.originalError,
+      });
+    }
+  };
 
   return (
     <div className="profile-page">
-      <button className="back-button" onClick={() => navigate('/homepage')}>
-        ← Back
-      </button>
+      <button
+          className="back-button"
+          onClick={() => navigate("/homepage")}
+          aria-label="Go back"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M15 18L9 12L15 6"
+              stroke="#FFFFFF"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
       
       <div className="profile-content">
         <header className="profile-header">
           <h1>Profile</h1>
-          <button 
-            className="logout-button"
-            onClick={() => navigate('/onboarding')}
-          >
-            Sign Out
+          <button className="logout-button" onClick={handleLogout}>
+            Log Out
           </button>
         </header>
 
@@ -41,15 +77,15 @@ const ProfilePage = () => {
               <label>Email</label>
               <p>dopoine@gmail.com</p>
             </div>
-            
+
             <div className="field">
               <label>Password</label>
               <p>••••••••</p>
             </div>
-            
-            <button 
+
+            <button
               className="edit-button"
-              onClick={() => navigate('/profile/settings')}
+              onClick={() => navigate("/profile/settings")}
             >
               Edit Profile
             </button>

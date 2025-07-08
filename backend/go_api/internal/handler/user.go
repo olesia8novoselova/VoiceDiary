@@ -74,25 +74,25 @@ func (h *UserHandler) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Printf("Login: invalid request, error: %v", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Please provide both email and password"})
 		return
 	}
 
 	user, err := h.svc.GetUserByLogin(c.Request.Context(), req.Login)
     if err != nil {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "Account not found. Please check your email or register"})
         return
     }
 
     if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "Incorrect password. Please try again"})
         return
     }
 
     sessionToken := uuid.NewString()
     err = h.svc.SaveSession(c.Request.Context(), user.ID, sessionToken)
     if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create session"})
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "We're having trouble signing you in. Please try again later"})
         return
     }
 
@@ -119,4 +119,39 @@ func (h *UserHandler) Login(c *gin.Context) {
 func (h *UserHandler) Me(c *gin.Context) {
     user, _ := c.Get("user")
     c.JSON(http.StatusOK, user)
+}
+
+// @Summary Logout a user
+// @Description Logs out the user by deleting the session token.
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Router /users/logout [post]
+func (h *UserHandler) Logout(c *gin.Context) {
+	log.Printf("Logout: received request")
+
+    cookie, err := c.Request.Cookie("session_token")
+    if err != nil {
+        c.JSON(http.StatusOK, gin.H{"message": "Logged out"})
+        return
+    }
+
+    if err := h.svc.DeleteSession(c.Request.Context(), cookie.Value); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not revoke session"})
+        return
+    }
+
+    // expire the cookie in the browser
+    http.SetCookie(c.Writer, &http.Cookie{
+        Name:     "session_token",
+        Value:    "",
+        Path:     "/",
+        Expires:  time.Unix(0, 0),
+        MaxAge:   -1,
+        HttpOnly: true,
+        SameSite: http.SameSiteLaxMode,
+    })
+
+    c.JSON(http.StatusOK, gin.H{"message": "Logged out"})
+	log.Printf("Logout: user logged out successfully")
 }

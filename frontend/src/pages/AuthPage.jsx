@@ -3,9 +3,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   useRegisterMutation,
   useLoginMutation,
+  useGetMeQuery,
 } from "../features/auth/authApi";
 import { useDispatch, useSelector } from "react-redux";
-import { setCredentials, setError } from "../features/auth/authSlice";
+import { setCredentials, setError} from "../features/auth/authSlice";
 import "./AuthPage.css";
 import AuthForm from "../features/auth/components/AuthForm";
 import AuthToggle from "../features/auth/components/AuthToggle";
@@ -14,7 +15,8 @@ function AuthPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { error: authError, token } = useSelector((state) => state.auth);
+  const { error: authError, user } = useSelector((state) => state.auth);
+  const { refetch: refetchMe } = useGetMeQuery();
 
   const [register] = useRegisterMutation();
   const [login] = useLoginMutation();
@@ -22,10 +24,10 @@ function AuthPage() {
   const isLogin = location.pathname === "/login";
 
   useEffect(() => {
-    if (token) {
+    if (user) {
       navigate("/homepage");
     }
-  }, [token, navigate]);
+  }, [user, navigate]);
 
   const toggleAuthMode = () => {
     navigate(isLogin ? "/signup" : "/login");
@@ -33,38 +35,58 @@ function AuthPage() {
 
   const handleSubmit = async (e, formData) => {
     e.preventDefault();
+    dispatch(setError(null));
 
     try {
+      let response;
       if (isLogin) {
-        const { data } = await login({
+        response = await login({
           login: formData.email,
           password: formData.password,
         }).unwrap();
-        console.log("Login successful:", data);
-        dispatch(setCredentials(data));
-        navigate("/homepage");
+        const { data: userData } = await refetchMe();
+        dispatch(setCredentials(userData));
       } else {
-        console.log("Registration formData:", formData);
-        const result = await register({
+        response = await register({
           login: formData.email,
           password: formData.password,
           nickname: formData.username,
+        }).unwrap();
+        console.log(response);
+        await login({
+          login: formData.email,
+          password: formData.password,
         });
-        console.log("Full registration result:", result);
-        const { data } = result;
-        console.log("Registration data:", data);
-        dispatch(setCredentials(data));
-        navigate("/homepage");
+
+        const { data: userData } = await refetchMe();
+        dispatch(setCredentials(userData));
       }
+
+      navigate("/homepage");
     } catch (err) {
-      console.error("Full error object:", err);
-      console.error("Error data:", err.data);
-      dispatch(setError(err.data?.error || "Authentication failed"));
+      console.error("Auth error:", err);
+
+      let errorMessage = "Authentication failed";
+      if (err.data) {
+        if (typeof err.data === "string") {
+          errorMessage = err.data;
+        } else if (err.data.error) {
+          errorMessage = err.data.error;
+        } else if (err.data.message) {
+          errorMessage = err.data.message;
+        }
+      }
+
+      dispatch(setError(errorMessage));
     }
   };
 
   return (
     <div className="auth">
+      <div className="gradient-ball" />
+<div className="gradient-ball-2" />
+<div className="gradient-ball-3" />
+<div className="gradient-ball-4" />
       <div className="auth-left">
         <button
           className="back-button"

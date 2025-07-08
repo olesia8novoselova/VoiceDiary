@@ -3,8 +3,9 @@ package main
 import (
 	"database/sql"
 	"log"
+	"os"
 
-    "github.com/gin-contrib/cors"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -12,8 +13,8 @@ import (
 	_ "github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/docs"
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/config"
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/handler"
-	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/service"
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/middleware"
+	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/service"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -34,9 +35,10 @@ func main() {
 		log.Fatalf("Failed to ping the database: %v", err)
 	}
 
+	frontendURL := os.Getenv("FRONTEND")
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-    AllowOrigins:     []string{"http://178.205.96.163:80"}, 
+    AllowOrigins:     []string{frontendURL},
     AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
     AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
     ExposeHeaders:    []string{"Content-Length"},
@@ -44,16 +46,27 @@ func main() {
 }))
 
 	recordHandler := handler.NewRecordHandler(db, cfg.MLServiceURL)
-
 	userService := service.NewUserService(db)
 	userHandler := handler.NewUserHandler(userService)
 
-	r.GET("/records/:recordID", recordHandler.GetRecordAnalysis)
-	r.GET("/users/:userID/records", recordHandler.GetRecords)
-	r.POST("/records/upload", recordHandler.UploadRecord)
-	r.POST("/users/register", userHandler.Register)
-	r.POST("/users/login", userHandler.Login)
-	r.GET("/me", middleware.AuthMiddleware(userService), userHandler.Me)
+	// User-related endpoints
+	userGroup := r.Group("/users")
+	{
+		userGroup.POST("/register", userHandler.Register)
+		userGroup.POST("/login", userHandler.Login)
+		userGroup.POST("/logout", middleware.AuthMiddleware(userService), userHandler.Logout)
+		userGroup.GET("/me", middleware.AuthMiddleware(userService), userHandler.Me)
+		userGroup.GET("/:userID/records", recordHandler.GetRecords)
+	}
+
+	// Record-related endpoints
+	recordGroup := r.Group("/records")
+	{
+		recordGroup.GET("/:recordID", recordHandler.GetRecordAnalysis)
+		recordGroup.POST("/upload", recordHandler.UploadRecord)
+		recordGroup.POST("/insights", recordHandler.GetRecordInsights)
+		// recordGroup.GET(/:recordID/dominant_emotion", recordHandler.GetDominantEmotion)
+	}
 
 	r.GET("/swagger/*any",
     ginSwagger.WrapHandler(swaggerFiles.Handler, 

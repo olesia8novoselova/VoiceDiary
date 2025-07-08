@@ -36,3 +36,7 @@ func (s *UserService) SaveSession(ctx context.Context, userID int, token string)
 func (s *UserService) GetUserBySession(ctx context.Context, token string) (*repository.User, error) {
 	return repository.GetUserBySession(ctx, s.db, token)
 }
+
+func (s *UserService) DeleteSession(ctx context.Context, token string) error {
+	return repository.DeleteSession(ctx, s.db, token)
+}

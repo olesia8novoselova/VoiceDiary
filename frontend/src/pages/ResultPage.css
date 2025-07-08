@@ -72,13 +72,13 @@
   color: #ccc;
 }
 
-/* Optional: prevent blue underline from being visible */
+
 .result-content a {
   color: inherit;
   text-decoration: none;
 }
 
-/* Add gradient background balls */
+
 .gradient-ball,
 .gradient-ball-2,
 .gradient-ball-3,
@@ -136,7 +136,7 @@
 .result-page {
   animation: fadeIn 0.8s ease forwards;
   opacity: 0;
-  transform: translateY(20px); /* немного вверх при входе */
+  transform: translateY(20px); 
 }
 
 @keyframes fadeIn {
