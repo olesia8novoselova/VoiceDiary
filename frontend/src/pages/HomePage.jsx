@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import AudioRecorder from "../features/recordings/components/AudioRecorder";
 import WaveAnimation from "../features/recordings/components/WaveAnimation";
 import RecordingCard from "../features/recordings/components/RecordingCard";
-import Calendar from "../features/calendar/components/MoodCalendar"; 
+import Calendar from "../features/calendar/components/MoodCalendar";
 import "./HomePage.css";
 
 const prompts = [
@@ -27,11 +27,12 @@ function HomePage() {
   const [currentDay, setCurrentDay] = useState(1);
   const navigate = useNavigate();
 
-
   useEffect(() => {
     const storedDays = JSON.parse(localStorage.getItem("recordedDays") || "[]");
     const currentMonth = new Date().toISOString().slice(0, 7);
-    const daysThisMonth = storedDays.filter((day) => day.startsWith(currentMonth));
+    const daysThisMonth = storedDays.filter((day) =>
+      day.startsWith(currentMonth)
+    );
     setCurrentDay(daysThisMonth.length);
   }, [analysisResult]);
 
@@ -67,9 +68,9 @@ function HomePage() {
           <small>Click to see calendar</small>
         </div>
 
-       <div className="profile-box" onClick={() => navigate("/profile")}>
-  <p>Your profile</p>
-</div>
+        <div className="profile-box" onClick={() => navigate("/profile")}>
+          <p>Your profile</p>
+        </div>
       </div>
 
       <div className="home-content">
@@ -93,18 +94,17 @@ function HomePage() {
         </div>
       )}
 
-    
-     {showCalendar && (
-  <div className="calendar-overlay">
-    <button className="close-btn" onClick={() => setShowCalendar(false)}>✕</button>
-    
-    <div className="calendar-container-homepage">
-      <Calendar />
-    </div>
-  </div>
-)}
+      {showCalendar && (
+        <div className="calendar-overlay">
+          <button className="close-btn" onClick={() => setShowCalendar(false)}>
+            ✕
+          </button>
 
- 
+          <div className="calendar-container-homepage">
+            <Calendar />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

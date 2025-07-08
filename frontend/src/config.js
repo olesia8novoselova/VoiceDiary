@@ -1,10 +1,11 @@
 export const API_CONFIG = {
-  BASE_URL: 'http://178.205.96.163:8080',
+  BASE_URL: 'http://localhost:8080',
   ENDPOINTS: {
     AUTH: {
       LOGIN: '/users/login',
       REGISTER: '/users/register',
-      ME: '/me'
+      ME: '/me',
+      LOGOUT: '/users/logout'
     },
     RECORDS: {
       UPLOAD: '/records/upload',

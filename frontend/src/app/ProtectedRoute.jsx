@@ -1,10 +1,22 @@
-import { useSelector } from 'react-redux';
-import { Navigate, Outlet } from 'react-router-dom';
+import { useSelector } from "react-redux";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { selectIsAuthenticated } from "../features/auth/authSlice";
 
 const ProtectedRoute = () => {
-  const { token } = useSelector((state) => state.auth);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const location = useLocation();
 
-  return token ? <Outlet /> : <Navigate to="/login" replace />;
+  const isFromLogout = location.state?.fromLogout;
+
+  return isAuthenticated ? (
+    <Outlet />
+  ) : (
+    <Navigate
+      to={isFromLogout ? "/onboarding" : "/login"}
+      state={{ from: location }}
+      replace
+    />
+  );
 };
 
 export default ProtectedRoute;
