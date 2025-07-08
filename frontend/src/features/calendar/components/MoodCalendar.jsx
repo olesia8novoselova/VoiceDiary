@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { FaMusic, FaLightbulb } from 'react-icons/fa';
 import './MoodCalendar.css';
@@ -75,6 +73,10 @@ const Calendar = () => {
 
   return (
     <div className="calendar-wrapper">
+        <div className="gradient-ball" />
+<div className="gradient-ball-2" />
+<div className="gradient-ball-3" />
+<div className="gradient-ball-4" />
       <div className="calendar-header">
         <h2>{monthName} {year}</h2>
       </div>
@@ -97,7 +99,7 @@ const Calendar = () => {
             {day || ''}
             {mockVoiceNotes[day] && (
               <>
-                <FaMusic className="note-icon" />
+                {/* <FaMusic className="note-icon" /> */}
                 <MoodIcon mood={mockVoiceNotes[day].mood} />
               </>
             )}

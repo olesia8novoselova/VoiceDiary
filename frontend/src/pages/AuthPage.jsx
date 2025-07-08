@@ -83,6 +83,10 @@ function AuthPage() {
 
   return (
     <div className="auth">
+      <div className="gradient-ball" />
+<div className="gradient-ball-2" />
+<div className="gradient-ball-3" />
+<div className="gradient-ball-4" />
       <div className="auth-left">
         <button
           className="back-button"

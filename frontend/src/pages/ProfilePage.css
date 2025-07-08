@@ -14,12 +14,16 @@
   align-items: center;
   gap: 0.3rem;
   cursor: pointer;
-  margin-bottom: 1rem;
+
+  margin-top: -0.3rem;
   transition: color 0.2s ease;
 }
 
 .back-button:hover {
   color: #fff;
+}
+.back-button-wrapper {
+  margin-bottom: 1.5rem;
 }
 
 .profile-content {

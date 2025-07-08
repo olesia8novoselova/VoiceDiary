@@ -6,7 +6,7 @@ body {
   overflow-x: hidden;
   position: relative;
 }
-body::before,
+/* body::before,
 body::after,
 body .gradient-ball,
 body .gradient-ball-2,
@@ -33,6 +33,16 @@ body::after {
   background: radial-gradient(circle at center, #02143a 0%, transparent 70%);
   bottom: 200px;
   right: 200px;
+} */
+
+.gradient-ball,
+.gradient-ball-2,
+.gradient-ball-3,
+.gradient-ball-4{
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: -1;
 }
 
 .gradient-ball {
@@ -55,7 +65,7 @@ body::after {
 .gradient-ball-3 {
   width: 350px;
   height: 350px;
-  background: radial-gradient(circle at center, #3210b9 0%, transparent 80%);
+  background: radial-gradient(circle at center, #3210b9 0%, transparent 50%);
   bottom: 10px;
   left: 300px;
   transform: translateX(-50%);
@@ -70,25 +80,12 @@ body::after {
   transform: translateX(-50%);
 }
 
-.gradient-ball-5 {
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle at center, #8c28dc 0%, transparent 70%);
-  position: fixed;
-  bottom: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  filter: blur(80px);
-  z-index: -1;
-}
-
 .container {
   max-width: 1200px;
   margin: auto;
   padding: 40px 20px;
   position: relative;
   padding-bottom: 150px;
-  padding-top: 10px;
 }
 
 header h1 {
@@ -390,47 +387,6 @@ svg {
   .how-works p {
     max-width: 100%;
   }
-}
-
-.scroll-to-record-button {
-  position: fixed;
-  bottom: 50px;
-  right: 50px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(35deg, rgba(78, 70, 229, 0.737) 0%, rgba(103, 47, 148, 0.693) 100%);
-  color: white;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  z-index: 1000;
-  padding: 0;
-}
-
-.scroll-to-record-button:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 6px 25px rgba(79, 70, 229, 0.4);
-}
-
-.scroll-to-record-button:active {
-  transform: translateY(1px) scale(0.98);
-}
-
-.up-arrow-icon {
-  width: 24px;
-  height: 24px;
-  stroke: white;
-  stroke-width: 2.5;
-  transition: transform 0.2s ease;
-}
-
-.scroll-to-record-button:hover .up-arrow-icon {
-  transform: translateY(-2px);
 }
 
 
