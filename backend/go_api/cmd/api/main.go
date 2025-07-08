@@ -3,8 +3,9 @@ package main
 import (
 	"database/sql"
 	"log"
+	"os"
 
-    "github.com/gin-contrib/cors"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -12,8 +13,8 @@ import (
 	_ "github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/docs"
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/config"
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/handler"
-	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/service"
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/middleware"
+	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/service"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -34,12 +35,10 @@ func main() {
 		log.Fatalf("Failed to ping the database: %v", err)
 	}
 
+	frontendURL := os.Getenv("FRONTEND")
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-    AllowOrigins:     []string{ 
-		"http://178.205.96.163:80",
-        "http://localhost:3000",      
-		}, 
+    AllowOrigins:     []string{frontendURL},
     AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
     AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
     ExposeHeaders:    []string{"Content-Length"},
@@ -65,7 +64,7 @@ func main() {
 	{
 		recordGroup.GET("/:recordID", recordHandler.GetRecordAnalysis)
 		recordGroup.POST("/upload", recordHandler.UploadRecord)
-		recordGroup.GET("/insights", recordHandler.GetRecordInsights)
+		recordGroup.POST("/insights", recordHandler.GetRecordInsights)
 		// recordGroup.GET(/:recordID/dominant_emotion", recordHandler.GetDominantEmotion)
 	}
 

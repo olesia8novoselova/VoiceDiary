@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"database/sql"
-	"strconv"
 	"log"
+	"strconv"
 
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/client"
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/repository"
@@ -37,8 +37,7 @@ func (s *RecordService) FetchUserRecords(ctx context.Context, userIDParam string
 
 func (s *RecordService) AnalyzeRawAudio(ctx context.Context, fileBytes []byte) (string, string, string, error) {
 	log.Printf("AnalyzeRawAudio: sending file to ML service at %s", s.mlURL)
-	
-	result, err := client.CallMLService(ctx, "http://178.205.96.163:5000", fileBytes)
+	result, err := client.CallMLService(ctx, s.mlURL, fileBytes)
 	if err != nil {
 		log.Printf("AnalyzeRawAudio: failed to call ML service, error: %v", err)
 		return "", "", "", err
