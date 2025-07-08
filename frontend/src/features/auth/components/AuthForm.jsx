@@ -76,8 +76,17 @@ const AuthForm = ({ isLogin, onSubmit, authError }) => {
     if (e.key === "Enter") {
       e.preventDefault();
       const form = e.target.form;
-      const index = Array.prototype.indexOf.call(form, e.target);
-      form.elements[index + 1]?.focus();
+      const inputs = Array.from(
+        form.querySelectorAll('input:not([type="hidden"])')
+      );
+      const isLastInput = inputs.indexOf(e.target) === inputs.length - 1;
+
+      if (isLastInput) {
+        handleSubmit(e);
+      } else {
+        const index = Array.prototype.indexOf.call(form.elements, e.target);
+        form.elements[index + 1]?.focus();
+      }
     }
   };
 

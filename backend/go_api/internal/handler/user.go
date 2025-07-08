@@ -74,25 +74,25 @@ func (h *UserHandler) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Printf("Login: invalid request, error: %v", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Please provide both email and password"})
 		return
 	}
 
 	user, err := h.svc.GetUserByLogin(c.Request.Context(), req.Login)
     if err != nil {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "Account not found. Please check your email or register"})
         return
     }
 
     if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "Incorrect password. Please try again"})
         return
     }
 
     sessionToken := uuid.NewString()
     err = h.svc.SaveSession(c.Request.Context(), user.ID, sessionToken)
     if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create session"})
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "We're having trouble signing you in. Please try again later"})
         return
     }
 
