@@ -89,6 +89,28 @@ export const authApi = createApi({
         return response;
       },
     }),
+    updateProfile: builder.mutation({
+      query: (profileData) => ({
+        url: API_CONFIG.ENDPOINTS.AUTH.UPDATE_PROFILE,
+        method: "PUT",
+        body: profileData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }),
+      transformResponse: (response) => {
+        console.log("[UPDATE PROFILE] Success:", response);
+        return response;
+      },
+      transformErrorResponse: (response) => {
+        console.error("[UPDATE PROFILE] Error:", {
+          status: response.status,
+          data: response.data,
+        });
+        return response;
+      },
+    }),
   }),
 });
 
@@ -97,4 +119,5 @@ export const {
   useLoginMutation,
   useGetMeQuery,
   useLogoutMutation,
+  useUpdateProfileMutation,
 } = authApi;

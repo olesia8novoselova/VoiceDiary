@@ -1,27 +1,34 @@
 .profile-page {
-  padding: 1.5rem;
+  padding: 2rem;
   max-width: 800px;
   margin: 0 auto;
   color: white;
+  position: relative;
 }
 
 .back-button {
-  background: none;
+  position: fixed; 
+  top: 1rem;
+  left: 1rem;
+
   border: none;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.95rem;
+  width: 4rem;
+  height: 4rem;
+
+  background: none;
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  justify-content: center;
   cursor: pointer;
-
-  margin-top: -0.3rem;
-  transition: color 0.2s ease;
+  transition: all 0.3s ease;
+  z-index: 1000; 
 }
 
 .back-button:hover {
-  color: #fff;
+  background: none;
+  transform: translateX(-3px);
 }
+
 .back-button-wrapper {
   margin-bottom: 1.5rem;
 }
@@ -146,4 +153,43 @@
 
 .profile-card, .calendar-container {
   animation: fadeIn 0.4s ease-out forwards;
+}
+
+@media (max-width: 768px) {
+  .profile-page {
+    padding-left: 1.5rem;
+    padding-top: 5rem;
+  }
+  
+  .back-button {
+    width: 3.5rem;
+    height: 3.5rem;
+    top: 1rem;
+    left: 1rem;
+  }
+  
+  .profile-content {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-page {
+    padding-top: 4.5rem;
+  }
+  
+  .back-button {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .user-info {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .avatar {
+    width: 80px;
+    height: 80px;
+  }
 }
