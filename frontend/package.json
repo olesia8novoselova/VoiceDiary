@@ -2,7 +2,7 @@
   "name": "voice-diary",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:8080",
+  "proxy": "http://178.205.96.163:8080",
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
     "@svgr/webpack": "^8.1.0",
