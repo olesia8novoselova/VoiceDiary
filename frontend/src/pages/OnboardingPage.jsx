@@ -77,10 +77,11 @@ function OnboardingPage() {
   return (
     <div className="container">
       <Header />
-      <div className="gradient-ball first"></div>
-      <div className="gradient-ball second"></div>
-      <div className="gradient-ball third"></div>
-      <div className="gradient-ball fourth"></div>
+      <div className="gradient-ball"></div>
+      <div className="gradient-ball-2"></div>
+      <div className="gradient-ball-3"></div>
+      <div className="gradient-ball-4"></div>
+      <div className="gradient-ball-5"></div>
 
       <header className="main-header">
         <p className="logo0">Understand your emotions with every word.</p>
