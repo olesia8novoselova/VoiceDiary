@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -11,10 +12,24 @@ import (
 type Record struct {
 	ID int `json:"record_id"`
 	UserID int `json:"user_id"`
-	RecordDate string `json:"record_date"`
+	RecordDate time.Time `json:"record_date"`
 	Emotion string `json:"emotion"`
 	Summary string `json:"summary"`
 }
+
+// type DailyEmotion struct {
+//     UserID  int       `json:"user_id"`
+//     Date    time.Time `json:"date"`
+//     Emotion string    `json:"emotion"`
+//     Count   int       `json:"count"`
+// }
+
+// const getDailyEmotionsSQL = `
+// 	SELECT user_id, date, emotion, count
+//     FROM daily_emotion
+//     WHERE user_id = $1
+//     AND date = $2
+// `
 
 const getRecordsByUserSQL = `
     SELECT record_id, user_id, record_date, emotion, summary
@@ -30,6 +45,18 @@ func SaveRecord(ctx context.Context, db *sql.DB, userID int, emotion string, sum
 	VALUES ($1, $2, $3)
 	RETURNING record_id
 	`
+
+	// upsert := `
+	// INSERT INTO daily_emotion (user_id, date, emotion, count)
+	// VALUES ($1, CURRENT_DATE, $2, 1)
+	// ON CONFLICT (user_id, date, emotion)
+	// DO UPDATE SET count = daily_emotion.count + 1
+	// `
+	// if _, err := db.ExecContext(ctx, upsert, userID, emotion); err != nil {
+	// 	log.Printf("SaveRecord: failed to upsert daily_emotion, error: %v", err)
+	// 	return 0, err
+	// }
+
 	var recordID int
 	err := db.QueryRowContext(ctx, query, userID, emotion, summary).Scan(&recordID)
 	if err != nil {
@@ -87,3 +114,21 @@ func GetRecordByID(ctx context.Context, db *sql.DB, recordID int) (*Record, erro
 	log.Printf("GetRecordByID: successfully fetched record with ID %d", rec.ID)
 	return &rec, nil
 }
+
+// func GetDailyEmotionsByUserAndDate(ctx context.Context, db *sql.DB, userID int, date time.Time) ([]DailyEmotion, error) {
+//     rows, err := db.QueryContext(ctx, getDailyEmotionsSQL, userID, date)
+//     if err != nil {
+//         return nil, err
+//     }
+//     defer rows.Close()
+
+//     var result []DailyEmotion
+//     for rows.Next() {
+//         var e DailyEmotion
+//         if err := rows.Scan(&e.UserID, &e.Date, &e.Emotion, &e.Count); err != nil {
+//             return nil, err
+//         }
+//         result = append(result, e)
+//     }
+//     return result, rows.Err()
+// }

@@ -61,7 +61,7 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 	}
 
 	// Send file to ML service
-	emotion, summary, err := h.svc.AnalyzeRawAudio(c.Request.Context(), buf.Bytes())
+	emotion, summary, textInsights, err := h.svc.AnalyzeRawAudio(c.Request.Context(), buf.Bytes())
 	if err != nil {
 		log.Printf("UploadRecord: failed to analyze audio, error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze audio"})
@@ -81,6 +81,7 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 		"record_id": recordID,
 		"emotion": emotion,
 		"summary": summary,
+		"text": textInsights,
 	})
 
 	log.Printf("UploadRecord: successfully processed record for user %d with ID %d", userID, recordID)
@@ -143,3 +144,44 @@ func (h *RecordHandler) GetRecordAnalysis(c *gin.Context) {
 
 	log.Printf("GetRecordAnalysis: successfully fetched record with ID %d", recordID)
 }
+
+// GetRecordInsights returns insights for a specific record.
+// @Summary Get insights for a record.
+// @Description Returns insights for a specific record.
+// @Tags records
+// @Produce json
+// @Success 200 {object} map[string]interface{}{"dictionary":{}}
+// @Failure 400 {object} map[string]string
+// @Router /records/insights [get]
+func (h *RecordHandler) GetRecordInsights(c *gin.Context) {
+	log.Println("GetRecordInsights: received request")
+
+	var input struct {
+		Text string `json:"text"`
+	}
+	if err := c.BindJSON(&input); err != nil {
+		log.Printf("GetRecordInsights: invalid JSON body, error: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
+		return
+	}
+
+	if input.Text == "" {
+		log.Println("GetRecordInsights: empty text input")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Text is required"})
+		return
+	}
+
+	result, err := h.svc.AnalyzeText(c.Request.Context(), input.Text)
+	if err != nil {
+		log.Printf("GetRecordInsights: failed to analyze text, error: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze text"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"dictionary":   result.Dictionary,
+	})
+
+	log.Println("GetRecordInsights: analysis completed successfully")
+}
+

@@ -48,18 +48,27 @@ func main() {
 }))
 
 	recordHandler := handler.NewRecordHandler(db, cfg.MLServiceURL)
-
 	userService := service.NewUserService(db)
 	userHandler := handler.NewUserHandler(userService)
 
-	r.GET("/records/:recordID", recordHandler.GetRecordAnalysis)
-	r.GET("/users/:userID/records", recordHandler.GetRecords)
-	r.POST("/records/upload", recordHandler.UploadRecord)
-	r.POST("/users/register", userHandler.Register)
-	r.POST("/users/login", userHandler.Login)
-	r.GET("/me", middleware.AuthMiddleware(userService), userHandler.Me)
-	r.POST("/users/logout", middleware.AuthMiddleware(userService), userHandler.Logout)
-	//r.GET("/records/:recordID/dominant_emotion", recordHandler.GetDominantEmotion)
+	// User-related endpoints
+	userGroup := r.Group("/users")
+	{
+		userGroup.POST("/register", userHandler.Register)
+		userGroup.POST("/login", userHandler.Login)
+		userGroup.POST("/logout", middleware.AuthMiddleware(userService), userHandler.Logout)
+		userGroup.GET("/me", middleware.AuthMiddleware(userService), userHandler.Me)
+		userGroup.GET("/:userID/records", recordHandler.GetRecords)
+	}
+
+	// Record-related endpoints
+	recordGroup := r.Group("/records")
+	{
+		recordGroup.GET("/:recordID", recordHandler.GetRecordAnalysis)
+		recordGroup.POST("/upload", recordHandler.UploadRecord)
+		recordGroup.GET("/insights", recordHandler.GetRecordInsights)
+		// recordGroup.GET(/:recordID/dominant_emotion", recordHandler.GetDominantEmotion)
+	}
 
 	r.GET("/swagger/*any",
     ginSwagger.WrapHandler(swaggerFiles.Handler, 

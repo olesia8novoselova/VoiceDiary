@@ -13,6 +13,8 @@ import (
 type AnalysisResult struct {
 	Emotion string `json:"emotion"`
 	Summary string `json:"summary"`
+	TextInsights string `json:"text_insights"`
+	Dictionary map[string]int `json:"dictionary"`
 }
 
 func CallMLService(ctx context.Context, mlURL string, fileBytes []byte) (*AnalysisResult, error) {
@@ -58,7 +60,37 @@ func CallMLService(ctx context.Context, mlURL string, fileBytes []byte) (*Analys
 		return nil, err
 	}
 	
-	log.Printf("CallMLService: successfully decoded response, emotion: %s, summary: %s", result.Emotion, result.Summary)
+	log.Printf("CallMLService: successfully decoded response, emotion: %s, summary: %s, text insights: %s", result.Emotion, result.Summary, result.TextInsights)
 	return &result, nil
 }
+
+func CallMLServiceWithInsights(ctx context.Context, mlURL string, text string) (*AnalysisResult, error) {
+	log.Printf("CallMLServiceWithText: sending text to ML service at %s", mlURL)
+
+	payload := map[string]string{"text": text}
+	jsonBytes, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, mlURL+"/analyze_text", bytes.NewBuffer(jsonBytes))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result AnalysisResult
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
 
