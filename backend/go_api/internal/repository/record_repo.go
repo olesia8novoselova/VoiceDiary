@@ -15,6 +15,7 @@ type Record struct {
 	RecordDate time.Time `json:"record_date"`
 	Emotion string `json:"emotion"`
 	Summary string `json:"summary"`
+	Feedback string `json:"feedback"` 
 }
 
 // type DailyEmotion struct {
@@ -32,16 +33,16 @@ type Record struct {
 // `
 
 const getRecordsByUserSQL = `
-    SELECT record_id, user_id, record_date, emotion, summary
+    SELECT record_id, user_id, record_date, emotion, summary, feedback
 	FROM record
 	WHERE user_id = $1
 	ORDER BY record_date DESC
 `
-func SaveRecord(ctx context.Context, db *sql.DB, userID int, emotion string, summary string) (int, error) {
+func SaveRecord(ctx context.Context, db *sql.DB, userID int, emotion string, summary string, feedback string) (int, error) {
 	log.Printf("SaveRecord: saving record for userID %d with emotion %s", userID, emotion)
 
 	query := `
-	INSERT INTO record (user_id, emotion, summary)
+	INSERT INTO record (user_id, emotion, summary, feedback)
 	VALUES ($1, $2, $3)
 	RETURNING record_id
 	`
@@ -81,7 +82,7 @@ func GetRecordsByUser(ctx context.Context, db *sql.DB, userID int) ([]Record, er
 	var records []Record
 	for rows.Next() {
 		var r Record
-		if err := rows.Scan(&r.ID, &r.UserID, &r.RecordDate, &r.Emotion, &r.Summary); err != nil {
+		if err := rows.Scan(&r.ID, &r.UserID, &r.RecordDate, &r.Emotion, &r.Summary, &r.Feedback); err != nil {
 			log.Printf("GetRecordsByUser: failed to scan record for userID %d, error: %v", userID, err)
 			return nil, err
 		}
@@ -101,12 +102,12 @@ func GetRecordByID(ctx context.Context, db *sql.DB, recordID int) (*Record, erro
 	log.Printf("GetRecordByID: fetching record with ID %d", recordID)
 
 	query := `
-	SELECT record_id, user_id, record_date, emotion, summary 
+	SELECT record_id, user_id, record_date, emotion, summary, feedback 
 	FROM record
 	WHERE record_id = $1
 	`
 	var rec Record
-	err := db.QueryRowContext(ctx, query, recordID).Scan(&rec.ID, &rec.UserID, &rec.RecordDate, &rec.Emotion, &rec.Summary)
+	err := db.QueryRowContext(ctx, query, recordID).Scan(&rec.ID, &rec.UserID, &rec.RecordDate, &rec.Emotion, &rec.Summary, &rec.Feedback)
 	if err != nil {
 		log.Printf("GetRecordByID: failed to fetch record with ID %d, error: %v", recordID, err)
 		return nil, err

@@ -36,7 +36,7 @@ func TestSaveAndGetRecord(t *testing.T) {
     // Save a record
     emotion := "happy"
     summary := "Test summary"
-    recordID, err := SaveRecord(ctx, db, userID, emotion, summary)
+    recordID, err := SaveRecord(ctx, db, userID, emotion, summary, "")
     assert.NoError(t, err)
     assert.True(t, recordID > 0)
 
@@ -56,8 +56,8 @@ func TestGetRecordsByUser(t *testing.T) {
     userID := 1 // Make sure this user exists in your test DB
 
     // Insert two records
-    SaveRecord(ctx, db, userID, "happy", "summary1")
-    SaveRecord(ctx, db, userID, "sad", "summary2")
+    SaveRecord(ctx, db, userID, "happy", "summary1", "")
+    SaveRecord(ctx, db, userID, "sad", "summary2", "")
 
     records, err := GetRecordsByUser(ctx, db, userID)
     assert.NoError(t, err)

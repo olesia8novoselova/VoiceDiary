@@ -40,9 +40,9 @@ func TestFetchUserRecords_SaveAndFetch(t *testing.T) {
     assert.NoError(t, err)
 
     // Save two records
-    _, err = svc.SaveRecord(ctx, userID, "happy", "summary1")
+    _, err = svc.SaveRecord(ctx, userID, "happy", "summary1", "")
     assert.NoError(t, err)
-    _, err = svc.SaveRecord(ctx, userID, "sad", "summary2")
+    _, err = svc.SaveRecord(ctx, userID, "sad", "summary2", "")
     assert.NoError(t, err)
 
     // Fetch records
@@ -73,7 +73,7 @@ func TestSaveAndFetchRecordByID(t *testing.T) {
     userID, err := repository.CreateUser(ctx, db, "singleuser", "pass", "SingleUser")
     assert.NoError(t, err)
 
-    recID, err := svc.SaveRecord(ctx, userID, "neutral", "test summary")
+    recID, err := svc.SaveRecord(ctx, userID, "neutral", "test summary", "")
     assert.NoError(t, err)
 
     rec, err := svc.FetchRecordByID(ctx, recID)

@@ -1,4 +1,10 @@
 definitions:
+  handler.InsightsResponse:
+    properties:
+      dictionary:
+        additionalProperties: true
+        type: object
+    type: object
   handler.LoginRequest:
     properties:
       login:
@@ -26,10 +32,12 @@ definitions:
     properties:
       emotion:
         type: string
-      id:
-        type: integer
+      feedback:
+        type: string
       record_date:
         type: string
+      record_id:
+        type: integer
       summary:
         type: string
       user_id:
@@ -72,6 +80,25 @@ paths:
               type: string
             type: object
       summary: Get analysis result for a record.
+      tags:
+      - records
+  /records/insights:
+    post:
+      description: Returns insights for a specific record.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.InsightsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get insights for a record.
       tags:
       - records
   /records/upload:
@@ -165,6 +192,25 @@ paths:
               type: string
             type: object
       summary: Login a user
+  /users/logout:
+    post:
+      description: Logs out the user by deleting the session token.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Logout a user
   /users/me:
     get:
       description: Returns the current user's info based on the session token.

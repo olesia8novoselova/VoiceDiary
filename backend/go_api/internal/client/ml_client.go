@@ -13,6 +13,7 @@ import (
 type AnalysisResult struct {
 	Emotion string `json:"emotion"`
 	Summary string `json:"summary"`
+	Feedback string `json:"feedback"`
 	TextInsights string `json:"text_insights"`
 	Dictionary map[string]string `json:"dictionary"`
 }

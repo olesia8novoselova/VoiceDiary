@@ -61,7 +61,7 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 	}
 
 	// Send file to ML service
-	emotion, summary, textInsights, err := h.svc.AnalyzeRawAudio(c.Request.Context(), buf.Bytes())
+	emotion, summary, textInsights, feedback, err := h.svc.AnalyzeRawAudio(c.Request.Context(), buf.Bytes())
 	if err != nil {
 		log.Printf("UploadRecord: failed to analyze audio, error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze audio"})
@@ -69,7 +69,7 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 	}
 
 	// Save record in DB
-	recordID, err := h.svc.SaveRecord(c.Request.Context(), userID, emotion, summary)
+	recordID, err := h.svc.SaveRecord(c.Request.Context(), userID, emotion, summary, feedback)
 	if err != nil {
 		log.Printf("UploadRecord: failed to save record, error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save record"})
@@ -81,6 +81,7 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 		"record_id": recordID,
 		"emotion": emotion,
 		"summary": summary,
+		"feedback": feedback,
 		"text": textInsights,
 	})
 
@@ -145,14 +146,20 @@ func (h *RecordHandler) GetRecordAnalysis(c *gin.Context) {
 	log.Printf("GetRecordAnalysis: successfully fetched record with ID %d", recordID)
 }
 
+
+type InsightsResponse struct {
+    Dictionary map[string]interface{} `json:"dictionary"`
+}
+
+
 // GetRecordInsights returns insights for a specific record.
 // @Summary Get insights for a record.
 // @Description Returns insights for a specific record.
 // @Tags records
 // @Produce json
-// @Success 200 {object} map[string]interface{}{"dictionary":{}}
+// @Success 200 {object} handler.InsightsResponse
 // @Failure 400 {object} map[string]string
-// @Router /records/insights [get]
+// @Router /records/insights [post]
 func (h *RecordHandler) GetRecordInsights(c *gin.Context) {
 	log.Println("GetRecordInsights: received request")
 

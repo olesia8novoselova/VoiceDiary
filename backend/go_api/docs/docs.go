@@ -15,6 +15,35 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/records/insights": {
+            "post": {
+                "description": "Returns insights for a specific record.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "records"
+                ],
+                "summary": "Get insights for a record.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.InsightsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/records/upload": {
             "post": {
                 "description": "Uploads a voice file, sends it to the ML service for analysis, and saves the record.",
@@ -124,6 +153,35 @@ const docTemplate = `{
                         }
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/logout": {
+            "post": {
+                "description": "Logs out the user by deleting the session token.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Logout a user",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -260,6 +318,15 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "handler.InsightsResponse": {
+            "type": "object",
+            "properties": {
+                "dictionary": {
+                    "type": "object",
+                    "additionalProperties": true
+                }
+            }
+        },
         "handler.LoginRequest": {
             "type": "object",
             "required": [
@@ -300,11 +367,14 @@ const docTemplate = `{
                 "emotion": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
+                "feedback": {
+                    "type": "string"
                 },
                 "record_date": {
                     "type": "string"
+                },
+                "record_id": {
+                    "type": "integer"
                 },
                 "summary": {
                     "type": "string"
