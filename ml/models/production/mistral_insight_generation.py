@@ -1,3 +1,5 @@
+from datetime import datetime
+import time
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 import json
@@ -102,14 +104,26 @@ from the fall but whatever."""
            Sam: 'Reduced query times by 300ms avg.' Jamie: 'Merged auth tests, fixed 3 security gaps.' TeamLead: 'Next week?'
              Alex: 'Start fraud detection PoC.' Sam: 'Schema versioning research.' Jamie: 'OAuth implementation.'"""
     
-    result = analyze_text(sample_text_1)
-    print("\nAnalysis Result:")
-    print(result)
+    with open("ml/outputs/benchmark_results.txt", "a", encoding="utf-8") as f:
+        f.write(f"\n\n=== OpenHermes Mistral Benchmark | {datetime.now()} ===\n")
 
-    result = analyze_text(sample_text_2)
-    print("\nAnalysis Result:")
-    print(result)
-    
-    result = analyze_text(sample_text_3)
-    print("\nAnalysis Result:")
-    print(result)
+        # Анализ sample_text_1
+        start_time = time.time()
+        result = analyze_text(sample_text_1)
+        elapsed = time.time() - start_time
+        f.write(f"\nAnalysis 1 | Time: {elapsed:.3f}s\n")
+        f.write(str(result) + "\n")
+
+        # Анализ sample_text_2
+        start_time = time.time()
+        result = analyze_text(sample_text_2)
+        elapsed = time.time() - start_time
+        f.write(f"\nAnalysis 2 | Time: {elapsed:.3f}s\n")
+        f.write(str(result) + "\n")
+
+        # Анализ sample_text_3
+        start_time = time.time()
+        result = analyze_text(sample_text_3)
+        elapsed = time.time() - start_time
+        f.write(f"\nAnalysis 3 | Time: {elapsed:.3f}s\n")
+        f.write(str(result) + "\n")

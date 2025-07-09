@@ -1,4 +1,6 @@
+from datetime import datetime
 import json
+import time
 import torch
 from transformers import RobertaTokenizer, RobertaForSequenceClassification
 from typing import Dict, List, Union
@@ -122,11 +124,29 @@ from the fall but whatever."""
            Sam: 'Reduced query times by 300ms avg.' Jamie: 'Merged auth tests, fixed 3 security gaps.' TeamLead: 'Next week?'
              Alex: 'Start fraud detection PoC.' Sam: 'Schema versioning research.' Jamie: 'OAuth implementation.'"""
     
-    raw_results_1 = analyzer.analyze_text(sample_text_1)
-    print(analyzer.format_for_ui(raw_results_1))
+    with open("ml/outputs/benchmark_results.txt", "a", encoding="utf-8") as f:
+        f.write(f"\n\n=== RoBERTa-base Benchmark | {datetime.now()} ===\n")
 
-    raw_results_2 = analyzer.analyze_text(sample_text_2)
-    print(analyzer.format_for_ui(raw_results_2))
+        # Анализ sample_text_1
+        start_time = time.time()
+        raw_results_1 = analyzer.analyze_text(sample_text_1)
+        elapsed = time.time() - start_time
+        formatted_result = analyzer.format_for_ui(raw_results_1)
+        f.write(f"\nAnalysis 1 | Time: {elapsed:.3f}s\n")
+        f.write(formatted_result + "\n")
 
-    raw_results_3 = analyzer.analyze_text(sample_text_3)
-    print(analyzer.format_for_ui(raw_results_3))
+        # Анализ sample_text_2
+        start_time = time.time()
+        raw_results_2 = analyzer.analyze_text(sample_text_2)
+        elapsed = time.time() - start_time
+        formatted_result = analyzer.format_for_ui(raw_results_2)
+        f.write(f"\nAnalysis 2 | Time: {elapsed:.3f}s\n")
+        f.write(formatted_result + "\n")
+
+        # Анализ sample_text_3
+        start_time = time.time()
+        raw_results_3 = analyzer.analyze_text(sample_text_3)
+        elapsed = time.time() - start_time
+        formatted_result = analyzer.format_for_ui(raw_results_3)
+        f.write(f"\nAnalysis 3 | Time: {elapsed:.3f}s\n")
+        f.write(formatted_result + "\n")
