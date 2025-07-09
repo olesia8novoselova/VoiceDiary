@@ -17,13 +17,15 @@
     "web-vitals": "^2.1.4",
     "webpack-dev-server": "^5.2.2"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --watchAll",
+"scripts": {
+  "start": "react-scripts start",
+  "build": "react-scripts build",
+  "test": "react-scripts test --watchAll=false", 
+  "test:watch": "react-scripts test --watchAll",  
   "test:ci": "CI=true react-scripts test --watchAll=false",
-    "eject": "react-scripts eject"
-  },
+  "test:once": "react-scripts test --watchAll=false",  
+  "eject": "react-scripts eject"
+},
   "eslintConfig": {
     "extends": [
       "react-app",

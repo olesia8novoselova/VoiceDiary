@@ -9,16 +9,19 @@ exports[`OnboardingPage matches snapshot 1`] = `
       Header
     </div>
     <div
-      class="gradient-ball first"
+      class="gradient-ball"
     />
     <div
-      class="gradient-ball second"
+      class="gradient-ball-2"
     />
     <div
-      class="gradient-ball third"
+      class="gradient-ball-3"
     />
     <div
-      class="gradient-ball fourth"
+      class="gradient-ball-4"
+    />
+    <div
+      class="gradient-ball-5"
     />
     <header
       class="main-header"
