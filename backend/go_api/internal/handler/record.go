@@ -3,10 +3,12 @@ package handler
 import (
 	"bytes"
 	"database/sql"
+	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
-	"log"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -67,9 +69,16 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze audio"})
 		return
 	}
+	var insightsMap map[string]string
+	err = json.Unmarshal([]byte(textInsights), &insightsMap)
+	if err != nil {
+		log.Printf("UploadRecord: failed to unmarshal text insights, error: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal text insights"})
+		return
+	}
 
 	// Save record in DB
-	recordID, err := h.svc.SaveRecord(c.Request.Context(), userID, emotion, summary, feedback)
+	recordID, err := h.svc.SaveRecord(c.Request.Context(), userID, emotion, summary, feedback, insightsMap)
 	if err != nil {
 		log.Printf("UploadRecord: failed to save record, error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save record"})
@@ -101,20 +110,51 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Router /users/{userID}/records [get]
 func (h *RecordHandler) GetRecords(c *gin.Context) {
-	log.Printf("GetRecords: received request")
+    log.Printf("GetRecords: received request")
 
-	ctx := c.Request.Context()
-	userID := c.Param("userID")
-
-	records, err := h.svc.FetchUserRecords(ctx, userID)
+    ctx := c.Request.Context()
+    userIDStr := c.Param("userID")
+	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		log.Printf("GetRecords: failed to fetch records for userID %s, error: %v", userID, err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Printf("GetRecords: invalid userID %s, error: %v", userIDStr, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
-	c.JSON(http.StatusOK, records)
 
-	log.Printf("GetRecords: successfully fetched %d records for userID %s", len(records), userID)
+    dateStr := c.Query("date")
+    var date time.Time
+    if dateStr != "" {
+        var err error
+        date, err = time.Parse("2006-01-02", dateStr)
+        if err != nil {
+            log.Printf("GetRecords: invalid date %s, error: %v", dateStr, err)
+            c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date"})
+            return
+        }
+    }
+
+    limitStr := c.Query("limit")
+    var limit int
+    if limitStr != "" {
+        var err error
+        limit, err = strconv.Atoi(limitStr)
+        if err != nil {
+            log.Printf("GetRecords: invalid limit %s, error: %v", limitStr, err)
+            c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+            return
+        }
+    }
+
+    records, err := h.svc.FetchUserRecords(ctx, userID, date, limit)
+    if err != nil {
+        log.Printf("GetRecords: failed to fetch records for userID %s, error: %v", userID, err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, records)
+
+    log.Printf("GetRecords: successfully fetched %d records for userID %s", len(records), userID)
 }
 
 // @Summary  Get analysis result for a record.

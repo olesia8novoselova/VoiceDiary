@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/repository"
 	_ "github.com/lib/pq"
@@ -40,13 +41,13 @@ func TestFetchUserRecords_SaveAndFetch(t *testing.T) {
     assert.NoError(t, err)
 
     // Save two records
-    _, err = svc.SaveRecord(ctx, userID, "happy", "summary1", "")
+    _, err = svc.SaveRecord(ctx, userID, "happy", "summary1", "", nil)
     assert.NoError(t, err)
-    _, err = svc.SaveRecord(ctx, userID, "sad", "summary2", "")
+    _, err = svc.SaveRecord(ctx, userID, "sad", "summary2", "", nil)
     assert.NoError(t, err)
 
     // Fetch records
-    records, err := svc.FetchUserRecords(ctx, stringFromInt(userID))
+    records, err := svc.FetchUserRecords(ctx, userID, time.Time{}, 0)
     assert.NoError(t, err)
     assert.True(t, len(records) >= 2)
 }
@@ -73,7 +74,7 @@ func TestSaveAndFetchRecordByID(t *testing.T) {
     userID, err := repository.CreateUser(ctx, db, "singleuser", "pass", "SingleUser")
     assert.NoError(t, err)
 
-    recID, err := svc.SaveRecord(ctx, userID, "neutral", "test summary", "")
+    recID, err := svc.SaveRecord(ctx, userID, "neutral", "test summary", "", nil)
     assert.NoError(t, err)
 
     rec, err := svc.FetchRecordByID(ctx, recID)
