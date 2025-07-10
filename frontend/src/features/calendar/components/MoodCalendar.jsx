@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaMusic, FaLightbulb } from 'react-icons/fa';
+import { FaLightbulb } from 'react-icons/fa';
 import './MoodCalendar.css';
 
 const dayNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];

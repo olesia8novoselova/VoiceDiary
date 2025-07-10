@@ -25,19 +25,16 @@ const getRecordsByUserSQL = `
 	WHERE user_id = $1
 	ORDER BY record_date DESC
 `
-func SaveRecord(ctx context.Context, db *sql.DB, userID int, emotion string, summary string, feedback string, insights map[string]string) (int, error) {
+func SaveRecord(ctx context.Context, db *sql.DB, userID int, emotion string, summary string) (int, error) {
 	log.Printf("SaveRecord: saving record for userID %d with emotion %s", userID, emotion)
 
 	query := `
-	INSERT INTO record (user_id, emotion, summary, feedback, insights)
-	VALUES ($1, $2, $3, $4, $5)
+	INSERT INTO record (user_id, emotion, summary)
+	VALUES ($1, $2, $3)
 	RETURNING record_id
 	`
-	if insights == nil {
-		insights = make(map[string]string)
-	}
 	var recordID int
-	err := db.QueryRowContext(ctx, query, userID, emotion, summary, feedback, insights).Scan(&recordID)
+	err := db.QueryRowContext(ctx, query, userID, emotion, summary).Scan(&recordID)
 	if err != nil {
 		log.Printf("SaveRecord: failed to save record, error: %v", err)
 		return 0, err

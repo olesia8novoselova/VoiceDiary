@@ -3,7 +3,6 @@ package handler
 import (
 	"bytes"
 	"database/sql"
-	"encoding/json"
 	"io"
 	"log"
 	"net/http"
@@ -69,16 +68,9 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze audio"})
 		return
 	}
-	var insightsMap map[string]string
-	err = json.Unmarshal([]byte(textInsights), &insightsMap)
-	if err != nil {
-		log.Printf("UploadRecord: failed to unmarshal text insights, error: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal text insights"})
-		return
-	}
 
 	// Save record in DB
-	recordID, err := h.svc.SaveRecord(c.Request.Context(), userID, emotion, summary, feedback, insightsMap)
+	recordID, err := h.svc.SaveRecord(c.Request.Context(), userID, emotion, summary)
 	if err != nil {
 		log.Printf("UploadRecord: failed to save record, error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save record"})

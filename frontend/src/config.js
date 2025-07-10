@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-  BASE_URL: process.env.REACT_APP_go_api,
+  BASE_URL: "http://localhost:8080",
   ENDPOINTS: {
     AUTH: {
       LOGIN: '/users/login',
@@ -12,7 +12,7 @@ export const API_CONFIG = {
       UPLOAD: '/records/upload',
       GET_ALL: '/users/:userID/records',
       GET_ANALYSIS: '/records/:recordID',
-      GET_INSIGHTS: 'records/insights'
+      GET_INSIGHTS: '/records/insights'
     }
   }
 };
