@@ -14,9 +14,9 @@ import InitializeAuth from "./features/auth/InitializeAuth";
 export default function App() {
   const [globalError, setGlobalError] = useState(null);
 
-  return (
+return (
     <Provider store={store}>
-      <Router>
+      <Router basename="/">
         <InitializeAuth />
         <div className="app">
           <main className="app-content">
@@ -41,7 +41,9 @@ export default function App() {
                 <Route path="/result" element={<ResultPage />} />
               </Route>
 
-              <Route path="*" element={<OnboardingPage />} />
+              <Route path="*" element={
+                <Navigate to="/onboarding" replace state={{ from: '404-redirect' }} />
+              } />
             </Routes>
           </main>
         </div>
