@@ -40,8 +40,8 @@ func (s *RecordService) AnalyzeRawAudio(ctx context.Context, fileBytes []byte) (
 		return "", "", "", "", err
 	}
 
-	log.Printf("AnalyzeRawAudio: received response from ML service, Emotion: %s, Summary: %s, TextInsights: %s, Feedback: %s", result.Emotion, result.Summary, result.TextInsights, result.Feedback)
-	return result.Emotion, result.Summary, result.TextInsights, result.Feedback, nil
+	log.Printf("AnalyzeRawAudio: received response from ML service, Emotion: %s, Summary: %s, Text: %s", result.Emotion, result.Summary, result.Text)
+	return result.Emotion, result.Summary, result.Text, nil
 }
 
 func (s *RecordService) SaveRecord(ctx context.Context, userID int, emotion string, summary string, feedback string, insights map[string]string) (int, error) {

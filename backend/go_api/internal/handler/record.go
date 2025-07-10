@@ -63,7 +63,7 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 	}
 
 	// Send file to ML service
-	emotion, summary, textInsights, feedback, err := h.svc.AnalyzeRawAudio(c.Request.Context(), buf.Bytes())
+	emotion, summary, text, err := h.svc.AnalyzeRawAudio(c.Request.Context(), buf.Bytes())
 	if err != nil {
 		log.Printf("UploadRecord: failed to analyze audio, error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze audio"})
@@ -90,8 +90,7 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 		"record_id": recordID,
 		"emotion": emotion,
 		"summary": summary,
-		"feedback": feedback,
-		"text": textInsights,
+		"text": text,
 	})
 
 	log.Printf("UploadRecord: successfully processed record for user %d with ID %d", userID, recordID)
