@@ -2,7 +2,7 @@
   "name": "voice-diary",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://178.205.96.163:8080",
+  "proxy": "http://localhost:8080",
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
     "@svgr/webpack": "^8.1.0",
@@ -17,13 +17,15 @@
     "web-vitals": "^2.1.4",
     "webpack-dev-server": "^5.2.2"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --watchAll",
+"scripts": {
+  "start": "react-scripts start",
+  "build": "react-scripts build",
+  "test": "react-scripts test --watchAll=false", 
+  "test:watch": "react-scripts test --watchAll",  
   "test:ci": "CI=true react-scripts test --watchAll=false",
-    "eject": "react-scripts eject"
-  },
+  "test:once": "react-scripts test --watchAll=false",  
+  "eject": "react-scripts eject"
+},
   "eslintConfig": {
     "extends": [
       "react-app",

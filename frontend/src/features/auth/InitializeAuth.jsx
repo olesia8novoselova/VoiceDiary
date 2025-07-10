@@ -1,20 +1,21 @@
 import { useEffect } from "react";
 import { useGetMeQuery } from "./authApi";
 import { useDispatch } from "react-redux";
-import { setCredentials } from "./authSlice";
+import { setCredentials, logout } from "./authSlice";
 
 const InitializeAuth = () => {
-  const { data } = useGetMeQuery(undefined, {
-    retry: false,
+  const { data, error } = useGetMeQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (data) {
-      dispatch(setCredentials({ user: data, token: 'existing' }));
+      dispatch(setCredentials({ user: data }));
+    } else if (error) {
+      dispatch(logout());
     }
-  }, [data, dispatch]);
+  }, [data, error, dispatch]);
 
   return null;
 };

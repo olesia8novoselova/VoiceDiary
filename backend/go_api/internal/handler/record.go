@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"database/sql"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
-	"log"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -61,7 +62,7 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 	}
 
 	// Send file to ML service
-	emotion, summary, textInsights, err := h.svc.AnalyzeRawAudio(c.Request.Context(), buf.Bytes())
+	emotion, summary, text, err := h.svc.AnalyzeRawAudio(c.Request.Context(), buf.Bytes())
 	if err != nil {
 		log.Printf("UploadRecord: failed to analyze audio, error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze audio"})
@@ -81,7 +82,7 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 		"record_id": recordID,
 		"emotion": emotion,
 		"summary": summary,
-		"text": textInsights,
+		"text": text,
 	})
 
 	log.Printf("UploadRecord: successfully processed record for user %d with ID %d", userID, recordID)
@@ -100,20 +101,51 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Router /users/{userID}/records [get]
 func (h *RecordHandler) GetRecords(c *gin.Context) {
-	log.Printf("GetRecords: received request")
+    log.Printf("GetRecords: received request")
 
-	ctx := c.Request.Context()
-	userID := c.Param("userID")
-
-	records, err := h.svc.FetchUserRecords(ctx, userID)
+    ctx := c.Request.Context()
+    userIDStr := c.Param("userID")
+	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		log.Printf("GetRecords: failed to fetch records for userID %s, error: %v", userID, err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Printf("GetRecords: invalid userID %s, error: %v", userIDStr, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
-	c.JSON(http.StatusOK, records)
 
-	log.Printf("GetRecords: successfully fetched %d records for userID %s", len(records), userID)
+    dateStr := c.Query("date")
+    var date time.Time
+    if dateStr != "" {
+        var err error
+        date, err = time.Parse("2006-01-02", dateStr)
+        if err != nil {
+            log.Printf("GetRecords: invalid date %s, error: %v", dateStr, err)
+            c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date"})
+            return
+        }
+    }
+
+    limitStr := c.Query("limit")
+    var limit int
+    if limitStr != "" {
+        var err error
+        limit, err = strconv.Atoi(limitStr)
+        if err != nil {
+            log.Printf("GetRecords: invalid limit %s, error: %v", limitStr, err)
+            c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+            return
+        }
+    }
+
+    records, err := h.svc.FetchUserRecords(ctx, userID, date, limit)
+    if err != nil {
+        log.Printf("GetRecords: failed to fetch records for userID %s, error: %v", userID, err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, records)
+
+    log.Printf("GetRecords: successfully fetched %d records for userID %s", len(records), userID)
 }
 
 // @Summary  Get analysis result for a record.
@@ -145,14 +177,20 @@ func (h *RecordHandler) GetRecordAnalysis(c *gin.Context) {
 	log.Printf("GetRecordAnalysis: successfully fetched record with ID %d", recordID)
 }
 
+
+type InsightsResponse struct {
+    Dictionary map[string]interface{} `json:"dictionary"`
+}
+
+
 // GetRecordInsights returns insights for a specific record.
 // @Summary Get insights for a record.
 // @Description Returns insights for a specific record.
 // @Tags records
 // @Produce json
-// @Success 200 {object} map[string]interface{}{"dictionary":{}}
+// @Success 200 {object} handler.InsightsResponse
 // @Failure 400 {object} map[string]string
-// @Router /records/insights [get]
+// @Router /records/insights [post]
 func (h *RecordHandler) GetRecordInsights(c *gin.Context) {
 	log.Println("GetRecordInsights: received request")
 

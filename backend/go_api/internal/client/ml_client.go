@@ -13,7 +13,7 @@ import (
 type AnalysisResult struct {
 	Emotion string `json:"emotion"`
 	Summary string `json:"summary"`
-	TextInsights string `json:"text_insights"`
+	Text string `json:"text"`
 	Dictionary map[string]string `json:"dictionary"`
 }
 
@@ -60,12 +60,12 @@ func CallMLService(ctx context.Context, mlURL string, fileBytes []byte) (*Analys
 		return nil, err
 	}
 	
-	log.Printf("CallMLService: successfully decoded response, emotion: %s, summary: %s, text insights: %s", result.Emotion, result.Summary, result.TextInsights)
+	log.Printf("CallMLService: successfully decoded response, emotion: %s, summary: %s, text: %s", result.Emotion, result.Summary, result.Text)
 	return &result, nil
 }
 
 func CallMLServiceWithInsights(ctx context.Context, mlURL string, text string) (*AnalysisResult, error) {
-	log.Printf("CallMLServiceWithText: sending text to ML service at %s", mlURL)
+	log.Printf("CallMLServiceWithInsights: sending text to ML service at %s", mlURL)
 
 	payload := map[string]string{"text": text}
 	jsonBytes, err := json.Marshal(payload)
@@ -73,7 +73,7 @@ func CallMLServiceWithInsights(ctx context.Context, mlURL string, text string) (
 		return nil, err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, mlURL+"/analyze_text", bytes.NewBuffer(jsonBytes))
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, mlURL+"/insights", bytes.NewBuffer(jsonBytes))
 	if err != nil {
 		return nil, err
 	}

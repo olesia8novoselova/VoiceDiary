@@ -1,8 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
-  "icons": [],
-  "start_url": ".",
+  "short_name": "Voice Diary",
+  "name": "AI Voice Diary - Emotion Analysis",
+  "start_url": "/onboarding",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
