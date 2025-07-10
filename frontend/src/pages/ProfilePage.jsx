@@ -1,8 +1,7 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { useLogoutMutation } from "../features/auth/authApi";
-import { logout } from "../features/auth/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useLogoutMutation, useGetMeQuery } from "../features/auth/authApi";
+import { logout, selectCurrentUser } from "../features/auth/authSlice";
 import Calendar from "../features/calendar/components/MoodCalendar";
 import "./ProfilePage.css";
 
@@ -10,6 +9,10 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [logoutApi] = useLogoutMutation();
+  
+  const user = useSelector(selectCurrentUser);
+
+  useGetMeQuery(undefined, { skip: !user });
 
   const handleLogout = async () => {
     try {
@@ -35,8 +38,8 @@ const ProfilePage = () => {
           aria-label="Go back"
         >
           <svg
-            width="24"
-            height="24"
+            width="30"
+            height="30"
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -62,12 +65,12 @@ const ProfilePage = () => {
         <div className="profile-card">
           <div className="user-info">
             <img
-              src="https://ui-avatars.com/api/?name=Dzhamila&background=672f94&color=fff"
+              src={`https://ui-avatars.com/api/?name=${user?.Nickname || 'User'}&background=672f94&color=fff`}
               alt="User"
               className="avatar"
             />
             <div className="user-details">
-              <h2>Dzhamila</h2>
+              <h2>{user?.Nickname || 'User'}</h2>
               <p className="activity-status">Active today</p>
             </div>
           </div>
@@ -75,12 +78,7 @@ const ProfilePage = () => {
           <div className="profile-fields">
             <div className="field">
               <label>Email</label>
-              <p>dopoine@gmail.com</p>
-            </div>
-
-            <div className="field">
-              <label>Password</label>
-              <p>••••••••</p>
+              <p>{user?.Login || 'No email'}</p>
             </div>
 
             <button

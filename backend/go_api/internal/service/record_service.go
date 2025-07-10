@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
-	"strconv"
+	"time"
 
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/client"
 	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/repository"
@@ -22,33 +22,30 @@ func NewRecordService(db *sql.DB, mlURL string) *RecordService {
     }
 }
 
-func (s *RecordService) FetchUserRecords(ctx context.Context, userIDParam string) ([]repository.Record, error) {
-	log.Printf("FetchUserRecords: fetching records for userID %s", userIDParam)
-
-	userID, err := strconv.Atoi(userIDParam)
-	if err != nil {
-		log.Printf("FetchUserRecords: invalid userIDParam %s, error: %v", userIDParam, err)
-		return nil, err
-	}
-
-	log.Printf("FetchUserRecords: valid userID %d", userID)
-	return repository.GetRecordsByUser(ctx, s.db, userID)
+func (s *RecordService) FetchUserRecords(ctx context.Context, userID int, date time.Time, limit int) ([]repository.Record, error) {
+    if date.IsZero() {
+        // Return latest records
+        return repository.GetLatestRecords(ctx, s.db, userID, limit)
+    } else {
+        // Return records starting from the specified date
+        return repository.GetRecordsStartingFromDate(ctx, s.db, userID, date, limit)
+    }
 }
 
-func (s *RecordService) AnalyzeRawAudio(ctx context.Context, fileBytes []byte) (string, string, string, error) {
+func (s *RecordService) AnalyzeRawAudio(ctx context.Context, fileBytes []byte) (string, string, string, string, error) {
 	log.Printf("AnalyzeRawAudio: sending file to ML service at %s", s.mlURL)
 	result, err := client.CallMLService(ctx, s.mlURL, fileBytes)
 	if err != nil {
 		log.Printf("AnalyzeRawAudio: failed to call ML service, error: %v", err)
-		return "", "", "", err
+		return "", "", "", "", err
 	}
 
 	log.Printf("AnalyzeRawAudio: received response from ML service, Emotion: %s, Summary: %s, Text: %s", result.Emotion, result.Summary, result.Text)
 	return result.Emotion, result.Summary, result.Text, nil
 }
 
-func (s *RecordService) SaveRecord(ctx context.Context, userID int, emotion string, summary string) (int, error) {
-	return repository.SaveRecord(ctx, s.db, userID, emotion, summary)
+func (s *RecordService) SaveRecord(ctx context.Context, userID int, emotion string, summary string, feedback string, insights map[string]string) (int, error) {
+	return repository.SaveRecord(ctx, s.db, userID, emotion, summary, feedback, insights)
 }
 
 func (s *RecordService) FetchRecordByID(ctx context.Context, recordID int) (*repository.Record, error) {

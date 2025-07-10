@@ -3,24 +3,47 @@
   max-width: 800px;
   margin: 0 auto;
   color: white;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
+    position: relative;
 }
 
 .back-button {
-  background: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+
   border: none;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.95rem;
+  width: 4rem;
+  height: 4rem;
+
+  background: none;
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  justify-content: center;
   cursor: pointer;
-  margin-bottom: 1.5rem;
-  transition: color 0.2s ease;
+  transition: all 0.3s ease;
+  z-index: 1000;
 }
 
 .back-button:hover {
-  color: #8b5cf6;
+  background: none;
+  transform: translateX(-3px);
+}
+
+@media (max-width: 768px) {  
+  .back-button {
+    width: 3.5rem;
+    height: 3.5rem;
+    top: 1rem;
+    left: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .back-button {
+    width: 3rem;
+    height: 3rem;
+  }
 }
 
 .settings-container {
@@ -159,19 +182,25 @@
   background: #7c4dff;
 }
 
+.error-message {
+  color: #ff6b6b;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
 @media (max-width: 768px) {
   .settings-page {
     padding: 1rem;
   }
-  
+
   .settings-container {
     padding: 1.5rem;
   }
-  
+
   .form-actions {
     flex-direction: column;
   }
-  
+
   .cancel-btn,
   .save-btn {
     width: 100%;

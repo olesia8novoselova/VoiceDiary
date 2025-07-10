@@ -15,50 +15,29 @@ type Record struct {
 	RecordDate time.Time `json:"record_date"`
 	Emotion string `json:"emotion"`
 	Summary string `json:"summary"`
+	Feedback string `json:"feedback"` 
+	Insights map[string]string `json:"insights"` 
 }
 
-// type DailyEmotion struct {
-//     UserID  int       `json:"user_id"`
-//     Date    time.Time `json:"date"`
-//     Emotion string    `json:"emotion"`
-//     Count   int       `json:"count"`
-// }
-
-// const getDailyEmotionsSQL = `
-// 	SELECT user_id, date, emotion, count
-//     FROM daily_emotion
-//     WHERE user_id = $1
-//     AND date = $2
-// `
-
 const getRecordsByUserSQL = `
-    SELECT record_id, user_id, record_date, emotion, summary
+    SELECT record_id, user_id, record_date, emotion, summary, feedback, insights
 	FROM record
 	WHERE user_id = $1
 	ORDER BY record_date DESC
 `
-func SaveRecord(ctx context.Context, db *sql.DB, userID int, emotion string, summary string) (int, error) {
+func SaveRecord(ctx context.Context, db *sql.DB, userID int, emotion string, summary string, feedback string, insights map[string]string) (int, error) {
 	log.Printf("SaveRecord: saving record for userID %d with emotion %s", userID, emotion)
 
 	query := `
-	INSERT INTO record (user_id, emotion, summary)
-	VALUES ($1, $2, $3)
+	INSERT INTO record (user_id, emotion, summary, feedback, insights)
+	VALUES ($1, $2, $3, $4, $5)
 	RETURNING record_id
 	`
-
-	// upsert := `
-	// INSERT INTO daily_emotion (user_id, date, emotion, count)
-	// VALUES ($1, CURRENT_DATE, $2, 1)
-	// ON CONFLICT (user_id, date, emotion)
-	// DO UPDATE SET count = daily_emotion.count + 1
-	// `
-	// if _, err := db.ExecContext(ctx, upsert, userID, emotion); err != nil {
-	// 	log.Printf("SaveRecord: failed to upsert daily_emotion, error: %v", err)
-	// 	return 0, err
-	// }
-
+	if insights == nil {
+		insights = make(map[string]string)
+	}
 	var recordID int
-	err := db.QueryRowContext(ctx, query, userID, emotion, summary).Scan(&recordID)
+	err := db.QueryRowContext(ctx, query, userID, emotion, summary, feedback, insights).Scan(&recordID)
 	if err != nil {
 		log.Printf("SaveRecord: failed to save record, error: %v", err)
 		return 0, err
@@ -81,7 +60,7 @@ func GetRecordsByUser(ctx context.Context, db *sql.DB, userID int) ([]Record, er
 	var records []Record
 	for rows.Next() {
 		var r Record
-		if err := rows.Scan(&r.ID, &r.UserID, &r.RecordDate, &r.Emotion, &r.Summary); err != nil {
+		if err := rows.Scan(&r.ID, &r.UserID, &r.RecordDate, &r.Emotion, &r.Summary, &r.Feedback, &r.Insights); err != nil {
 			log.Printf("GetRecordsByUser: failed to scan record for userID %d, error: %v", userID, err)
 			return nil, err
 		}
@@ -101,12 +80,12 @@ func GetRecordByID(ctx context.Context, db *sql.DB, recordID int) (*Record, erro
 	log.Printf("GetRecordByID: fetching record with ID %d", recordID)
 
 	query := `
-	SELECT record_id, user_id, record_date, emotion, summary 
+	SELECT record_id, user_id, record_date, emotion, summary, feedback, insights 
 	FROM record
 	WHERE record_id = $1
 	`
 	var rec Record
-	err := db.QueryRowContext(ctx, query, recordID).Scan(&rec.ID, &rec.UserID, &rec.RecordDate, &rec.Emotion, &rec.Summary)
+	err := db.QueryRowContext(ctx, query, recordID).Scan(&rec.ID, &rec.UserID, &rec.RecordDate, &rec.Emotion, &rec.Summary, &rec.Feedback, &rec.Insights)
 	if err != nil {
 		log.Printf("GetRecordByID: failed to fetch record with ID %d, error: %v", recordID, err)
 		return nil, err
@@ -115,20 +94,52 @@ func GetRecordByID(ctx context.Context, db *sql.DB, recordID int) (*Record, erro
 	return &rec, nil
 }
 
-// func GetDailyEmotionsByUserAndDate(ctx context.Context, db *sql.DB, userID int, date time.Time) ([]DailyEmotion, error) {
-//     rows, err := db.QueryContext(ctx, getDailyEmotionsSQL, userID, date)
-//     if err != nil {
-//         return nil, err
-//     }
-//     defer rows.Close()
+func GetLatestRecords(ctx context.Context, db *sql.DB, userID int, limit int) ([]Record, error) {
+    query := `SELECT * FROM record WHERE user_id = $1 ORDER BY record_date DESC`
+    if limit > 0 {
+        query += ` LIMIT $2`
+    }
 
-//     var result []DailyEmotion
-//     for rows.Next() {
-//         var e DailyEmotion
-//         if err := rows.Scan(&e.UserID, &e.Date, &e.Emotion, &e.Count); err != nil {
-//             return nil, err
-//         }
-//         result = append(result, e)
-//     }
-//     return result, rows.Err()
-// }
+    rows, err := db.QueryContext(ctx, query, userID, limit)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    var records []Record
+    for rows.Next() {
+        var record Record
+        err := rows.Scan(&record.ID, &record.UserID, &record.RecordDate, &record.Emotion, &record.Summary, &record.Feedback, &record.Insights)
+        if err != nil {
+            return nil, err
+        }
+        records = append(records, record)
+    }
+
+    return records, nil
+}
+
+func GetRecordsStartingFromDate(ctx context.Context, db *sql.DB, userID int, date time.Time, limit int) ([]Record, error) {
+    query := `SELECT * FROM record WHERE user_id = $1 AND record_date >= $2 ORDER BY record_date DESC`
+    if limit > 0 {
+        query += ` LIMIT $3`
+    }
+
+    rows, err := db.QueryContext(ctx, query, userID, date, limit)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    var records []Record
+    for rows.Next() {
+        var record Record
+        err := rows.Scan(&record.ID, &record.UserID, &record.RecordDate, &record.Emotion, &record.Summary, &record.Feedback, &record.Insights)
+        if err != nil {
+            return nil, err
+        }
+        records = append(records, record)
+    }
+
+    return records, nil
+}
