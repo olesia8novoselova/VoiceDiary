@@ -6,9 +6,12 @@ import numpy as np
 from scipy.special import softmax
 import json
 from typing import Dict, List, Union
+from huggingface_hub import login
+
+login(token="")
 
 # Initialize models - RoBERTa-base + supporting models for comprehensive analysis
-MODEL_NAME = "roberta-base"
+MODEL_NAME = "FacebookAI/roberta-base"
 EMOTION_MODEL = "finiteautomata/bertweet-base-sentiment-analysis"  # For nuanced emotional analysis
 RISK_MODEL = "mental/mental-roberta-base"  # For clinical risk factors
 
