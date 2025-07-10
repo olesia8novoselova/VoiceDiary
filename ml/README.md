@@ -2,6 +2,17 @@
 
 **Voice Diary** is an innovative application that allows users to record voice entries, which are automatically analyzed for emotional content using advanced AI. This document outlines the machine learning models currently used in the MVP, along with training details, evaluation results, and future plans.
 
+# Table of Contents
+- [🎯 Objective](#-objective)
+- [📦 Models Used (MVP)](#-models-used-mvp)
+  - [1. 🎤 Emotion Recognition from Voice (Speech Audio)](#1--emotion-recognition-from-voice-speech-audio)
+  - [2. 📝 Transcription (Voice to Text)](#2--transcription-voice-to-text)
+  - [3. 💬 Text-Based summary](#3--text-based-summary)
+  - [4. 🧾 Emotion Recognition from Text (In Testing)](#4--emotion-recognition-from-text-in-testing)
+  - [5. Psychological Insight Extraction from Text](#5-psychological-insight-extraction-from-text)
+- [🔮 Future Plans](#-future-plans)
+- [📌 Summary](#-summary)
+- [🔧 Setup & Installation](#-setup--installation)
 
 ## 🎯 Objective
 
@@ -117,8 +128,58 @@ The generated summary is later used in downstream modules (e.g., LLM-based refle
 
 > This summarization step is already **fully deployed and in active use** as part of the Voice Diary MVP.
 
+### 4. Psychological Insight Extraction from Text
 
-### 4. 🧾 Emotion Recognition from Text (In Testing)
+#### Models Evaluated
+
+1. **teknium/OpenHermes-2.5-Mistral-7B (SELECTED MODEL)** 
+   - **Performance**: Optimal balance between response quality and speed
+   - **Use Case**: General psychological feedback generation, but needs further debugging
+
+2. **FacebookAI/roberta-base**
+   - **Performance**: Fast execution but provides minimal contextual information
+   - **Use Case**: Basic text processing where speed is prioritized over depth
+
+3. **mistralai/Mistral-7B-Instruct-v0.2**
+   - **Performance**: Produces high-quality results but operates approximately 100x slower than OpenHermes, quantilization approaches will be tested in the future
+   - **Use Case**: Situations requiring deep analysis where response time is not critical
+
+4. **zephyr-7b**
+   - **Performance**: Moderate speed and quality
+   - **Use Case**: General NLP tasks with moderate requirements
+
+5. **FacebookAI/roberta-base** + **finiteautomata/bertweet-base-sentiment-analysis** + **mental/mental-roberta-base**
+   - **Performance**: Provides minimal contextual information
+   - **Use Case**: Emotional tone assessment in text, Quick mental health-related text processing
+
+#### Prompt Engineering Process
+
+1. **Initial Attempt**:
+   - Simple instruction to "analyze this text psychologically"
+   - Problems: Unstructured output, inconsistent formatting
+
+2. **Structured JSON Attempt**:
+   - Added explicit JSON format requirements
+   - Problems: Still produced non-JSON text around output
+
+3. **System Message Integration**:
+   - Added `<<SYS>>` tags for role definition
+   - Problems: Sometimes missed fields
+
+4. **Current Final Prompt**:
+   - Combines system message with strict JSON template
+   - Includes clear instructions about specificity
+   - Uses [INST] tags for instruction clarity
+
+#### Why This Prompt Works Best
+
+- **Clear Structure**: The exact JSON template prevents hallucination of fields
+- **Specific Instructions**: "Be specific and concrete" improves output quality
+- **Format Enforcement**: "Output must be valid JSON" reduces errors
+- **Context Isolation**: [INST] tags help the model understand task boundaries
+
+
+### 5. 🧾 Emotion Recognition from Text (In Testing)
 
 We're also testing **text-based emotion detection**, which will eventually be combined with voice-based results for a richer analysis. (not for MVP)
 
@@ -140,7 +201,6 @@ This model allows us to understand emotional content from transcribed text, enha
 
 We are actively working to enhance the ML component of the Voice Diary app:
 
-- **Better Text Emotion Detection**: Improve recognition of emotions from text using LLM fine-tuning or ensemble models.
 - **Multimodal Emotion Fusion**: Combine insights from both **voice** and **text** to improve overall emotion recognition accuracy.
 - **Richer Psychological Responses**: Make AI-generated feedback more helpful, empathetic, and tailored.
 - **Multilingual Support**: Further improve performance across different languages and accents.
@@ -153,7 +213,7 @@ We are actively working to enhance the ML component of the Voice Diary app:
 | Emotion from Voice | Whisper Large V3 (fine-tuned) | Audio emotion classification     | ✅ In Use      |
 | Transcription     | Whisper Small/Medium      | Speech-to-text                   | ✅ In Use      |
 | Summary     | Samsum     | Text summary                   | ✅ In Use      |
-| Emotional feedback | TBD               | Summary, emotion, psychologist reply | 🔄 In Progress |
+| Emotional feedback | OpenHermes-2.5-Mistral-7B  | Psychological insight generation | ✅ In Use  |
 | Emotion from Text | XLM-T (fine-tuned)      | Text emotion classification | 🚧 In Testing |
 
 
@@ -255,4 +315,10 @@ python test_Wav2Vec2.py
 If testing with Samsum models:
 ```bash
 python samsum_text_summary.py
+```
+
+#### 5. Mistral
+
+```bash
+pip install accelerate sentencepiece
 ```
