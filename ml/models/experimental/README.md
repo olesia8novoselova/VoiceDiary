@@ -303,6 +303,103 @@ Each approach is intentionally chosen to test **different philosophies** of psyc
 
 ---
 
+# Emotion Fusion in VoiceDiary
+
+This project combines **audio-based** and **text-based** emotion recognition models to produce a single, more robust emotional interpretation of a spoken utterance.
+
+## Models Used
+
+### 🎤 Audio-Based Emotion Recognition
+
+- **Base model**: `openai/whisper-large-v3` (for speech-to-text)
+- **Classifier**: Fine-tuned audio classification model
+- **Emotion Labels**:\
+  `Angry`, `Disgust`, `Fearful`, `Happy`, `Neutral`, `Sad`, `Surprised`
+
+### 📝 Text-Based Emotion Recognition
+
+Two optional models are supported:
+
+1. ``
+   - Architecture: DistilRoBERTa
+   - Labels: `anger`, `joy`, `sadness`, `fear`, `love`, `surprise`
+   - Trained on six diverse emotion datasets
+2. ``
+   - Architecture: BERT
+   - Labels: `sadness`, `joy`, `love`, `anger`, `fear`, `surprise`
+   - Trained on the GoEmotions dataset
+
+## 🎯 Fusion Strategies
+
+To combine the outputs of both models into a final emotion label, several fusion techniques can be applied:
+
+### 1. **Confidence-Based Weighted Averaging**
+
+- Each model outputs a probability distribution over emotions.
+- Map labels into a shared emotion space.
+- Apply a weighted average:
+  ```
+  final_probs = α * audio_probs + (1 - α) * text_probs
+  ```
+- The `α` weight (e.g., 0.6 for audio, 0.4 for text) can be tuned based on validation results.
+
+### 2. **Majority Voting**
+
+- Convert predicted labels from both models to a unified set.
+- Choose the label that appears most frequently.
+- In case of a tie, prioritize the model with higher confidence or predefined weight.
+
+### 3. **Rule-Based Fusion**
+
+- Use heuristics such as:
+  - If audio is `Neutral` but text is `Joy`/`Sadness`, trust text.
+  - If both are `Anger`, amplify certainty.
+  - If emotions contradict (`Happy` vs `Sad`), mark as `Mixed` or `Uncertain`.
+
+### 4. **Train a Meta-Classifier (Optional)**
+
+- Use outputs of both models as input features to a small neural network or decision tree.
+- Train on a labeled dataset to learn the optimal combination.
+- Requires additional data with both audio and transcribed emotion labels.
+
+## 🧠 Emotion Mapping
+
+Since the models use different label sets, we normalize them to a common emotion taxonomy:
+
+| Audio Label | Mapped Label |
+| ----------- | ------------ |
+| Angry       | anger        |
+| Disgust     | anger        |
+| Fearful     | fear         |
+| Happy       | joy          |
+| Neutral     | neutral      |
+| Sad         | sadness      |
+| Surprised   | surprise     |
+
+`love` (from text models) is currently treated as an optional extension, or mapped to `joy` if needed.
+
+## ✅ Example Output
+
+| Audio Emotion | Text Emotion | Final Emotion    |
+| ------------- | ------------ | ---------------- |
+| Sad           | Sadness      | sadness          |
+| Neutral       | Joy          | joy (text bias)  |
+| Angry         | Surprise     | anger (weighted) |
+| Fearful       | Fear         | fear             |
+
+## 🔧 Configuration
+
+You can set the fusion strategy in the config:
+
+```json
+{
+  "fusion_strategy": "weighted_average",
+  "audio_weight": 0.6
+}
+```
+
+
+
 ## 🛠️ Setup
 
 ```bash
