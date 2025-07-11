@@ -1,4 +1,4 @@
-# Emotion Recognition Research (VoiceDiary Project)
+# 1. Emotion Recognition Research (VoiceDiary Project)
 
 This document summarizes the research and selection of models for **emotion recognition from text and audio** in the VoiceDiary project. The goal is to enable the system to analyze both **speech transcriptions** and **raw audio** to infer user emotions.
 
@@ -158,3 +158,152 @@ Audio Input
 - IEMOCAP Dataset: [https://sail.usc.edu/iemocap/](https://sail.usc.edu/iemocap/)
 - MELD Dataset: [https://affective-meld.github.io/](https://affective-meld.github.io/)
 
+---
+
+
+# 2. 🧠 Psychological Text Analysis - Research
+
+This repository presents three distinct approaches to psychological analysis of natural language, leveraging state-of-the-art language models. Each approach has been tailored for specific research or clinical utility, ranging from structured clinical assessment to deep generative insight extraction.
+
+## 📌 Overview of Approaches
+
+| Approach Name         | Model Backbone                       | Purpose                          | Speed     | Output Richness |
+|-----------------------|--------------------------------------|----------------------------------|-----------|-----------------|
+| `Mistral-Instruct`    | Mistral 7B Instruct v0.2             | Generative insight generation    | ❌ Slow   | ✅ Rich          |
+| `Roberta Clinical`    | FacebookAI/roberta-base              | Dimensional & clinical analysis  | ✅ Fast   | ⚠️ Sparse        |
+| `Multi-Model Ensemble`| Roberta + FiniteAutomata + MentalAI | Multi-verified psychological output | ⚠️ Medium | ⚠️ Sparse        |
+
+---
+
+## 🧬 1. Mistral-Instruct Approach (LLM Insight Generator)
+
+**Model:** `mistralai/Mistral-7B-Instruct-v0.2`  
+**Purpose:** Generative structured psychological insight from raw text.
+
+### 🔧 How It Works
+
+- Accepts raw user text as input.
+- Constructs a carefully designed prompt with a **strict JSON output schema**.
+- Uses quantized 4-bit inference (via `BitsAndBytesConfig`) for GPU memory efficiency.
+- Outputs high-fidelity psychological insights, including:
+  - Emotional dynamics
+  - Triggers
+  - Physical reactions
+  - Coping strategies
+  - Recommendations
+
+### ✅ Pros
+- **High-quality** and **contextually rich output**
+- Flexible to various psychological constructs
+- Capable of subtle nuance (e.g., emotional shifts, contradictions)
+
+### ❌ Cons
+- **~100x slower** inference than OpenHermes or quantized encoder-only models
+- Requires **strong hardware** (7B parameters, GPU recommended)
+- Output occasionally deviates from schema under edge cases
+
+### 🔬 Suggested Improvements
+- Fine-tune on clinical narrative datasets (e.g., PsychNarrative, ISEAR)
+- Implement schema validation post-processing for cleaner outputs
+- Replace Mistral with **smaller instruction-tuned models** (e.g., Phi-3, TinyLLaMA) for speed without severe quality loss
+
+---
+
+## 🧪 2. Clinical RoBERTa Analyzer
+
+**Model:** `FacebookAI/roberta-base`  
+**Purpose:** Encode clinically validated psychological constructs (PHQ-9, CBT) in structured format.
+
+### 🔧 How It Works
+
+- Classifies each sentence against flattened taxonomy of constructs:
+  - `emotional_state`: positive / neutral / negative
+  - `risk_level`: low / medium / high
+  - `coping_style`: active / avoidant / mixed
+- Tokenized with RoBERTa tokenizer, output converted using temperature-calibrated softmax.
+
+### ✅ Pros
+- **Research-aligned** — grounded in validated psychological taxonomies (PHQ-9, CBT)
+- Fast and lightweight (encoder-only, small footprint)
+- Deterministic output with schema guarantee
+
+### ❌ Cons
+- Outputs are often **minimal** or **generic**
+- Lacks context-awareness or narrative chaining
+- No natural language explanations or reasoning traces
+
+### 🔬 Suggested Improvements
+- Fine-tune on clinical interview transcripts or therapy session logs
+- Add auxiliary labels (e.g., insomnia, anhedonia) to expand scope
+- Incorporate sentence-level attention heatmaps for interpretability
+
+---
+
+## 🤖 3. Multi-Model Psychological Ensemble
+
+**Models Used:**
+- `FacebookAI/roberta-base`: Dimensional representation
+- `finiteautomata/bertweet-base-sentiment-analysis`: Emotional nuance (GoEmotions-aligned)
+- `mental/mental-roberta-base`: Clinical risk markers (PHQ-9 inspired)
+
+### 🔧 How It Works
+
+- Combines **three specialized models**:
+  - Dimensional classifier (5-label)
+  - Sentiment pipeline for emotion disambiguation
+  - Risk analyzer for red-flag mental health markers
+- Uses prompt engineering to generate clinically structured output (JSON).
+- Applies multi-model verification for robustness.
+
+### ✅ Pros
+- **Cross-validated** psychological inference
+- Supports **multiple psychological facets** (emotions, coping, risk)
+- Modular architecture — can be expanded with more models
+
+### ❌ Cons
+- **Fragmented output** due to model disagreement
+- Slow due to sequential model calls
+- **Sparse and sometimes redundant results** (e.g., duplicated sentiment terms)
+
+### 🔬 Suggested Improvements
+- Use **Mixture-of-Experts (MoE)** routing instead of static ensembling
+- Apply **attention-based fusion** of logits or embeddings
+- Add semantic clustering to reduce emotional label noise
+
+---
+
+## 🧾 Why These Approaches?
+
+Each approach is intentionally chosen to test **different philosophies** of psychological NLP:
+
+| Approach              | Design Goal                            | Strength                        |
+|-----------------------|----------------------------------------|----------------------------------|
+| Mistral-Instruct      | High-context, free-form reasoning       | Best for exploratory insight     |
+| Clinical RoBERTa      | Structured, schema-constrained analysis | Best for clinical diagnostics    |
+| Ensemble              | Multi-perspective validation            | Best for robustness              |
+
+---
+
+## 📚 Further Research Directions
+
+1. **Hybrid Inference Pipeline**:
+   - Use RoBERTa to pre-filter low-risk inputs and only pass high-risk ones to Mistral for deep generation.
+
+2. **Explainable AI (XAI)**:
+   - Implement attention-weight visualizations or saliency maps for all models.
+
+3. **Multimodal Fusion**:
+   - Incorporate speech signals or physiological sensor data (e.g., heart rate) for more complete emotional profiling.
+
+4. **Fine-Tuning Pipeline**:
+   - Fine-tune models using the [DAIC-WOZ](https://dcapswoz.ict.usc.edu) dataset or [CounselChat](https://counselchat.com) for real psychological conversations.
+
+5. **Deployment**:
+   - Optimize with `ONNX`, `TorchScript`, or `GGUF` for mobile/edge use.
+
+---
+
+## 🛠️ Setup
+
+```bash
+pip install torch transformers accelerate bitsandbytes
