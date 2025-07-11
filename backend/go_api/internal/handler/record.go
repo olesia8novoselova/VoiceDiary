@@ -179,7 +179,7 @@ func (h *RecordHandler) GetRecordAnalysis(c *gin.Context) {
 
 
 type InsightsResponse struct {
-    Dictionary map[string]interface{} `json:"dictionary"`
+    Insights map[string]interface{} `json:"insights"`
 }
 
 
@@ -217,7 +217,7 @@ func (h *RecordHandler) GetRecordInsights(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"dictionary":   result.Dictionary,
+		"insights": result.Insights,
 	})
 
 	log.Println("GetRecordInsights: analysis completed successfully")

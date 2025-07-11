@@ -38,7 +38,7 @@ func main() {
 	frontendURL := os.Getenv("FRONTEND")
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-    AllowOrigins:     []string{frontendURL},
+    AllowOrigins:     []string{frontendURL, "http://localhost", "http://localhost:8080"},
     AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
     AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
     ExposeHeaders:    []string{"Content-Length"},

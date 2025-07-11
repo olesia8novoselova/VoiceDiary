@@ -14,7 +14,15 @@ type AnalysisResult struct {
 	Emotion string `json:"emotion"`
 	Summary string `json:"summary"`
 	Text string `json:"text"`
-	Dictionary map[string]string `json:"dictionary"`
+	Insights Insight `json:"insights"`
+}
+
+type Insight struct {
+    emotional_dynamics string
+    key_triggers []string
+    physical_reaction string
+    coping_strategies map[string]string
+    recommendations []string
 }
 
 func CallMLService(ctx context.Context, mlURL string, fileBytes []byte) (*AnalysisResult, error) {
