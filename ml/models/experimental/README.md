@@ -202,11 +202,6 @@ This repository presents three distinct approaches to psychological analysis of 
 - Requires **strong hardware** (7B parameters, GPU recommended)
 - Output occasionally deviates from schema under edge cases
 
-### 🔬 Suggested Improvements
-- Fine-tune on clinical narrative datasets (e.g., PsychNarrative, ISEAR)
-- Implement schema validation post-processing for cleaner outputs
-- Replace Mistral with **smaller instruction-tuned models** (e.g., Phi-3, TinyLLaMA) for speed without severe quality loss
-
 ---
 
 ## 🧪 2. Clinical RoBERTa Analyzer
@@ -232,12 +227,6 @@ This repository presents three distinct approaches to psychological analysis of 
 - Lacks context-awareness or narrative chaining
 - No natural language explanations or reasoning traces
 
-### 🔬 Suggested Improvements
-- Fine-tune on clinical interview transcripts or therapy session logs
-- Add auxiliary labels (e.g., insomnia, anhedonia) to expand scope
-- Incorporate sentence-level attention heatmaps for interpretability
-
----
 
 ## 🤖 3. Multi-Model Psychological Ensemble
 
@@ -265,11 +254,6 @@ This repository presents three distinct approaches to psychological analysis of 
 - Slow due to sequential model calls
 - **Sparse and sometimes redundant results** (e.g., duplicated sentiment terms)
 
-### 🔬 Suggested Improvements
-- Use **Mixture-of-Experts (MoE)** routing instead of static ensembling
-- Apply **attention-based fusion** of logits or embeddings
-- Add semantic clustering to reduce emotional label noise
-
 ---
 
 ## 🧾 Why These Approaches?
@@ -284,26 +268,7 @@ Each approach is intentionally chosen to test **different philosophies** of psyc
 
 ---
 
-## 📚 Further Research Directions
-
-1. **Hybrid Inference Pipeline**:
-   - Use RoBERTa to pre-filter low-risk inputs and only pass high-risk ones to Mistral for deep generation.
-
-2. **Explainable AI (XAI)**:
-   - Implement attention-weight visualizations or saliency maps for all models.
-
-3. **Multimodal Fusion**:
-   - Incorporate speech signals or physiological sensor data (e.g., heart rate) for more complete emotional profiling.
-
-4. **Fine-Tuning Pipeline**:
-   - Fine-tune models using the [DAIC-WOZ](https://dcapswoz.ict.usc.edu) dataset or [CounselChat](https://counselchat.com) for real psychological conversations.
-
-5. **Deployment**:
-   - Optimize with `ONNX`, `TorchScript`, or `GGUF` for mobile/edge use.
-
----
-
-# Emotion Fusion in VoiceDiary
+# 3. Emotion Fusion in VoiceDiary
 
 This project combines **audio-based** and **text-based** emotion recognition models to produce a single, more robust emotional interpretation of a spoken utterance.
 
