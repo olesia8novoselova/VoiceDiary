@@ -223,3 +223,37 @@ func (h *RecordHandler) GetRecordInsights(c *gin.Context) {
 	log.Println("GetRecordInsights: analysis completed successfully")
 }
 
+// DeleteRecord deletes a record by its ID.
+// @Summary Delete a record
+// @Description Deletes a record by its record_id.
+// @Tags records
+// @Param recordID path int true "Record ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Router /records/{recordID} [delete]
+func (h *RecordHandler) DeleteRecord(c *gin.Context) {
+    log.Printf("DeleteRecord: received request")
+
+    recordIDStr := c.Param("recordID")
+    recordID, err := strconv.Atoi(recordIDStr)
+    if err != nil {
+        log.Printf("DeleteRecord: invalid recordID %s, error: %v", recordIDStr, err)
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid record ID"})
+        return
+    }
+
+    err = h.svc.DeleteRecordByID(c.Request.Context(), recordID)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            log.Printf("DeleteRecord: record with ID %d not found", recordID)
+            c.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
+            return
+        }
+        log.Printf("DeleteRecord: failed to delete record with ID %d, error: %v", recordID, err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete record"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Record deleted successfully"})
+    log.Printf("DeleteRecord: successfully deleted record with ID %d", recordID)
+}

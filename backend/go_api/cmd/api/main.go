@@ -65,7 +65,7 @@ func main() {
 		recordGroup.GET("/:recordID", recordHandler.GetRecordAnalysis)
 		recordGroup.POST("/upload", recordHandler.UploadRecord)
 		recordGroup.POST("/insights", recordHandler.GetRecordInsights)
-		// recordGroup.GET(/:recordID/dominant_emotion", recordHandler.GetDominantEmotion)
+		recordGroup.DELETE("/records/:recordID", recordHandler.DeleteRecord)
 	}
 
 	r.GET("/swagger/*any",
