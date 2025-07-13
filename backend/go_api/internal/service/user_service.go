@@ -40,3 +40,15 @@ func (s *UserService) GetUserBySession(ctx context.Context, token string) (*repo
 func (s *UserService) DeleteSession(ctx context.Context, token string) error {
 	return repository.DeleteSession(ctx, s.db, token)
 }
+
+func (s *UserService) UpdateUserProfile(ctx context.Context, userID int, login, password, nickname string) error {
+    var hashedPassword string
+    if password != "" {
+        hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+        if err != nil {
+            return err
+        }
+        hashedPassword = string(hash)
+    }
+    return repository.UpdateUserProfile(ctx, s.db, userID, login, hashedPassword, nickname)
+}
