@@ -138,13 +138,13 @@ func (h *RecordHandler) GetRecords(c *gin.Context) {
 
     records, err := h.svc.FetchUserRecords(ctx, userID, date, limit)
     if err != nil {
-        log.Printf("GetRecords: failed to fetch records for userID %s, error: %v", userID, err)
+        log.Printf("GetRecords: failed to fetch records for userID %d, error: %v", userID, err)
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
 
     c.JSON(http.StatusOK, records)
-    log.Printf("GetRecords: successfully fetched %d records for userID %s", len(records), userID)
+    log.Printf("GetRecords: successfully fetched %d records for userID %d", len(records), userID)
 }
 
 // @Summary  Get analysis result for a record.

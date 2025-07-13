@@ -152,3 +152,13 @@ func UpdateUserProfile(ctx context.Context, db *sql.DB, userID int, login, passw
     log.Printf("UpdateUserProfile: successfully updated user %d", userID)
     return nil
 }
+
+func UserExists(ctx context.Context, db *sql.DB, login string) (bool, error) {
+    query := `SELECT COUNT(1) FROM "user" WHERE login = $1`
+    var count int
+    err := db.QueryRowContext(ctx, query, login).Scan(&count)
+    if err != nil {
+        return false, err
+    }
+    return count > 0, nil
+}

@@ -52,3 +52,7 @@ func (s *UserService) UpdateUserProfile(ctx context.Context, userID int, login, 
     }
     return repository.UpdateUserProfile(ctx, s.db, userID, login, hashedPassword, nickname)
 }
+
+func (s *UserService) UserExists(ctx context.Context, login string) (bool, error) {
+    return repository.UserExists(ctx, s.db, login)
+}

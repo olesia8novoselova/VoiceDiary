@@ -51,6 +51,16 @@ func (h *UserHandler) Register(c *gin.Context) {
 		return
 	}
 
+    exists, err := h.svc.UserExists(c.Request.Context(), req.Login)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check user"})
+        return
+    }
+    if exists {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Login/email already in use"})
+        return
+    }
+
 	id, err := h.svc.RegisterUser(c.Request.Context(), req.Login, req.Password, req.Nickname)
 	if err != nil {
 		log.Printf("Register: failed to register user, error: %v", err)
@@ -79,6 +89,16 @@ func (h *UserHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Please provide both email and password"})
 		return
 	}
+
+    exists, err := h.svc.UserExists(c.Request.Context(), req.Login)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check user"})
+        return
+    }
+    if exists {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Login/email already in use"})
+        return
+    }
 
 	user, err := h.svc.GetUserByLogin(c.Request.Context(), req.Login)
     if err != nil {
