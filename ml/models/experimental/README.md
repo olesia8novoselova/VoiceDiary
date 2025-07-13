@@ -1,4 +1,4 @@
-# Emotion Recognition Research (VoiceDiary Project)
+# 1. Emotion Recognition Research (VoiceDiary Project)
 
 This document summarizes the research and selection of models for **emotion recognition from text and audio** in the VoiceDiary project. The goal is to enable the system to analyze both **speech transcriptions** and **raw audio** to infer user emotions.
 
@@ -158,3 +158,214 @@ Audio Input
 - IEMOCAP Dataset: [https://sail.usc.edu/iemocap/](https://sail.usc.edu/iemocap/)
 - MELD Dataset: [https://affective-meld.github.io/](https://affective-meld.github.io/)
 
+---
+
+
+# 2. 🧠 Psychological Text Analysis - Research
+
+This repository presents three distinct approaches to psychological analysis of natural language, leveraging state-of-the-art language models. Each approach has been tailored for specific research or clinical utility, ranging from structured clinical assessment to deep generative insight extraction.
+
+## 📌 Overview of Approaches
+
+| Approach Name         | Model Backbone                       | Purpose                          | Speed     | Output Richness |
+|-----------------------|--------------------------------------|----------------------------------|-----------|-----------------|
+| `Mistral-Instruct`    | Mistral 7B Instruct v0.2             | Generative insight generation    | ❌ Slow   | ✅ Rich          |
+| `Roberta Clinical`    | FacebookAI/roberta-base              | Dimensional & clinical analysis  | ✅ Fast   | ⚠️ Sparse        |
+| `Multi-Model Ensemble`| Roberta + FiniteAutomata + MentalAI | Multi-verified psychological output | ⚠️ Medium | ⚠️ Sparse        |
+
+---
+
+## 🧬 1. Mistral-Instruct Approach (LLM Insight Generator)
+
+**Model:** `mistralai/Mistral-7B-Instruct-v0.2`  
+**Purpose:** Generative structured psychological insight from raw text.
+
+### 🔧 How It Works
+
+- Accepts raw user text as input.
+- Constructs a carefully designed prompt with a **strict JSON output schema**.
+- Uses quantized 4-bit inference (via `BitsAndBytesConfig`) for GPU memory efficiency.
+- Outputs high-fidelity psychological insights, including:
+  - Emotional dynamics
+  - Triggers
+  - Physical reactions
+  - Coping strategies
+  - Recommendations
+
+### ✅ Pros
+- **High-quality** and **contextually rich output**
+- Flexible to various psychological constructs
+- Capable of subtle nuance (e.g., emotional shifts, contradictions)
+
+### ❌ Cons
+- **~100x slower** inference than OpenHermes or quantized encoder-only models
+- Requires **strong hardware** (7B parameters, GPU recommended)
+- Output occasionally deviates from schema under edge cases
+
+---
+
+## 🧪 2. Clinical RoBERTa Analyzer
+
+**Model:** `FacebookAI/roberta-base`  
+**Purpose:** Encode clinically validated psychological constructs (PHQ-9, CBT) in structured format.
+
+### 🔧 How It Works
+
+- Classifies each sentence against flattened taxonomy of constructs:
+  - `emotional_state`: positive / neutral / negative
+  - `risk_level`: low / medium / high
+  - `coping_style`: active / avoidant / mixed
+- Tokenized with RoBERTa tokenizer, output converted using temperature-calibrated softmax.
+
+### ✅ Pros
+- **Research-aligned** — grounded in validated psychological taxonomies (PHQ-9, CBT)
+- Fast and lightweight (encoder-only, small footprint)
+- Deterministic output with schema guarantee
+
+### ❌ Cons
+- Outputs are often **minimal** or **generic**
+- Lacks context-awareness or narrative chaining
+- No natural language explanations or reasoning traces
+
+
+## 🤖 3. Multi-Model Psychological Ensemble
+
+**Models Used:**
+- `FacebookAI/roberta-base`: Dimensional representation
+- `finiteautomata/bertweet-base-sentiment-analysis`: Emotional nuance (GoEmotions-aligned)
+- `mental/mental-roberta-base`: Clinical risk markers (PHQ-9 inspired)
+
+### 🔧 How It Works
+
+- Combines **three specialized models**:
+  - Dimensional classifier (5-label)
+  - Sentiment pipeline for emotion disambiguation
+  - Risk analyzer for red-flag mental health markers
+- Uses prompt engineering to generate clinically structured output (JSON).
+- Applies multi-model verification for robustness.
+
+### ✅ Pros
+- **Cross-validated** psychological inference
+- Supports **multiple psychological facets** (emotions, coping, risk)
+- Modular architecture — can be expanded with more models
+
+### ❌ Cons
+- **Fragmented output** due to model disagreement
+- Slow due to sequential model calls
+- **Sparse and sometimes redundant results** (e.g., duplicated sentiment terms)
+
+---
+
+## 🧾 Why These Approaches?
+
+Each approach is intentionally chosen to test **different philosophies** of psychological NLP:
+
+| Approach              | Design Goal                            | Strength                        |
+|-----------------------|----------------------------------------|----------------------------------|
+| Mistral-Instruct      | High-context, free-form reasoning       | Best for exploratory insight     |
+| Clinical RoBERTa      | Structured, schema-constrained analysis | Best for clinical diagnostics    |
+| Ensemble              | Multi-perspective validation            | Best for robustness              |
+
+---
+
+# 3. Emotion Fusion in VoiceDiary
+
+This project combines **audio-based** and **text-based** emotion recognition models to produce a single, more robust emotional interpretation of a spoken utterance.
+
+## Models Used
+
+### 🎤 Audio-Based Emotion Recognition
+
+- **Base model**: `openai/whisper-large-v3` (for speech-to-text)
+- **Classifier**: Fine-tuned audio classification model
+- **Emotion Labels**:\
+  `Angry`, `Disgust`, `Fearful`, `Happy`, `Neutral`, `Sad`, `Surprised`
+
+### 📝 Text-Based Emotion Recognition
+
+Two optional models are supported:
+
+1. ``
+   - Architecture: DistilRoBERTa
+   - Labels: `anger`, `joy`, `sadness`, `fear`, `love`, `surprise`
+   - Trained on six diverse emotion datasets
+2. ``
+   - Architecture: BERT
+   - Labels: `sadness`, `joy`, `love`, `anger`, `fear`, `surprise`
+   - Trained on the GoEmotions dataset
+
+## 🎯 Fusion Strategies
+
+To combine the outputs of both models into a final emotion label, several fusion techniques can be applied:
+
+### 1. **Confidence-Based Weighted Averaging**
+
+- Each model outputs a probability distribution over emotions.
+- Map labels into a shared emotion space.
+- Apply a weighted average:
+  ```
+  final_probs = α * audio_probs + (1 - α) * text_probs
+  ```
+- The `α` weight (e.g., 0.6 for audio, 0.4 for text) can be tuned based on validation results.
+
+### 2. **Majority Voting**
+
+- Convert predicted labels from both models to a unified set.
+- Choose the label that appears most frequently.
+- In case of a tie, prioritize the model with higher confidence or predefined weight.
+
+### 3. **Rule-Based Fusion**
+
+- Use heuristics such as:
+  - If audio is `Neutral` but text is `Joy`/`Sadness`, trust text.
+  - If both are `Anger`, amplify certainty.
+  - If emotions contradict (`Happy` vs `Sad`), mark as `Mixed` or `Uncertain`.
+
+### 4. **Train a Meta-Classifier (Optional)**
+
+- Use outputs of both models as input features to a small neural network or decision tree.
+- Train on a labeled dataset to learn the optimal combination.
+- Requires additional data with both audio and transcribed emotion labels.
+
+## 🧠 Emotion Mapping
+
+Since the models use different label sets, we normalize them to a common emotion taxonomy:
+
+| Audio Label | Mapped Label |
+| ----------- | ------------ |
+| Angry       | anger        |
+| Disgust     | anger        |
+| Fearful     | fear         |
+| Happy       | joy          |
+| Neutral     | neutral      |
+| Sad         | sadness      |
+| Surprised   | surprise     |
+
+`love` (from text models) is currently treated as an optional extension, or mapped to `joy` if needed.
+
+## ✅ Example Output
+
+| Audio Emotion | Text Emotion | Final Emotion    |
+| ------------- | ------------ | ---------------- |
+| Sad           | Sadness      | sadness          |
+| Neutral       | Joy          | joy (text bias)  |
+| Angry         | Surprise     | anger (weighted) |
+| Fearful       | Fear         | fear             |
+
+## 🔧 Configuration
+
+You can set the fusion strategy in the config:
+
+```json
+{
+  "fusion_strategy": "weighted_average",
+  "audio_weight": 0.6
+}
+```
+
+
+
+## 🛠️ Setup
+
+```bash
+pip install torch transformers accelerate bitsandbytes

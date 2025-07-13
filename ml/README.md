@@ -5,11 +5,10 @@
 # Table of Contents
 - [🎯 Objective](#-objective)
 - [📦 Models Used (MVP)](#-models-used-mvp)
-  - [1. 🎤 Emotion Recognition from Voice (Speech Audio)](#1--emotion-recognition-from-voice-speech-audio)
-  - [2. 📝 Transcription (Voice to Text)](#2--transcription-voice-to-text)
-  - [3. 💬 Text-Based summary](#3--text-based-summary)
-  - [4. 🧾 Emotion Recognition from Text (In Testing)](#4--emotion-recognition-from-text-in-testing)
-  - [5. Psychological Insight Extraction from Text](#5-psychological-insight-extraction-from-text)
+- 1. 🎤 [Fine-tuned Whisper Large V3 - Emotion Recognition](#1--fine-tuned-whisper-large-v3---emotion-recognition-from-voice-speech-audio)
+- 2. 📝 [Whisper Models - Transcription (Voice to Text)](#2--whisper-large-v3---transcription-voice-to-text)
+- 3. 💬 [Fine-tuned BART SAMSum - Text Summarization](#3--fine-tuned-bart-based-model-samsum---text-based-summary)
+- 4. 🤖 [OpenHermes-2.5-Mistral-7B - Psychological Insights](#4--openhermes-25-mistral-7b---psychological-insight-extraction-from-text)
 - [🔮 Future Plans](#-future-plans)
 - [📌 Summary](#-summary)
 - [🔧 Setup & Installation](#-setup--installation)
@@ -21,7 +20,7 @@ The goal of the ML component is to accurately detect emotions in users' voice re
 
 ## 📦 Models Used (MVP)
 
-### 1. 🎤 Emotion Recognition from Voice (Speech Audio)
+### 1. 🎤 Fine-tuned Whisper Large V3 - Emotion Recognition from Voice (Speech Audio)
 
 We use a **fine-tuned Whisper Large V3** model to classify emotions from raw voice recordings.
 
@@ -48,7 +47,7 @@ We use a **fine-tuned Whisper Large V3** model to classify emotions from raw voi
 > The model performs well in distinguishing between multiple emotional states in speech.
 
 
-### 2. 📝 Transcription (Voice to Text)
+### 2. 📝 Whisper Large V3* - Transcription (Voice to Text)
 
 We use **Whisper** models for transcribing user voice recordings into text. The choice of model depends on the language and desired balance between speed and accuracy.
 
@@ -63,13 +62,7 @@ We use **Whisper** models for transcribing user voice recordings into text. The 
 
 #### 🚀 Current Strategy
 
-To balance transcription **speed** and **quality**:
-1. **Use Whisper Large V3** for **language detection**.
-2. If the language is **English**, use **Whisper Medium** for faster transcription.
-3. If the language is **not English**, use **Whisper Large V3** to **transcribe and translate** to English.
-
-This hybrid approach ensures reliable language handling while keeping performance efficient.
-
+1. **Use Whisper Large V3** for **language detection**, **transcription** and **translation** (if initially it is not in English)
 ---
 
 #### 📊 Model Comparison
@@ -87,7 +80,7 @@ This hybrid approach ensures reliable language handling while keeping performanc
 The transcribed text is then forwarded to a text-based analysis module for tasks such as emotion extraction, summarization, and supportive feedback (currently under development).
 
 
-### 3. 💬 Text-Based summary
+### 3. 💬 Fine-tuned BART-based model SAMSum - Text-Based summary
 We use a **fine-tuned BART-based model** to generate short summaries from transcribed user voice recordings. This helps distill lengthy or unstructured speech into clear, meaningful insights — ideal for daily reflection and psychological tracking.
 
 #### 🧪 Experimental Findings
@@ -128,7 +121,7 @@ The generated summary is later used in downstream modules (e.g., LLM-based refle
 
 > This summarization step is already **fully deployed and in active use** as part of the Voice Diary MVP.
 
-### 4. Psychological Insight Extraction from Text
+### 4. 🤖 OpenHermes-2.5-Mistral-7B - Psychological Insight Extraction from Text
 
 #### Models Evaluated
 
@@ -179,24 +172,6 @@ The generated summary is later used in downstream modules (e.g., LLM-based refle
 - **Context Isolation**: [INST] tags help the model understand task boundaries
 
 
-### 5. 🧾 Emotion Recognition from Text (In Testing)
-
-We're also testing **text-based emotion detection**, which will eventually be combined with voice-based results for a richer analysis. (not for MVP)
-
-### 🔍 Model in Testing
-
-- **Model**: Fine-tuned version of **XLM-T**
-- **Trained on**: Social media emotion datasets in 19 languages
-- **Use case**: Multilingual emotion detection in text
-
-### 📊 Results
-
-- **F1 Score**: 0.85 (on test set)
-- **Strength**: Effective even in low-resource languages (zero-shot settings)
-
-This model allows us to understand emotional content from transcribed text, enhancing insights for users.
-
-
 ## 🔮 Future Plans
 
 We are actively working to enhance the ML component of the Voice Diary app:
@@ -214,7 +189,7 @@ We are actively working to enhance the ML component of the Voice Diary app:
 | Transcription     | Whisper Small/Medium      | Speech-to-text                   | ✅ In Use      |
 | Summary     | Samsum     | Text summary                   | ✅ In Use      |
 | Emotional feedback | OpenHermes-2.5-Mistral-7B  | Psychological insight generation | ✅ In Use  |
-| Emotion from Text | XLM-T (fine-tuned)      | Text emotion classification | 🚧 In Testing |
+| Emotion from Text | TBD | Text emotion classification | 🚧 In Testing |
 
 
 For more technical details or questions, please feel free to contact the development team.
@@ -317,7 +292,7 @@ If testing with Samsum models:
 python samsum_text_summary.py
 ```
 
-#### 5. Mistral
+#### 5. 🤖  Mistral OpenHermes
 
 ```bash
 pip install accelerate sentencepiece

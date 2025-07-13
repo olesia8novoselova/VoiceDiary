@@ -4,6 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"strconv"
+	"strings"
+
 	_ "github.com/lib/pq"
 )
 
@@ -102,4 +105,60 @@ func DeleteSession(ctx context.Context, db *sql.DB, token string) error {
 	}
 	log.Printf("DeleteSession: successfully deleted session token %s", token)
 	return nil
+}
+
+// UpdateUserProfile updates login, password, and/or nickname for a user.
+func UpdateUserProfile(ctx context.Context, db *sql.DB, userID int, login, password, nickname string) error {
+    log.Printf("UpdateUserProfile: updating profile for userID %d", userID)
+    setParts := []string{}
+    args := []interface{}{}
+    argIdx := 1
+
+    if login != "" {
+        setParts = append(setParts, "login = $" + strconv.Itoa(argIdx))
+        args = append(args, login)
+        argIdx++
+    }
+    if password != "" {
+        setParts = append(setParts, "password = $" + strconv.Itoa(argIdx))
+        args = append(args, password)
+        argIdx++
+    }
+    if nickname != "" {
+        setParts = append(setParts, "nickname = $" + strconv.Itoa(argIdx))
+        args = append(args, nickname)
+        argIdx++
+    }
+    if len(setParts) == 0 {
+        log.Printf("UpdateUserProfile: no fields to update for userID %d", userID)
+        return nil
+    }
+
+    args = append(args, userID)
+    query := `UPDATE "user" SET ` + strings.Join(setParts, ", ") + ` WHERE user_id = $` + strconv.Itoa(argIdx)
+    res, err := db.ExecContext(ctx, query, args...)
+    if err != nil {
+        log.Printf("UpdateUserProfile: failed to update user %d, error: %v", userID, err)
+        return err
+    }
+    rowsAffected, err := res.RowsAffected()
+    if err != nil {
+        return err
+    }
+    if rowsAffected == 0 {
+        log.Printf("UpdateUserProfile: no user found with ID %d", userID)
+        return sql.ErrNoRows
+    }
+    log.Printf("UpdateUserProfile: successfully updated user %d", userID)
+    return nil
+}
+
+func UserExists(ctx context.Context, db *sql.DB, login string) (bool, error) {
+    query := `SELECT COUNT(1) FROM "user" WHERE login = $1`
+    var count int
+    err := db.QueryRowContext(ctx, query, login).Scan(&count)
+    if err != nil {
+        return false, err
+    }
+    return count > 0, nil
 }
