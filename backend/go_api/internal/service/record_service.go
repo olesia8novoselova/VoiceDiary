@@ -59,3 +59,7 @@ func (s *RecordService) AnalyzeText(ctx context.Context, text string) (*client.A
 func (s *RecordService) DeleteRecordByID(ctx context.Context, recordID int) error {
     return repository.DeleteRecordByID(ctx, s.db, recordID)
 }
+
+func (s *RecordService) UpdateRecordFeedback(ctx context.Context, recordID int, feedback int) error {
+    return repository.UpdateRecordFeedback(ctx, s.db, recordID, feedback)
+}

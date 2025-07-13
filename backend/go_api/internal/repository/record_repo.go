@@ -161,3 +161,24 @@ func DeleteRecordByID(ctx context.Context, db *sql.DB, recordID int) error {
     log.Printf("DeleteRecordByID: successfully deleted record %d", recordID)
     return nil
 }
+
+func UpdateRecordFeedback(ctx context.Context, db *sql.DB, recordID int, feedback int) error {
+    log.Printf("UpdateRecordFeedback: updating feedback for record ID %d", recordID)
+    query := `UPDATE record SET feedback = $1 WHERE record_id = $2`
+    res, err := db.ExecContext(ctx, query, feedback, recordID)
+    if err != nil {
+        log.Printf("UpdateRecordFeedback: failed to update feedback for record %d, error: %v", recordID, err)
+        return err
+    }
+    rowsAffected, err := res.RowsAffected()
+    if err != nil {
+        log.Printf("UpdateRecordFeedback: failed to get rows affected for record %d, error: %v", recordID, err)
+        return err
+    }
+    if rowsAffected == 0 {
+        log.Printf("UpdateRecordFeedback: no record found with ID %d", recordID)
+        return sql.ErrNoRows
+    }
+    log.Printf("UpdateRecordFeedback: successfully updated feedback for record %d", recordID)
+    return nil
+}
