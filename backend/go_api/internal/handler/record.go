@@ -138,18 +138,17 @@ func (h *RecordHandler) GetRecords(c *gin.Context) {
 
     records, err := h.svc.FetchUserRecords(ctx, userID, date, limit)
     if err != nil {
-        log.Printf("GetRecords: failed to fetch records for userID %s, error: %v", userID, err)
+        log.Printf("GetRecords: failed to fetch records for userID %d, error: %v", userID, err)
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
 
     c.JSON(http.StatusOK, records)
-
-    log.Printf("GetRecords: successfully fetched %d records for userID %s", len(records), userID)
+    log.Printf("GetRecords: successfully fetched %d records for userID %d", len(records), userID)
 }
 
 // @Summary  Get analysis result for a record.
-// @Description Returns emotion and summary for a specific record.
+// @Description Returns emotion, summary, and feedback for a specific record.
 // @Tags records
 // @Produce json
 // @Param recordID path int true "Record ID"
@@ -157,31 +156,29 @@ func (h *RecordHandler) GetRecords(c *gin.Context) {
 // @Failure 400 {object} map[string]string	
 // @Router /records/{recordID} [get]
 func (h *RecordHandler) GetRecordAnalysis(c *gin.Context) {
-	log.Printf("GetRecordAnalysis: received request")
+    log.Printf("GetRecordAnalysis: received request")
 
-	recordIDStr := c.Param("recordID")
-	recordID, err := strconv.Atoi(recordIDStr)
-	if err != nil {
-		log.Printf("GetRecordAnalysis: invalid recordID %s, error: %v", recordIDStr, err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid record ID"})
-		return
-	}
-	record, err := h.svc.FetchRecordByID(c.Request.Context(), recordID)
-	if err != nil {
-		log.Printf("GetRecordAnalysis: failed to fetch record with ID %d, error: %v", recordID, err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Record not found"})
-		return
-	}
-	c.JSON(http.StatusOK, record)
+    recordIDStr := c.Param("recordID")
+    recordID, err := strconv.Atoi(recordIDStr)
+    if err != nil {
+        log.Printf("GetRecordAnalysis: invalid recordID %s, error: %v", recordIDStr, err)
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid record ID"})
+        return
+    }
+    record, err := h.svc.FetchRecordByID(c.Request.Context(), recordID)
+    if err != nil {
+        log.Printf("GetRecordAnalysis: failed to fetch record with ID %d, error: %v", recordID, err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Record not found"})
+        return
+    }
+    c.JSON(http.StatusOK, record)
 
-	log.Printf("GetRecordAnalysis: successfully fetched record with ID %d", recordID)
+    log.Printf("GetRecordAnalysis: successfully fetched record with ID %d", recordID)
 }
-
 
 type InsightsResponse struct {
     Insights map[string]interface{} `json:"insights"`
 }
-
 
 // GetRecordInsights returns insights for a specific record.
 // @Summary Get insights for a record.
@@ -223,3 +220,83 @@ func (h *RecordHandler) GetRecordInsights(c *gin.Context) {
 	log.Println("GetRecordInsights: analysis completed successfully")
 }
 
+// DeleteRecord deletes a record by its ID.
+// @Summary Delete a record
+// @Description Deletes a record by its record_id.
+// @Tags records
+// @Param recordID path int true "Record ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Router /records/{recordID} [delete]
+func (h *RecordHandler) DeleteRecord(c *gin.Context) {
+    log.Printf("DeleteRecord: received request")
+
+    recordIDStr := c.Param("recordID")
+    recordID, err := strconv.Atoi(recordIDStr)
+    if err != nil {
+        log.Printf("DeleteRecord: invalid recordID %s, error: %v", recordIDStr, err)
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid record ID"})
+        return
+    }
+
+    err = h.svc.DeleteRecordByID(c.Request.Context(), recordID)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            log.Printf("DeleteRecord: record with ID %d not found", recordID)
+            c.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
+            return
+        }
+        log.Printf("DeleteRecord: failed to delete record with ID %d, error: %v", recordID, err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete record"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Record deleted successfully"})
+    log.Printf("DeleteRecord: successfully deleted record with ID %d", recordID)
+}
+
+// SetRecordFeedback sets feedback for a record.
+// @Summary Set feedback for a record
+// @Description Sets feedback value for a specific record.
+// @Tags records
+// @Accept json
+// @Produce json
+// @Param recordID path int true "Record ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Router /records/{recordID}/feedback [post]
+func (h *RecordHandler) SetRecordFeedback(c *gin.Context) {
+    log.Printf("SetRecordFeedback: received request")
+
+    recordIDStr := c.Param("recordID")
+    recordID, err := strconv.Atoi(recordIDStr)
+    if err != nil {
+        log.Printf("SetRecordFeedback: invalid recordID %s, error: %v", recordIDStr, err)
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid record ID"})
+        return
+    }
+
+    var req struct {
+        Feedback int `json:"feedback"`
+    }
+    if err := c.BindJSON(&req); err != nil {
+        log.Printf("SetRecordFeedback: invalid JSON body, error: %v", err)
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
+        return
+    }
+
+    err = h.svc.UpdateRecordFeedback(c.Request.Context(), recordID, req.Feedback)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            log.Printf("SetRecordFeedback: record with ID %d not found", recordID)
+            c.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
+            return
+        }
+        log.Printf("SetRecordFeedback: failed to update feedback for record %d, error: %v", recordID, err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update feedback"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Feedback set successfully"})
+    log.Printf("SetRecordFeedback: successfully updated feedback for record %d", recordID)
+}

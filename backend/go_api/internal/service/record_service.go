@@ -56,43 +56,10 @@ func (s *RecordService) AnalyzeText(ctx context.Context, text string) (*client.A
 	return client.CallMLServiceWithInsights(ctx, s.mlURL, text)
 }
 
+func (s *RecordService) DeleteRecordByID(ctx context.Context, recordID int) error {
+    return repository.DeleteRecordByID(ctx, s.db, recordID)
+}
 
-// GetDominantEmotion returns:
-//  - "no"           if no rows for that user/date
-//  - a string       if one emotion strictly has the highest count
-//  - the full slice if all counts are equal
-// func (s *RecordService) GetDominantEmotion(ctx context.Context, userID int, date time.Time) (interface{}, error) {
-//     ems, err := repository.GetDailyEmotionsByUserAndDate(ctx, s.db, userID, date)
-//     if err != nil {
-//         return nil, err
-//     }
-//     if len(ems) == 0 {
-//         return "no", nil
-//     }
-
-//     // find max
-//     max := ems[0].Count
-//     for _, e := range ems {
-//         if e.Count > max {
-//             max = e.Count
-//         }
-//     }
-//     // check if *all* equal
-//     allEqual := true
-//     for _, e := range ems {
-//         if e.Count != max {
-//             allEqual = false
-//             break
-//         }
-//     }
-//     if allEqual {
-//         return ems, nil
-//     }
-//     // otherwise return one of the highest
-//     for _, e := range ems {
-//         if e.Count == max {
-//             return e.Emotion, nil
-//         }
-//     }
-//     return nil, errors.New("unexpected balanced state")
-// }
+func (s *RecordService) UpdateRecordFeedback(ctx context.Context, recordID int, feedback int) error {
+    return repository.UpdateRecordFeedback(ctx, s.db, recordID, feedback)
+}
