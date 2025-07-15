@@ -127,7 +127,14 @@
   gap: 25px;
 }
 
-.physical-responses > div {
+.physical-response {
+  background: rgba(255,255,255,0.03);
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 2px solid rgba(255,255,255,0.1);
+}
+
+/* .physical-responses > div {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -139,7 +146,7 @@
 
 .physical-responses span {
   font-size: 1.5rem;
-}
+} */
 
 .strategy-boxes {
   display: flex;
@@ -213,4 +220,9 @@
     flex-direction: column;
     gap: 15px;
   }
+}
+
+.section-icon {
+  margin-right: 10px;
+  opacity: 0.8;
 }
