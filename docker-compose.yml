@@ -12,6 +12,7 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   frontend:
+    env_file: ".env"
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -22,6 +23,7 @@ services:
     command: nginx -g "daemon off;"
 
   go_api:
+    env_file: ".env"
     build:
       context: ./backend/go_api
       dockerfile: Dockerfile
