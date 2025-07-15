@@ -25,7 +25,7 @@ model = AutoModelForCausalLM.from_pretrained(
 
 
 def create_prompt(text):
-    return f"""<<SYS>>You are a psychological analysis assistant. Extract insights from text into this exact JSON format.<</SYS>>
+    return f"""<<SYS>>You are a psychological analysis assistant. Extract insights from text into this exact JSON format. Be specific and concrete.<</SYS>>
 
 [INST]
 Analyze the text and output ONLY pure JSON with:
@@ -50,12 +50,7 @@ Structure EXACTLY:
 ```
 
 Text: '''{text}'''
-[/INST]
-
-Important:
-- Use only the provided fields
-- Be specific and concrete
-- Output must be valid JSON"""
+[/INST] """
 
 def clean_output(output):
     cleaned_output = output.replace('\\n', '')
@@ -65,8 +60,8 @@ def clean_output(output):
         second_json = all_jsons[1]  # вытаскиваем второй джсон - ответ
         return second_json
     else:
-        return "Error cleaning output"
-
+        return cleaned_output
+    
 def analyze_text(input_text, max_new_tokens=500): #500, чтобы сильно болтать не начал
     prompt = create_prompt(input_text)
     
@@ -108,6 +103,10 @@ if __name__ == "__main__":
     "Maybe I felt somewhat slightly irritated or possibly annoyed, I'm not entirely sure, it could have just been tiredness perhaps, potentially from lack of sleep the previous night",
     "Okay so today was whatever coffee spilled meeting sucked boss said thing then I was like what the hell but anyway lunch was okay I guess sandwich was decent but then headache started and ugh you know how it is just one of those days",
     "Why am I so tired? Is this normal? Should I be worried? What if it doesn't get better? Maybe I should call someone? But who? What would I even say?",
+    "Felt depresso all day. Had anxiety attac. My Brian won't stop. Need to sea doctor maybe.",
+    "Felt like sh*t tbh. So tired rn. Slept like 3h. Probs should see doc but meh. Idk maybe tmrw.",
+    "Eye fill so tired. Know thing helps. Might of caught some flue. Theirs know energy",
+    "C-c-couldn't s-sleep l-last night. T-t-today ffffeel terrible. H-h-head [cut off]"
 ]
     with open("ml/outputs/benchmark_results.txt", "a", encoding="utf-8") as f:
         f.write(f"\n\n=== OpenHermes Mistral Benchmark | {datetime.now()} ===\n")
