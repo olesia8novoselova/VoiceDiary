@@ -29,5 +29,5 @@ def combine_emotions(audio_emotion: str, text_emotion: str, similarity: dict, we
 
     return max(score, key=score.get)
 
-final_emotion = combine_emotions("fear", "sadness", similarity, weight_audio=0.4, weight_text=0.6)
+final_emotion = combine_emotions("Fearful", "sadness", similarity, weight_audio=0.4, weight_text=0.6)
 print(final_emotion)
