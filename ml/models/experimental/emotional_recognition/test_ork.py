@@ -1,3 +1,13 @@
+emotion_map_audio_to_text = {
+    "Angry": "anger",
+    "Disgust": "disgust",
+    "Fearful": "fear",
+    "Happy": "joy",
+    "Neutral": "neutral",
+    "Sad": "sadness",
+    "Surprised": "surprise"
+}
+
 similarity = {
     'anger':     {'anger': 1.0, 'disgust': 0.9, 'fear': 0.8, 'sadness': 0.7, 'joy': 0.0, 'neutral': 0.5, 'surprise': 0.6},
     'disgust':   {'anger': 0.9, 'disgust': 1.0, 'fear': 0.7, 'sadness': 0.8, 'joy': 0.0, 'neutral': 0.6, 'surprise': 0.5},
@@ -9,7 +19,9 @@ similarity = {
 }
 
 def combine_emotions(audio_emotion: str, text_emotion: str, similarity: dict, weight_audio: float = 0.5, weight_text: float = 0.5) -> str:
+    audio_emotion = emotion_map_audio_to_text[audio_emotion]
     score = {}
+
     for target_emotion in similarity:
         audio_score = similarity[audio_emotion][target_emotion] * weight_audio
         text_score = similarity[text_emotion][target_emotion] * weight_text
