@@ -70,8 +70,9 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 	}
 
 	// Save record in DB
+	var recordID int
 	if userID != -1 {
-        recordID, err := h.svc.SaveRecord(c.Request.Context(), userID, emotion, summary)
+        recordID, err = h.svc.SaveRecord(c.Request.Context(), userID, emotion, summary)
         if err != nil {
             log.Printf("UploadRecord: failed to save record, error: %v", err)
             c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save record"})

@@ -95,8 +95,8 @@ func (h *UserHandler) Login(c *gin.Context) {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check user"})
         return
     }
-    if exists {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Login/email already in use"})
+    if !exists {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Login not found. Please check your email or register"})
         return
     }
 
