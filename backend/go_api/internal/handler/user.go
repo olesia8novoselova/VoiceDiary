@@ -90,16 +90,6 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-    exists, err := h.svc.UserExists(c.Request.Context(), req.Login)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check user"})
-        return
-    }
-    if !exists {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Login not found. Please check your email or register"})
-        return
-    }
-
 	user, err := h.svc.GetUserByLogin(c.Request.Context(), req.Login)
     if err != nil {
         c.JSON(http.StatusUnauthorized, gin.H{"error": "Account not found. Please check your email or register"})
