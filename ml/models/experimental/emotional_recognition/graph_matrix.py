@@ -1,12 +1,6 @@
-emotion_map_audio_to_text = {
-    "Angry": "anger",
-    "Disgust": "disgust",
-    "Fearful": "fear",
-    "Happy": "joy",
-    "Neutral": "neutral",
-    "Sad": "sadness",
-    "Surprised": "surprise"
-}
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 
 similarity = {
     'anger':     {'anger': 1.0, 'disgust': 0.9, 'fear': 0.8, 'sadness': 0.7, 'joy': 0.0, 'neutral': 0.2, 'surprise': 0.6},
@@ -18,16 +12,12 @@ similarity = {
     'surprise':  {'anger': 0.6, 'disgust': 0.5, 'fear': 0.8, 'sadness': 0.0, 'joy': 0.9, 'neutral': 0.2, 'surprise': 1.0},
 }
 
-def combine_emotions(audio_emotion: str, text_emotion: str, similarity: dict, weight_audio: float = 0.5, weight_text: float = 0.5) -> str:
-    audio_emotion = emotion_map_audio_to_text[audio_emotion]
-    score = {}
+df = pd.DataFrame(similarity).T
 
-    for target_emotion in similarity:
-        audio_score = similarity[audio_emotion][target_emotion] * weight_audio
-        text_score = similarity[text_emotion][target_emotion] * weight_text
-        score[target_emotion] = audio_score + text_score
+print(df)
 
-    return max(score, key=score.get)
-
-final_emotion = combine_emotions("Happy", "sadness", similarity, weight_audio=0.4, weight_text=0.6)
-print(final_emotion)
+plt.figure(figsize=(8, 6))
+sns.heatmap(df, annot=True, cmap='coolwarm', vmin=0, vmax=1, square=True, fmt=".2f")
+plt.title("Emotion Similarity Matrix")
+plt.tight_layout()
+plt.show()

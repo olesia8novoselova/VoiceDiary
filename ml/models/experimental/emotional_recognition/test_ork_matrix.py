@@ -29,9 +29,5 @@ def combine_emotions(audio_emotion: str, text_emotion: str, similarity: dict, we
 
     return max(score, key=score.get)
 
-#Данилка вставь сюда вывод моделек люблю тебя пипец
-audio = "Happy"
-text = "surprise"
-
-final_emotion = combine_emotions(audio, text, similarity, weight_audio=0.4, weight_text=0.6)
+final_emotion = combine_emotions("Sad", "fear", similarity, weight_audio=0.4, weight_text=0.6)
 print(final_emotion)
