@@ -45,6 +45,7 @@ function AuthPage() {
           password: formData.password,
         }).unwrap();
         const { data: userData } = await refetchMe();
+        console.log(userData);
         dispatch(setCredentials(userData));
       } else {
         response = await register({

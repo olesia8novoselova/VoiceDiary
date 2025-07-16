@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '../features/auth/authSlice';
@@ -9,15 +9,48 @@ const SettingsPage = () => {
   const navigate = useNavigate();
   const user = useSelector(selectCurrentUser);
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
-  
-  useGetMeQuery(undefined, { skip: !user });
+  const { refetch } = useGetMeQuery();
   
   const [formData, setFormData] = useState({
-    nickname: user?.Nickname || '',
-    email: user?.Login || '',
+    nickname: '',
+    login: '',
     newPassword: '',
     confirmPassword: ''
   });
+
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        nickname: user.Nickname || '',
+        login: user.Login || '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+    }
+  }, [user]);
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (formData.newPassword) {
+      if (formData.newPassword.length < 6) {
+        newErrors.newPassword = "Password should be at least 6 characters";
+      } else if (!/[A-Z]/.test(formData.newPassword)) {
+        newErrors.newPassword = "Add at least one uppercase letter";
+      } else if (!/\d/.test(formData.newPassword)) {
+        newErrors.newPassword = "Add at least one number";
+      }
+      
+      if (formData.newPassword !== formData.confirmPassword) {
+        newErrors.confirmPassword = "Passwords don't match";
+      }
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,22 +62,30 @@ const SettingsPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-        if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
-      alert("Passwords don't match!");
+    
+    if (!validateForm()) {
       return;
     }
 
     try {
       const updateData = {
         nickname: formData.nickname,
+        login: formData.login,
         ...(formData.newPassword && { password: formData.newPassword })
       };
       
       await updateProfile(updateData).unwrap();
+      await refetch();
       navigate('/profile');
     } catch (err) {
       console.error("Failed to update profile:", err);
-      alert("Failed to update profile. Please try again.");
+      let errorMessage = "Failed to update profile";
+      if (err.data?.error?.includes("already in use")) {
+        errorMessage = "This login is already taken";
+      } else if (err.data?.error) {
+        errorMessage = err.data.error;
+      }
+      alert(errorMessage);
     }
   };
 
@@ -53,26 +94,26 @@ const SettingsPage = () => {
   return (
     <div className="settings-page">
       <button
-          className="back-button"
-          onClick={() => navigate("/profile")}
-          aria-label="Go back"
+        className="back-button"
+        onClick={handleBack}
+        aria-label="Go back"
+      >
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <svg
-            width="30"
-            height="30"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M15 18L9 12L15 6"
-              stroke="#FFFFFF"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
+          <path
+            d="M15 18L9 12L15 6"
+            stroke="#FFFFFF"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
       
       <div className="settings-container">
         <div className="settings-header">
@@ -101,7 +142,7 @@ const SettingsPage = () => {
 
             <div className="settings-form">
               <div className="form-group">
-                <label htmlFor="nickname">Full Name</label>
+                <label htmlFor="nickname">Nickname</label>
                 <input
                   id="nickname"
                   name="nickname"
@@ -114,15 +155,15 @@ const SettingsPage = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="email">Email Address</label>
+                <label htmlFor="login">Login</label>
                 <input
-                  id="email"
-                  name="email"
+                  id="login"
+                  name="login"
                   type="email"
-                  value={formData.email}
+                  value={formData.login}
                   onChange={handleChange}
                   className="form-input"
-                  disabled
+                  required
                 />
               </div>
 
@@ -135,8 +176,13 @@ const SettingsPage = () => {
                   placeholder="Enter new password"
                   value={formData.newPassword}
                   onChange={handleChange}
-                  className="form-input"
+                  className={`form-input ${errors.newPassword ? 'error' : ''}`}
                 />
+                {errors.newPassword && (
+                  <div className="error-message">
+                    <span>{errors.newPassword}</span>
+                  </div>
+                )}
               </div>
 
               <div className="form-group">
@@ -148,8 +194,13 @@ const SettingsPage = () => {
                   placeholder="Confirm new password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="form-input"
+                  className={`form-input ${errors.confirmPassword ? 'error' : ''}`}
                 />
+                {errors.confirmPassword && (
+                  <div className="error-message">
+                    <span>{errors.confirmPassword}</span>
+                  </div>
+                )}
               </div>
 
               <div className="form-actions">
