@@ -126,7 +126,8 @@ func (h *UserHandler) Login(c *gin.Context) {
         Expires:  time.Now().Add(30 * 24 * time.Hour), // 30 days session token expiration
         SameSite: http.SameSiteLaxMode,
     })
-
+    
+    c.Set("user", user)
     c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
 
 	log.Printf("Login: user logged in successfully, userID: %d", user.ID)
