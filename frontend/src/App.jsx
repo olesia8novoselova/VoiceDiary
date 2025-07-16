@@ -29,6 +29,7 @@ return (
               </div>
             )}
             <Routes>
+             
               <Route path="/" element={<Navigate to="/onboarding" replace />} />
               <Route path="/onboarding" element={<OnboardingPage />} />
               <Route path="/login" element={<AuthPage />} />

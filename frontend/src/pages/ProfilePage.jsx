@@ -4,15 +4,12 @@ import { useLogoutMutation, useGetMeQuery } from "../features/auth/authApi";
 import { logout, selectCurrentUser } from "../features/auth/authSlice";
 import Calendar from "../features/calendar/components/MoodCalendar";
 import "./ProfilePage.css";
+import { useState } from "react";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [logoutApi] = useLogoutMutation();
-  
-  const user = useSelector(selectCurrentUser);
-
-  useGetMeQuery(undefined, { skip: !user });
 
   const handleLogout = async () => {
     try {
@@ -89,10 +86,39 @@ const ProfilePage = () => {
             </button>
           </div>
         </div>
-
-        <div className="calendar-container">
-          <h3>Your Mood Calendar</h3>
-          <Calendar />
+        
+        <div className="tabs">
+          <button 
+            className={activeTab === "calendar" ? "active" : ""}
+            onClick={() => setActiveTab("calendar")}
+          >
+            Calendar
+          </button>
+          <button 
+            className={activeTab === "entries" ? "active" : ""}
+            onClick={() => setActiveTab("entries")}
+          >
+            Entries
+          </button>
+        </div>
+        
+        <div className="tab-content">
+          {activeTab === "calendar" ? (
+            <div className="calendar-container">
+              <h3>Your Mood Calendar</h3>
+              <Calendar />
+            </div>
+          ) : (
+            <div className="entries-grid">
+              {entries.map((entry) => (
+                <div key={entry.id} className="entry-card">
+                  <p><strong>Date:</strong> {entry.date}</p>
+                  <p><strong>Mood:</strong> {entry.mood}</p>
+                  {entry.note && <p><strong>Note:</strong> {entry.note}</p>}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -3,10 +3,13 @@ package handler
 import (
 	"bytes"
 	"database/sql"
+	"encoding/json"
 	"io"
+	"log"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -68,6 +71,13 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze audio"})
 		return
 	}
+	var insightsMap map[string]string
+	err = json.Unmarshal([]byte(textInsights), &insightsMap)
+	if err != nil {
+		log.Printf("UploadRecord: failed to unmarshal text insights, error: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal text insights"})
+		return
+	}
 
 	// Save record in DB
 	var recordID int
@@ -106,6 +116,7 @@ func (h *RecordHandler) UploadRecord(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Router /users/{userID}/records [get]
 func (h *RecordHandler) GetRecords(c *gin.Context) {
+    log.Printf("GetRecords: received request")
     log.Printf("GetRecords: received request")
 
     ctx := c.Request.Context()
@@ -191,7 +202,9 @@ type InsightsResponse struct {
 // @Tags records
 // @Produce json
 // @Success 200 {object} handler.InsightsResponse
+// @Success 200 {object} handler.InsightsResponse
 // @Failure 400 {object} map[string]string
+// @Router /records/insights [post]
 // @Router /records/insights [post]
 func (h *RecordHandler) GetRecordInsights(c *gin.Context) {
 	log.Println("GetRecordInsights: received request")
