@@ -10,6 +10,15 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [logoutApi] = useLogoutMutation();
+  
+  const user = useSelector(selectCurrentUser);
+  const [activeTab, setActiveTab] = useState("calendar");
+  const [entries] = useState([
+    { id: 1, date: "2023-10-01", mood: "Happy", note: "Good day" },
+    { id: 2, date: "2023-10-02", mood: "Sad", note: "Meeting was tough" },
+  ]);
+
+  useGetMeQuery(undefined, { skip: !user });
 
   const handleLogout = async () => {
     try {

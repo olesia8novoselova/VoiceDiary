@@ -124,5 +124,4 @@ export const {
   useGetMeQuery,
   useLogoutMutation,
   useUpdateProfileMutation,
-  useUpdateProfileMutation,
 } = authApi;

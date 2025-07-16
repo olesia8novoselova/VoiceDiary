@@ -32,20 +32,20 @@ func (s *RecordService) FetchUserRecords(ctx context.Context, userID int, date t
     }
 }
 
-func (s *RecordService) AnalyzeRawAudio(ctx context.Context, fileBytes []byte) (string, string, string, string, error) {
+func (s *RecordService) AnalyzeRawAudio(ctx context.Context, fileBytes []byte) (string, string, string, error) {
 	log.Printf("AnalyzeRawAudio: sending file to ML service at %s", s.mlURL)
 	result, err := client.CallMLService(ctx, s.mlURL, fileBytes)
 	if err != nil {
 		log.Printf("AnalyzeRawAudio: failed to call ML service, error: %v", err)
-		return "", "", "", "", err
+		return "", "", "", err
 	}
 
 	log.Printf("AnalyzeRawAudio: received response from ML service, Emotion: %s, Summary: %s, Text: %s", result.Emotion, result.Summary, result.Text)
 	return result.Emotion, result.Summary, result.Text, nil
 }
 
-func (s *RecordService) SaveRecord(ctx context.Context, userID int, emotion string, summary string, feedback string, insights map[string]string) (int, error) {
-	return repository.SaveRecord(ctx, s.db, userID, emotion, summary, feedback, insights)
+func (s *RecordService) SaveRecord(ctx context.Context, userID int, emotion string, summary string) (int, error) {
+	return repository.SaveRecord(ctx, s.db, userID, emotion, summary)
 }
 
 func (s *RecordService) FetchRecordByID(ctx context.Context, recordID int) (*repository.Record, error) {
