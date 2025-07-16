@@ -6,6 +6,10 @@ export const authApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: API_CONFIG.BASE_URL,
     credentials: "include",
+    prepareHeaders: (headers, { getState }) => {
+    console.log('Cookies:', document.cookie);
+    return headers;
+  },
   }),
   endpoints: (builder) => ({
     register: builder.mutation({
@@ -92,7 +96,7 @@ export const authApi = createApi({
     updateProfile: builder.mutation({
       query: (profileData) => ({
         url: API_CONFIG.ENDPOINTS.AUTH.UPDATE_PROFILE,
-        method: "PUT",
+        method: "PATCH",
         body: profileData,
         headers: {
           "Content-Type": "application/json",

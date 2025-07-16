@@ -208,6 +208,18 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
         return
     }
 
+    if req.Login != "" && req.Login != user.Login {
+        exists, err := h.svc.UserExists(c.Request.Context(), req.Login)
+        if err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check login availability"})
+            return
+        }
+        if exists {
+            c.JSON(http.StatusConflict, gin.H{"error": "Login already in use"})
+            return
+        }
+    }
+
     err := h.svc.UpdateUserProfile(c.Request.Context(), user.ID, req.Login, req.Password, req.Nickname)
     if err != nil {
         if err == sql.ErrNoRows {
