@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-
+import { useState, useEffect, useRef } from "react";
 import AudioRecorder from "../features/recordings/components/AudioRecorder";
 import WaveAnimation from "../features/recordings/components/WaveAnimation";
 import RecordingCard from "../features/recordings/components/RecordingCard";
 import Calendar from "../features/calendar/components/MoodCalendar";
+import Header from "../features/Header/Header";
 import "./HomePage.css";
 
 const prompts = [
@@ -25,7 +24,6 @@ function HomePage() {
   const [showCalendar, setShowCalendar] = useState(false);
   const resultRef = useRef(null);
   const [currentDay, setCurrentDay] = useState(1);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const storedDays = JSON.parse(localStorage.getItem("recordedDays") || "[]");
@@ -62,16 +60,10 @@ function HomePage() {
       <div className="gradient-ball-4"></div>
       <div className="gradient-ball-5"></div>
 
-      <div className="result-header">
-        <div className="day-box" onClick={() => setShowCalendar(true)}>
-          <p>Day {currentDay}/30</p>
-          <small>Click to see calendar</small>
-        </div>
-
-        <div className="profile-box" onClick={() => navigate("/profile")}>
-          <p>Your profile</p>
-        </div>
-      </div>
+      <Header
+        currentDay={currentDay}
+        onCalendarToggle={() => setShowCalendar(!showCalendar)}
+      />
 
       <div className="home-content">
         <h1 className="main-title">Your AI Voice Diary</h1>

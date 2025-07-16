@@ -222,11 +222,11 @@
   margin-bottom: 1rem;
 }
 
-.password-input-wrapper {
+.settings-page .password-input-wrapper {
   position: relative;
 }
 
-.password-toggle {
+.settings-page .password-input-wrapper .password-toggle {
   position: absolute;
   right: 12px;
   top: 50%;
@@ -241,11 +241,11 @@
   justify-content: center;
 }
 
-.password-toggle:hover {
+.settings-page .password-input-wrapper .password-toggle:hover {
   color: rgba(255, 255, 255, 0.9);
 }
 
-.password-toggle svg {
+.settings-page .password-input-wrapper .password-toggle svg {
   width: 20px;
   height: 20px;
 }
