@@ -53,14 +53,27 @@ Text: '''{text}'''
 [/INST] """
 
 def clean_output(output):
-    cleaned_output = output.replace('\\n', '')
-    all_jsons = re.findall(r'```json\s*({.*?})\s*```', cleaned_output, re.DOTALL)
+    #удаляем промпт и мусор
+    text = re.sub(r'<<SYS>>.*?<</SYS>>\n?', '', text, flags=re.DOTALL) 
+    text = re.sub(r'\[INST\].*?\[/INST\]\n?', '', text, flags=re.DOTALL)  
+    normalized_text = (
+        text.replace('\\n', ' ')
+             .replace('\\"', '"')    
+             .replace('\\\\', '\\')   
+             .strip()                
+    )
 
-    if len(all_jsons) >= 2:
-        second_json = all_jsons[1]  # вытаскиваем второй джсон - ответ
-        return second_json
-    else:
-        return cleaned_output
+    json_match = re.search(r'\{.*\}', normalized_text, re.DOTALL) #находим реальный джсон
+    if not json_match:
+        return None 
+    
+    json_str = json_match.group(0) 
+
+    try:
+        data = json.loads(json_str)
+        return json.dumps(data, indent=2) 
+    except json.JSONDecodeError:
+        return None 
     
 def analyze_text(input_text, max_new_tokens=500): #500, чтобы сильно болтать не начал
     prompt = create_prompt(input_text)
