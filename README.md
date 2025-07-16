@@ -15,7 +15,7 @@ Voice Diary is an innovative application that enables users to record voice entr
 ### ⚙️ Backend Services
 #### 🐹 Core Service (Go)
 - **Web Framework**: Gin
-- **Authentication**: JWT
+- **Authentication**: HTTP-Only + Cookies
 - **API Development**: RESTful endpoints
 
 #### 🐍 AI Service (Python)
@@ -27,7 +27,6 @@ Voice Diary is an innovative application that enables users to record voice entr
 
 ### 🗄️ Infrastructure
 - **Database**: PostgreSQL
-- **Storage**: S3 Minio (voice recordings)
 - **Containerization**: Docker
 - **CI/CD**: GitHub Actions
 
