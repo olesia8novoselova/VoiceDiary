@@ -11,13 +11,10 @@ describe('RecordingCard Component', () => {
     insights: {
       emotional_dynamics: 'Positive throughout the day',
       key_triggers: ['Meeting with friends', 'Completed project'],
-      physical_reactions: {
-        morning: 'Energetic start',
-        afternoon: 'Relaxed and content'
-      },
-      coping_effectiveness: {
-        successful: 'Taking short breaks',
-        unsuccessful: 'Late night working'
+      physical_reaction: 'Increased energy and positive body language',
+      coping_strategies: {
+        effective: 'Taking short breaks',
+        ineffective: 'Late night working'
       },
       recommendations: [
         'Exercise: Try 30 minutes of yoga',
@@ -34,43 +31,33 @@ describe('RecordingCard Component', () => {
   test('renders all main sections with happy emotion', () => {
     render(<RecordingCard result={mockResult} />);
     
-
     expect(screen.getByText('Your Emotional Report')).toBeInTheDocument();
     expect(screen.getByText('happy')).toBeInTheDocument();
     expect(screen.getByText('happy')).toHaveClass('positive');
     
-  
     expect(screen.getByText('Summary')).toBeInTheDocument();
     expect(screen.getByText(/joyful and energetic today/)).toBeInTheDocument();
     
-
     expect(screen.getByText('Emotional Analysis')).toBeInTheDocument();
-    expect(screen.getByText('Pattern')).toBeInTheDocument();
+    expect(screen.getByText('📈 Pattern')).toBeInTheDocument();
     expect(screen.getByText('Positive throughout the day')).toBeInTheDocument();
-    expect(screen.getByText('Key Triggers')).toBeInTheDocument();
+    expect(screen.getByText('🔑 Key Triggers')).toBeInTheDocument();
     expect(screen.getByText('Meeting with friends')).toBeInTheDocument();
+    expect(screen.getByText('Completed project')).toBeInTheDocument();
     
-    expect(screen.getByText('Physical Responses')).toBeInTheDocument();
-    expect(screen.getByText('🌞')).toBeInTheDocument();
-    expect(screen.getByText('Energetic start')).toBeInTheDocument();
-    expect(screen.getByText('🌆')).toBeInTheDocument();
-    expect(screen.getByText('Relaxed and content')).toBeInTheDocument();
+    expect(screen.getByText('Physical Response')).toBeInTheDocument();
+    expect(screen.getByText('Increased energy and positive body language')).toBeInTheDocument();
     
-    // Check coping strategies
     expect(screen.getByText('Coping Strategies')).toBeInTheDocument();
-    expect(screen.getByText('What worked')).toBeInTheDocument();
+    expect(screen.getByText('✅ Effective')).toBeInTheDocument();
     expect(screen.getByText('Taking short breaks')).toBeInTheDocument();
-    expect(screen.getByText('What didn\'t')).toBeInTheDocument();
+    expect(screen.getByText('❌ Ineffective')).toBeInTheDocument();
     expect(screen.getByText('Late night working')).toBeInTheDocument();
     
-    // Check recommendations
     expect(screen.getByText('Recommendations')).toBeInTheDocument();
-    expect(screen.getByText('Exercise:')).toBeInTheDocument();
-    expect(screen.getByText(/30 minutes of yoga/)).toBeInTheDocument();
-    expect(screen.getByText('Social:')).toBeInTheDocument();
-    expect(screen.getByText(/more friend time/)).toBeInTheDocument();
+    expect(screen.getByText('Exercise: Try 30 minutes of yoga')).toBeInTheDocument();
+    expect(screen.getByText('Social: Schedule more friend time')).toBeInTheDocument();
     
-    // Check footer
     expect(screen.getByText(/Recorded:/)).toBeInTheDocument();
     expect(screen.getByText('AI-generated, for reference only')).toBeInTheDocument();
   });
@@ -94,7 +81,6 @@ describe('RecordingCard Component', () => {
     });
   });
 
-  
   test('renders multiple key triggers correctly', () => {
     const resultWithMultipleTriggers = {
       ...mockResult,
@@ -110,4 +96,26 @@ describe('RecordingCard Component', () => {
     expect(screen.getByText('Trigger 3')).toBeInTheDocument();
   });
 
+  test('does not render coping strategies section when none are provided', () => {
+    const resultWithoutStrategies = {
+      ...mockResult,
+      insights: {
+        ...mockResult.insights,
+        coping_strategies: {}
+      }
+    };
+    
+    render(<RecordingCard result={resultWithoutStrategies} />);
+    expect(screen.queryByText('Coping Strategies')).not.toBeInTheDocument();
+  });
+
+  test('shows processing message when insights are missing', () => {
+    const resultWithoutInsights = {
+      ...mockResult,
+      insights: null
+    };
+    
+    render(<RecordingCard result={resultWithoutInsights} />);
+    expect(screen.getByText('Detailed analysis is being processed...')).toBeInTheDocument();
+  });
 });
