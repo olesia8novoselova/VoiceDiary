@@ -182,12 +182,6 @@
   background: #7c4dff;
 }
 
-.error-message {
-  color: #ff6b6b;
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
-}
-
 @media (max-width: 768px) {
   .settings-page {
     padding: 1rem;
@@ -205,4 +199,53 @@
   .save-btn {
     width: 100%;
   }
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #ff4d4f;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
+.error-message svg {
+  flex-shrink: 0;
+}
+
+.error-message.api-error {
+  background: rgba(255, 77, 79, 0.1);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
 }
