@@ -16,7 +16,7 @@ type Record struct {
 	Emotion string `json:"emotion"`
 	Summary string `json:"summary"`
 	Feedback *int `json:"feedback"` 
-	Insights *map[string]string `json:"insights"` 
+	Insights *map[string] any `json:"insights"` 
 }
 
 const getRecordsByUserSQL = `
@@ -221,5 +221,30 @@ func UpdateRecordFeedback(ctx context.Context, db *sql.DB, recordID int, feedbac
         return sql.ErrNoRows
     }
     log.Printf("UpdateRecordFeedback: successfully updated feedback for record %d", recordID)
+    return nil
+}
+
+func UpdateRecordInsights(ctx context.Context, db *sql.DB, recordID int, insights map[string]interface{}) error {
+    log.Printf("UpdateRecordInsights: updating insights for record ID %d", recordID)
+    
+    query := `UPDATE record SET insights = $1 WHERE record_id = $2`
+    res, err := db.ExecContext(ctx, query, insights, recordID)
+    if err != nil {
+        log.Printf("UpdateRecordInsights: failed to update insights for record %d, error: %v", recordID, err)
+        return err
+    }
+    
+    rowsAffected, err := res.RowsAffected()
+    if err != nil {
+        log.Printf("UpdateRecordInsights: failed to get rows affected for record %d, error: %v", recordID, err)
+        return err
+    }
+    
+    if rowsAffected == 0 {
+        log.Printf("UpdateRecordInsights: no record found with ID %d", recordID)
+        return sql.ErrNoRows
+    }
+    
+    log.Printf("UpdateRecordInsights: successfully updated insights for record %d", recordID)
     return nil
 }

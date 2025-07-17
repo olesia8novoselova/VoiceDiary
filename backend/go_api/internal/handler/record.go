@@ -198,6 +198,7 @@ func (h *RecordHandler) GetRecordInsights(c *gin.Context) {
 
 	var input struct {
 		Text string `json:"text"`
+        RecordID int    `json:"record_id,omitempty"`
 	}
 	if err := c.BindJSON(&input); err != nil {
 		log.Printf("GetRecordInsights: invalid JSON body, error: %v", err)
@@ -217,6 +218,12 @@ func (h *RecordHandler) GetRecordInsights(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze text"})
 		return
 	}
+
+    if input.RecordID > 0 {
+        if err := h.svc.UpdateRecordInsights(c.Request.Context(), input.RecordID, result.Insights); err != nil {
+            log.Printf("GetRecordInsights: failed to save insights for record %d, error: %v", input.RecordID, err)
+        }
+    }
 
 	c.JSON(http.StatusOK, result.Insights)
 

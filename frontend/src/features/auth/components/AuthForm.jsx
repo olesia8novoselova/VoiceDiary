@@ -137,7 +137,6 @@ const AuthForm = ({ isLogin, onSubmit, authError }) => {
           onChange={handleChange}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          className={hasError("email") ? "error" : ""}
           aria-describedby={hasError("email") ? "email-error" : undefined}
         />
         {hasError("email") && (
@@ -162,7 +161,6 @@ const AuthForm = ({ isLogin, onSubmit, authError }) => {
             onChange={handleChange}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
-            className={hasError("username") ? "error" : ""}
             aria-describedby={
               hasError("username") ? "username-error" : undefined
             }
@@ -188,7 +186,6 @@ const AuthForm = ({ isLogin, onSubmit, authError }) => {
           placeholder="Enter your password"
           showPassword={showPassword}
           togglePasswordVisibility={() => setShowPassword(!showPassword)}
-          hasError={hasError("password")}
           errorId="password-error"
         />
         {hasError("password") ? (
@@ -227,7 +224,6 @@ const AuthForm = ({ isLogin, onSubmit, authError }) => {
             togglePasswordVisibility={() =>
               setShowRepeatPassword(!showRepeatPassword)
             }
-            hasError={hasError("repeatPassword")}
             errorId="repeatPassword-error"
           />
           {hasError("repeatPassword") && (
