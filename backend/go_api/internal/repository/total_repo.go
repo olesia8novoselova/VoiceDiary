@@ -65,3 +65,17 @@ func GetUserTotalsByDateRange(ctx context.Context, db *sql.DB, userID int, start
 
 	return totals, nil
 }
+
+func DeleteUserTotal(ctx context.Context, db *sql.DB, userID int, date time.Time) error {
+    log.Printf("DeleteUserTotal: deleting total for user %d on date %s", userID, date.Format("2006-01-02"))
+
+    query := `DELETE FROM user_totals WHERE user_id = $1 AND date = $2`
+    _, err := db.ExecContext(ctx, query, userID, date)
+    if err != nil {
+        log.Printf("DeleteUserTotal: failed to delete total, error: %v", err)
+        return err
+    }
+
+    log.Printf("DeleteUserTotal: successfully deleted total for user %d", userID)
+    return nil
+}
