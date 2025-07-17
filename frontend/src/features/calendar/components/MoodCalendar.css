@@ -1,21 +1,15 @@
 
 
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-y: auto;
-z-index: 0; 
-}
 
 .gradient-ball,
 .gradient-ball-2,
 .gradient-ball-3,
-.gradient-ball-4{
+.gradient-ball-4 {
   position: fixed;
   border-radius: 50%;
   filter: blur(80px);
   z-index: 0;
+  pointer-events: none;
 }
 
 .gradient-ball {
@@ -52,6 +46,8 @@ z-index: 0;
   left: 50%;
   transform: translateX(-50%);
 }
+
+
 .calendar-wrapper {
   max-width: 100%;
   color: white;
@@ -61,7 +57,11 @@ z-index: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 1;
 }
+
+
 .calendar-header {
   text-align: center;
   margin-bottom: 1.5rem;
@@ -71,7 +71,36 @@ z-index: 0;
   font-size: 1.3rem;
   font-weight: 600;
   color: #fff;
+  margin: 0;
 }
+
+.month-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.nav-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.nav-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
 
 .day-names {
   display: grid;
@@ -83,6 +112,7 @@ z-index: 0;
   font-weight: 500;
 }
 
+
 .days-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -91,25 +121,15 @@ z-index: 0;
 
 .day-cell {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   aspect-ratio: 1;
-  padding: 0.2rem;
   border-radius: 50%;
-   background: rgba(255, 255, 255, 0.05);
-   
-}
-.day-cell-content {
-  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9rem;
+  transition: all 0.2s ease;
 }
-
-
 
 .day-cell:hover {
   background: rgba(255, 255, 255, 0.1);
@@ -117,61 +137,52 @@ z-index: 0;
 
 .day-cell.selected {
   background: #8b5cf6;
-  color: white;
-  font-weight: 600;
 }
 
 .day-cell.has-note {
   border: 2px solid #8b5cf6;
-  position: relative;
-  font-size: 1rem;
 }
 
-.note-icon {
+.day-number {
   position: absolute;
-  bottom: 2px;
-  right: 2px;
-  font-size: 0.9rem;
-  color: #8b5cf6;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  top: 0.3rem;
+  left: 0.3rem;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-
-.mood-note-icons {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  position: absolute;
-  bottom: 4px;
-  left: 0;
-  padding: 0 4px;
-  box-sizing: border-box;
-}
-.note-icon,
-.mood-icon {
-  font-size: 1rem;
-  width: 1.5rem;
-  height: 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  line-height: 1;
-}
-
-.mood-icon {
+.day-cell.selected .day-number {
   color: white;
+  font-weight: 600;
 }
+
+
+.mood-emoji-main {
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: none;
+  border: none;
+}
+
+/* .day-cell.selected .mood-emoji-main {
+  color: white;
+} */
+
+.empty-day {
+  width: 60%;
+  height: 60%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.day-cell:hover .empty-day {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 
 .voice-note-panel {
   margin-top: 2rem;
@@ -196,20 +207,26 @@ z-index: 0;
   margin-bottom: 1rem;
 }
 
+
 .mood-summary {
   font-size: 0.95rem;
   margin-bottom: 0.5rem;
   color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.mood-summary .mood-emoji {
-  margin-left: 6px;
-  vertical-align: middle;
+.mood-emoji {
+  font-size: 1.5rem;
+  background: transparent;
+  border: none;
 }
 
 .summary-section {
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.85);
+  margin-top: 1rem;
 }
 
 .recommendation-section {
@@ -217,6 +234,7 @@ z-index: 0;
   border-radius: 8px;
   padding: 1rem;
   border-left: 3px solid #8b5cf6;
+  margin-top: 1rem;
 }
 
 .recommendation-header {
@@ -247,69 +265,63 @@ z-index: 0;
   color: rgba(255, 255, 255, 0.5);
   font-style: italic;
   text-align: center;
+  padding: 1rem 0;
 }
+
+
 .mood-selector {
   display: flex;
-  gap: 12px;
-  margin: 15px 0;
+  gap: 0.75rem;
+  margin: 1rem 0;
   flex-wrap: wrap;
-}
-.edit-mood-btn {
-  margin-left: 12px;
-  padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  color: #fff;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .mood-option {
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 1.5rem;
   transition: transform 0.2s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-.edit-mood-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.edit-mood-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
-}
-
-.edit-mood-btn svg {
-  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
 .mood-option:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transform: scale(1.2);
+}
+
+
+.edit-mood-btn {
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1.5rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  margin-left: 0.5rem;
+}
+
+.edit-mood-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .clear-data-btn {
-  padding: 4px 8px;
+  padding: 0.3rem 0.6rem;
   background: rgba(255, 99, 71, 0.2);
   border: 1px solid rgba(255, 99, 71, 0.3);
-  border-radius: 4px;
+  border-radius: 0.25rem;
   color: tomato;
-  font-size: 12px;
+  font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -317,3 +329,21 @@ z-index: 0;
 .clear-data-btn:hover {
   background: rgba(255, 99, 71, 0.3);
 }
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.mood-emoji-main,
+.mood-emoji,
+.mood-option {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+}
+

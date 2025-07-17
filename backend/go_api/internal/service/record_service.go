@@ -27,8 +27,8 @@ func (s *RecordService) FetchUserRecords(ctx context.Context, userID int, date t
         // Return latest records
         return repository.GetLatestRecords(ctx, s.db, userID, limit)
     } else {
-        // Return records starting from the specified date
-        return repository.GetRecordsStartingFromDate(ctx, s.db, userID, date, limit)
+        // Return records for the specified date
+        return repository.GetRecordsByDate(ctx, s.db, userID, date, limit)
     }
 }
 
