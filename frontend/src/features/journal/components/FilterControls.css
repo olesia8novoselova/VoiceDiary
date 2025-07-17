@@ -1,56 +1,227 @@
+/* Основной контейнер */
+.filter-controls-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* Контейнер фильтров */
 .filter-controls {
   display: flex;
   justify-content: center;
-  gap: 30px;
-  margin-bottom: 30px;
+  align-items: flex-start;
+  gap: 32px;
+  margin: 50px auto;
   flex-wrap: wrap;
+  padding: 24px 28px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow:
+    inset 0 0 0.5px rgba(255, 255, 255, 0.1),
+    0 10px 40px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(18px);
+  width: fit-content;
+  max-width: 90vw;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
+/* Группа фильтров */
 .filter-group {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+  position: relative;
 }
 
 .filter-group label {
-  color: #aaa;
-  font-size: 0.9rem;
+  color: #ccc;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-left: 2px;
 }
 
-.filter-group input,
-.filter-group select {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  padding: 8px 12px;
-  color: white;
+/* Обертка для DatePicker */
+.datepicker-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Стили для DatePicker */
+.custom-datepicker-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #f1f1f1;
+  font-size: 0.95rem;
+  width: 100%;
+  cursor: pointer;
   font-family: inherit;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
-.filter-group input:focus,
-.filter-group select:focus {
+.custom-datepicker-input:focus {
   outline: none;
-  border-color: #7a4b56;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #8a2be2;
+  box-shadow: 0 0 8px rgba(138, 43, 226, 0.4);
 }
 
-.filter-group select {
+/* Стили для выпадающего списка */
+.custom-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #f1f1f1;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  width: 100%;
   cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg fill='white' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  padding-right: 32px;
 }
 
-.filter-group select::-ms-expand {
-  display: none;
+.custom-select:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #8a2be2;
+  box-shadow: 0 0 8px rgba(138, 43, 226, 0.4);
 }
 
-.filter-group input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-  opacity: 0.7;
-  cursor: pointer;
+/* Стили для выпадающего календаря */
+.custom-datepicker-popper {
+  z-index: 1000 !important;
 }
 
+.react-datepicker {
+  background: linear-gradient(145deg, rgba(30,30,30,0.95), rgba(20,20,20,0.95)) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 16px !important;
+  font-family: inherit !important;
+  box-shadow:
+    inset 0 0 0.5px rgba(255, 255, 255, 0.1),
+    0 10px 40px rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(18px) !important;
+  overflow: hidden;
+}
+
+.react-datepicker__header {
+  background: rgba(40,40,40,0.8) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  padding: 16px 8px 8px !important;
+}
+
+.react-datepicker__current-month {
+  color: #f1f1f1 !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 12px !important;
+}
+
+.react-datepicker__day-name {
+  color: #aaa !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  width: 2.2rem !important;
+  line-height: 2.2rem !important;
+  margin: 0.166rem !important;
+}
+
+.react-datepicker__day {
+  color: #f1f1f1 !important;
+  width: 2.2rem !important;
+  line-height: 2.2rem !important;
+  margin: 0.166rem !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.react-datepicker__day:hover {
+  background: rgba(138, 43, 226, 0.3) !important;
+}
+
+.react-datepicker__day--selected {
+  background: linear-gradient(135deg, #8a2be2, #6a19c9) !important;
+  color: white !important;
+  font-weight: 500 !important;
+}
+
+.react-datepicker__day--keyboard-selected {
+  background: transparent !important;
+  color: #f1f1f1 !important;
+}
+
+.react-datepicker__day--today {
+  font-weight: 600 !important;
+  color: #8a2be2 !important;
+}
+
+.react-datepicker__navigation {
+  top: 16px !important;
+  width: 2rem !important;
+  height: 2rem !important;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: #aaa !important;
+  border-width: 2px 2px 0 0 !important;
+  width: 8px !important;
+  height: 8px !important;
+  top: 10px !important;
+}
+
+.react-datepicker__navigation:hover *::before {
+  border-color: #f1f1f1 !important;
+}
+
+.react-datepicker__triangle {
+  display: none !important;
+}
+
+/* Анимация появления */
+.react-datepicker-popper[data-placement^="bottom"] {
+  animation: fadeInUp 0.3s ease-out !important;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Адаптация для мобильных */
 @media (max-width: 600px) {
   .filter-controls {
     flex-direction: column;
-    gap: 15px;
-    align-items: center;
+    align-items: stretch;
+    gap: 20px;
+    padding: 20px;
+    margin: 30px auto;
+  }
+
+  .filter-group {
+    width: 100%;
+    min-width: auto;
   }
 }
