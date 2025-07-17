@@ -1,12 +1,17 @@
+import { useState } from "react";
 import { format } from "date-fns";
 import "./RecordingListItem.css";
-import { useGetRecordingAnalysisQuery } from "../recordingsApi";
+import { useGetRecordingAnalysisQuery, useDeleteRecordingMutation } from "../recordingsApi";
 
-function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
+function RecordingListItem({ recording, isExpanded, onToggleExpand, onDelete }) {
   const { data: fullAnalysis, isLoading: isAnalysisLoading } =
     useGetRecordingAnalysisQuery(recording.record_id, {
       skip: !isExpanded,
     });
+  
+  const [deleteRecording] = useDeleteRecordingMutation();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const formattedDate = format(
     new Date(recording.record_date),
@@ -15,6 +20,28 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
 
   const displayRecording =
     isExpanded && fullAnalysis ? { ...recording, ...fullAnalysis } : recording;
+
+  const handleDeleteClick = (e) => {
+    e.stopPropagation();
+    setShowDeleteConfirm(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteRecording(recording.record_id).unwrap();
+      if (onDelete) onDelete(recording.record_id);
+    } catch (error) {
+      console.error("Failed to delete recording:", error);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false);
+  };
 
   return (
     <div
@@ -44,7 +71,43 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
 
       {isExpanded && (
         <div className="recording-details">
-          <h3>Full Analysis</h3>
+          <div className="details-header">
+            <h3>Full Analysis</h3>
+            <button 
+              onClick={handleDeleteClick}
+              className="delete-button"
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete Recording"}
+            </button>
+          </div>
+
+          {showDeleteConfirm && (
+            <div className="delete-confirmation">
+              <p>Are you sure you want to delete this recording?</p>
+              <div className="confirmation-buttons">
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleConfirmDelete();
+                  }}
+                  className="confirm-button"
+                  disabled={isDeleting}
+                >
+                  Yes, Delete
+                </button>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCancelDelete();
+                  }}
+                  className="cancel-button"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
 
           {isAnalysisLoading ? (
             <div className="loading-analysis">Loading analysis...</div>
