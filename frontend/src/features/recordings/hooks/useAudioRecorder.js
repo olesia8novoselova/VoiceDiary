@@ -187,7 +187,9 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
           `voice-${new Date().toISOString()}.wav`
         );
 
-        formData.append("userID", currentUser?.user_id?.toString() || "-1");
+        console.log(currentUser);
+
+        formData.append("userID", currentUser?.ID?.toString() || "-1");
 
         const result = await uploadRecording(formData).unwrap();
 
