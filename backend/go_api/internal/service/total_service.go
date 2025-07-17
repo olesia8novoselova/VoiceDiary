@@ -49,6 +49,10 @@ func (s *TotalService) GetCombinedSummary(ctx context.Context, summaries []strin
 }
 
 func (s *TotalService) calculateDominantEmotion(emotionCount map[string]int) string {
+	if len(emotionCount) == 0 {
+        return ""
+    }
+
 	// Определим противоположные эмоции
 	oppositeEmotions := map[string]string{
 		"happy":   "sad",
@@ -95,35 +99,42 @@ func (s *TotalService) calculateDominantEmotion(emotionCount map[string]int) str
 
 // Вычисляем доминирующую эмоцию за день на основе всех записей
 func (s *TotalService) CalculateDailyTotal(ctx context.Context, userID int, date time.Time) error {
-	log.Printf("CalculateDailyTotal: calculating for user %d on %s", userID, date.Format("2006-01-02"))
+    log.Printf("CalculateDailyTotal: calculating for user %d on %s", userID, date.Format("2006-01-02"))
 
-	// Получаем все записи пользователя за указанную дату
-	records, err := repository.GetRecordsStartingFromDate(ctx, s.db, userID, date, 0)
-	if err != nil {
-		return err
-	}
-
-	if len(records) == 0 {
-		return nil
-	}
-
-	emotionCount := make(map[string]int)
-	var allSummaries []string
-
-	for _, record := range records {
-		emotionCount[record.Emotion]++
-		allSummaries = append(allSummaries, record.Summary)
-	}
-
-	// общая эмоция
-	Emotion := s.calculateDominantEmotion(emotionCount)
-
-	// Генерируем общий summary
-	summary, err := s.GetCombinedSummary(ctx, allSummaries)
+    // Получаем все записи пользователя за указанную дату
+    records, err := repository.GetRecordsStartingFromDate(ctx, s.db, userID, date, 0)
     if err != nil {
         return err
     }
 
-	// Сохраняем результат
-	return s.UpdateUserTotal(ctx, userID, date, Emotion, summary)
+    if len(records) == 0 {
+        log.Printf("CalculateDailyTotal: no records found for user %d on date %s", userID, date.Format("2006-01-02"))
+        // Удаляем существующую запись total, если она есть
+        err := repository.DeleteUserTotal(ctx, s.db, userID, date)
+        if err != nil && err != sql.ErrNoRows {
+            return err
+        }
+        return nil
+    }
+
+    // Остальная логика остается без изменений
+    emotionCount := make(map[string]int)
+    var allSummaries []string
+
+    for _, record := range records {
+        emotionCount[record.Emotion]++
+        allSummaries = append(allSummaries, record.Summary)
+    }
+
+    // общая эмоция
+    Emotion := s.calculateDominantEmotion(emotionCount)
+
+    // Генерируем общий summary
+    summary, err := s.GetCombinedSummary(ctx, allSummaries)
+    if err != nil {
+        return err
+    }
+
+    // Сохраняем результат
+    return s.UpdateUserTotal(ctx, userID, date, Emotion, summary)
 }

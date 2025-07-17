@@ -46,12 +46,20 @@ func (h *TotalHandler) GetTotals(c *gin.Context) {
 	
 	// Запрос агрегированных данных из сервиса
 	totals, err := h.svc.GetUserTotals(c.Request.Context(), userID, startDate, endDate)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get totals"})
-		return
-	}
-	
-	c.JSON(http.StatusOK, totals)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get totals"})
+        return
+    }
+
+    if len(totals) == 0 {
+        c.JSON(http.StatusOK, gin.H{
+            "message": "No records found for the specified period",
+            "data":    []interface{}{},
+        })
+        return
+    }
+
+    c.JSON(http.StatusOK, totals)
 }
 
 func (h *TotalHandler) RecalculateTotal(c *gin.Context) {
@@ -73,10 +81,25 @@ func (h *TotalHandler) RecalculateTotal(c *gin.Context) {
 	
 	// Вызов сервиса для пересчёта данных
 	err = h.svc.CalculateDailyTotal(c.Request.Context(), userID, date)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to recalculate totals"})
-		return
-	}
-	
-	c.JSON(http.StatusOK, gin.H{"message": "Totals recalculated successfully"})
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to recalculate totals"})
+        return
+    }
+
+    // Проверяем, есть ли теперь записи
+    totals, err := h.svc.GetUserTotals(c.Request.Context(), userID, date, date)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to verify recalculation"})
+        return
+    }
+
+    if len(totals) == 0 {
+        c.JSON(http.StatusOK, gin.H{
+            "message": "No records found for the specified date",
+            "data":    nil,
+        })
+        return
+    }
+
+    c.JSON(http.StatusOK, totals[0])
 }
