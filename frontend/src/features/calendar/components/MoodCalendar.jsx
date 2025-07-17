@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { FaLightbulb } from 'react-icons/fa';
+import { FaLightbulb, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import './MoodCalendar.css';
 
 const dayNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -48,7 +49,7 @@ const MoodIcon = ({ mood }) => {
     <span
       className="mood-icon"
       title={currentMood.label}
-      style={{ backgroundColor: currentMood.color }}
+    
     >
       {currentMood.emoji}
     </span>
@@ -57,16 +58,16 @@ const MoodIcon = ({ mood }) => {
 
 const Calendar = () => {
   const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const currentDate = today.getDate();
-
-  const [selectedDay, setSelectedDay] = useState(currentDate);
+  const [currentDate, setCurrentDate] = useState(today);
+  const [selectedDay, setSelectedDay] = useState(today.getDate());
   const [voiceNotes, setVoiceNotes] = useState(() => {
     const savedNotes = localStorage.getItem('moodCalendarNotes');
     return savedNotes ? JSON.parse(savedNotes) : initialVoiceNotes;
   });
   const [isEditingMood, setIsEditingMood] = useState(false);
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
 
   const firstDay = new Date(year, month, 1);
   const startDay = (firstDay.getDay() + 6) % 7;
@@ -77,13 +78,12 @@ const Calendar = () => {
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1)
   ];
 
+  const monthName = currentDate.toLocaleString('en-US', { month: 'long' });
 
-
-  const monthName = today.toLocaleString('en-US', { month: 'long' });
-const saveNotes = (notes) => {
-  setVoiceNotes(notes);
-  localStorage.setItem('moodCalendarNotes', JSON.stringify(notes));
-};
+  const saveNotes = (notes) => {
+    setVoiceNotes(notes);
+    localStorage.setItem('moodCalendarNotes', JSON.stringify(notes));
+  };
 
   const handleDayClick = (day) => {
     if (day) {
@@ -91,6 +91,7 @@ const saveNotes = (notes) => {
       setIsEditingMood(false);
     }
   };
+
   const handleMoodChange = (newMood) => {
     const updatedNotes = {
       ...voiceNotes,
@@ -103,7 +104,14 @@ const saveNotes = (notes) => {
     setIsEditingMood(false);
   };
 
-  const currentNote = voiceNotes[selectedDay];
+  const changeMonth = (increment) => {
+    const newDate = new Date(currentDate);
+    newDate.setMonth(newDate.getMonth() + increment);
+    setCurrentDate(newDate);
+    setSelectedDay(null);
+  };
+
+  const currentNote = selectedDay ? voiceNotes[selectedDay] : null;
 
   return (
     <div className="calendar-wrapper">
@@ -113,7 +121,21 @@ const saveNotes = (notes) => {
       <div className="gradient-ball-4" />
       
       <div className="calendar-header">
-        <h2>{monthName} {year}</h2>
+        <div className="month-navigation">
+          <button 
+            onClick={() => changeMonth(-1)}
+            className="nav-button"
+          >
+            <FaChevronLeft />
+          </button>
+          <h2>{monthName} {year}</h2>
+          <button 
+            onClick={() => changeMonth(1)}
+            className="nav-button"
+          >
+            <FaChevronRight />
+          </button>
+        </div>
       </div>
 
       <div className="day-names">
@@ -125,34 +147,39 @@ const saveNotes = (notes) => {
       <div className="days-grid">
         {calendarDays.map((day, index) => (
           <div
-            key={index}
-            className={`day-cell ${day === selectedDay ? 'selected' : ''} ${
-              voiceNotes[day] ? 'has-note' : ''
-            }`}
-            onClick={() => handleDayClick(day)}
-          >
-            {day || ''}
-            {voiceNotes[day] && (
+          key={index}
+          className={`day-cell ${day === selectedDay ? 'selected' : ''} ${
+            voiceNotes[day] ? 'has-note' : ''
+          }`}
+          onClick={() => handleDayClick(day)}
+        >
+          {day && (
+            <span className="day-number">{day}</span>
+          )}
+          {voiceNotes[day] ? (
+            <div className="mood-emoji-main">
               <MoodIcon mood={voiceNotes[day].mood} />
-            )}
-          </div>
+            </div>
+          ) : day && (
+            <div className="empty-day"></div>
+          )}
+        </div>
         ))}
       </div>
 
       <div className="voice-note-panel">
-  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-    <h3>Daily Reflection</h3>
-    <button 
-      onClick={() => {
-        localStorage.removeItem('moodCalendarNotes');
-        setVoiceNotes(initialVoiceNotes);
-      }}
-      className="clear-data-btn"
-    >
-      Clear Data
-    </button>
-  </div>
-        <h3>Daily Reflection</h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3>Daily Reflection</h3>
+          <button 
+            onClick={() => {
+              localStorage.removeItem('moodCalendarNotes');
+              setVoiceNotes(initialVoiceNotes);
+            }}
+            className="clear-data-btn"
+          >
+            Clear Data
+          </button>
+        </div>
 
         {currentNote ? (
           <>
@@ -166,17 +193,17 @@ const saveNotes = (notes) => {
                   {currentNote.mood?.charAt(0).toUpperCase() + currentNote.mood?.slice(1)}
                   
                   <button 
-  className="edit-mood-btn"
-  onClick={() => setIsEditingMood(!isEditingMood)}
->
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M11 4H4V11H11V4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M20 13H13V20H20V13Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M11 13H7V17H11V13Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M17 4H13V8H17V4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-  {isEditingMood ? 'Cancel' : 'Edit Mood'}
-</button>
+                    className="edit-mood-btn"
+                    onClick={() => setIsEditingMood(!isEditingMood)}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M11 4H4V11H11V4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M20 13H13V20H20V13Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M11 13H7V17H11V13Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M17 4H13V8H17V4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    {isEditingMood ? 'Cancel' : 'Edit Mood'}
+                  </button>
                 </span>
               </div>
 
@@ -212,7 +239,11 @@ const saveNotes = (notes) => {
             </div>
           </>
         ) : (
-          <p className="empty-note">No reflection for this day</p>
+          <p className="empty-note">
+            {selectedDay 
+              ? `No reflection for ${monthName} ${selectedDay}, ${year}` 
+              : 'Select a day to view or add reflection'}
+          </p>
         )}
       </div>
     </div>

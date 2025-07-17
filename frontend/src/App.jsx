@@ -29,22 +29,24 @@ return (
               </div>
             )}
             <Routes>
+            <Route path="/homepage" element={<HomePage />} />
               <Route path="/" element={<Navigate to="/onboarding" replace />} />
               <Route path="/onboarding" element={<OnboardingPage />} />
               <Route path="/login" element={<AuthPage />} />
               <Route path="/signup" element={<AuthPage />} />
               
-              <Route element={<ProtectedRoute />}>
-                <Route path="/homepage" element={<HomePage />} />
+              {/* <Route element={<ProtectedRoute />}> */}
+                {/* <Route path="/homepage" element={<HomePage />} /> */}
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/profile/settings" element={<SettingsPage />} />
                 <Route path="/result" element={<ResultPage />} />
-              </Route>
+              {/* </Route> */}
 
-              <Route path="*" element={
+              {/* <Route path="*" element={
                 <Navigate to="/onboarding" replace state={{ from: '404-redirect' }} />
-              } />
+              } /> */}
             </Routes>
+            
           </main>
         </div>
       </Router>
