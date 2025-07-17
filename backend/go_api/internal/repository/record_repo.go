@@ -15,8 +15,8 @@ type Record struct {
 	RecordDate time.Time `json:"record_date"`
 	Emotion string `json:"emotion"`
 	Summary string `json:"summary"`
-	Feedback string `json:"feedback"` 
-	Insights map[string]string `json:"insights"` 
+	Feedback *int `json:"feedback"` 
+	Insights *map[string]string `json:"insights"` 
 }
 
 const getRecordsByUserSQL = `
@@ -93,11 +93,16 @@ func GetRecordByID(ctx context.Context, db *sql.DB, recordID int) (*Record, erro
 
 func GetLatestRecords(ctx context.Context, db *sql.DB, userID int, limit int) ([]Record, error) {
     query := `SELECT * FROM record WHERE user_id = $1 ORDER BY record_date DESC`
+    var rows *sql.Rows
+    var err error
+    
     if limit > 0 {
         query += ` LIMIT $2`
+        rows, err = db.QueryContext(ctx, query, userID, limit)
+    } else {
+        rows, err = db.QueryContext(ctx, query, userID)
     }
 
-    rows, err := db.QueryContext(ctx, query, userID, limit)
     if err != nil {
         return nil, err
     }
@@ -123,6 +128,42 @@ func GetRecordsStartingFromDate(ctx context.Context, db *sql.DB, userID int, dat
     }
 
     rows, err := db.QueryContext(ctx, query, userID, date, limit)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    var records []Record
+    for rows.Next() {
+        var record Record
+        err := rows.Scan(&record.ID, &record.UserID, &record.RecordDate, &record.Emotion, &record.Summary, &record.Feedback, &record.Insights)
+        if err != nil {
+            return nil, err
+        }
+        records = append(records, record)
+    }
+
+    return records, nil
+}
+
+func GetRecordsByDate(ctx context.Context, db *sql.DB, userID int, date time.Time, limit int) ([]Record, error) {
+    startOfDay := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
+    endOfDay := startOfDay.Add(24 * time.Hour)
+
+    query := `SELECT * FROM record WHERE user_id = $1 AND record_date >= $2 AND record_date < $3 ORDER BY record_date DESC`
+    if limit > 0 {
+        query += ` LIMIT $4`
+    }
+
+    var rows *sql.Rows
+    var err error
+    
+    if limit > 0 {
+        rows, err = db.QueryContext(ctx, query, userID, startOfDay, endOfDay, limit)
+    } else {
+        rows, err = db.QueryContext(ctx, query, userID, startOfDay, endOfDay)
+    }
+
     if err != nil {
         return nil, err
     }
