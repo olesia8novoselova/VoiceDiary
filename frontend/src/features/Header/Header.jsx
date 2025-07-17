@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { FaUser, FaCalendarAlt, FaChartLine, FaBook } from "react-icons/fa";
+import { FaUser, FaCalendarAlt, FaMicrophone, FaChartLine, FaBook } from "react-icons/fa";
 import "./Header.css";
 import { useNavigate } from "react-router-dom";
 
@@ -7,21 +7,24 @@ function Header({ currentDay = 1, streakDays = 0, onCalendarToggle }) {
   const location = useLocation();
   const navigate = useNavigate();
   const isHomePage = location.pathname === "/homepage";
+  const isJournalPage = location.pathname === "/journal";
 
   return (
-    <header className={`sticky-header ${isHomePage ? "transparent" : ""}`}>
+    <header className={`sticky-header ${isHomePage || isJournalPage ? "transparent" : ""}`}>
       <div className="header-content">
-        {isHomePage ? (
+        {isHomePage || isJournalPage ? (
           <div className="home-header-nav">
             <div className="nav-group left-group">
-              <div 
-                className="nav-box calendar" 
-                onClick={() => onCalendarToggle()}
-                title="Calendar"
-              >
-                <FaCalendarAlt className="icon" />
-                <span className="nav-label">Calendar</span>
-              </div>
+              {isHomePage && (
+                <div 
+                  className="nav-box calendar" 
+                  onClick={() => onCalendarToggle()}
+                  title="Calendar"
+                >
+                  <FaCalendarAlt className="icon" />
+                  <span className="nav-label">Calendar</span>
+                </div>
+              )}
               
               <div 
                 className="nav-box profile" 
@@ -35,12 +38,21 @@ function Header({ currentDay = 1, streakDays = 0, onCalendarToggle }) {
 
             <div className="nav-group right-group">
               <div 
-                className="nav-box journal" 
-                onClick={() => navigate("/journal")}
-                title="Journal"
+                className="nav-box home" 
+                onClick={() => navigate(isJournalPage ? "/homepage" : "/journal")}
+                title={isJournalPage ? "Home" : "Journal"}
               >
-                <FaBook className="icon" />
-                <span className="nav-label">Journal</span>
+                {isJournalPage ? (
+                  <>
+                    <FaMicrophone className="icon" />
+                    <span className="nav-label">Record</span>
+                  </>
+                ) : (
+                  <>
+                    <FaBook className="icon" />
+                    <span className="nav-label">Journal</span>
+                  </>
+                )}
               </div>
               
               <div className="nav-box progress" title="Progress">

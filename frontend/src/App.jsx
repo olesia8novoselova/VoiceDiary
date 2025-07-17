@@ -10,6 +10,7 @@ import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 import ProtectedRoute from "./app/ProtectedRoute";
 import InitializeAuth from "./features/auth/InitializeAuth";
+import JournalPage from "./pages/JournalPage"; 
 
 export default function App() {
   const [globalError, setGlobalError] = useState(null);
@@ -39,6 +40,7 @@ return (
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/profile/settings" element={<SettingsPage />} />
                 <Route path="/result" element={<ResultPage />} />
+                <Route path="/journal" element={<JournalPage />} />
               </Route>
 
               <Route path="*" element={
