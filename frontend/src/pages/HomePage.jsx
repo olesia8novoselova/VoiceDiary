@@ -2,9 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import AudioRecorder from "../features/recordings/components/AudioRecorder";
 import WaveAnimation from "../features/recordings/components/WaveAnimation";
 import RecordingCard from "../features/recordings/components/RecordingCard";
+import FeedbackWidget from "../features/recordings/components/FeedbackWidget";
 import Calendar from "../features/calendar/components/MoodCalendar";
 import Header from "../features/Header/Header";
 import "./HomePage.css";
+import { useSetRecordingFeedbackMutation } from "../features/recordings/recordingsApi";
 
 const prompts = [
   "How was your day?",
@@ -21,18 +23,11 @@ function HomePage() {
   const [isRecording, setIsRecording] = useState(false);
   const [currentPrompt, setCurrentPrompt] = useState("");
   const [analysisResult, setAnalysisResult] = useState(null);
+  const [showFeedback, setShowFeedback] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const resultRef = useRef(null);
-  const [currentDay, setCurrentDay] = useState(1);
-
-  useEffect(() => {
-    const storedDays = JSON.parse(localStorage.getItem("recordedDays") || "[]");
-    const currentMonth = new Date().toISOString().slice(0, 7);
-    const daysThisMonth = storedDays.filter((day) =>
-      day.startsWith(currentMonth)
-    );
-    setCurrentDay(daysThisMonth.length);
-  }, [analysisResult]);
+  const [currentDay] = useState(1);
+  const [setFeedback] = useSetRecordingFeedbackMutation();
 
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * prompts.length);
@@ -51,6 +46,30 @@ function HomePage() {
       }, 100);
     }
   }, [analysisResult]);
+
+  const handleRecordingStart = () => {
+    setAnalysisResult(null);
+    setShowFeedback(false);
+    setIsRecording(true);
+  };
+
+  const handleFeedbackSubmit = async (rating) => {
+    try {
+      if (!analysisResult?.record_id) {
+        console.error("No recording ID available for feedback");
+        return;
+      }
+
+      await setFeedback({
+        recordId: analysisResult.record_id,
+        feedback: rating
+      }).unwrap();
+
+      console.log("Feedback submitted successfully:", rating);
+    } catch (error) {
+      console.error("Failed to submit feedback:", error);
+    }
+  };
 
   return (
     <div className={`home-page ${showCalendar ? "calendar-mode" : ""}`}>
@@ -73,7 +92,11 @@ function HomePage() {
           <p className="prompt-message">{currentPrompt}</p>
           <AudioRecorder
             setIsRecording={setIsRecording}
-            onResult={setAnalysisResult}
+            onRecordingStart={handleRecordingStart}
+            onResult={(result) => {
+              setAnalysisResult(result);
+              setShowFeedback(true);
+            }}
           />
         </div>
       </div>
@@ -81,8 +104,9 @@ function HomePage() {
       <WaveAnimation className="wave-container" isRecording={isRecording} />
 
       {analysisResult && (
-        <div ref={resultRef}>
+        <div ref={resultRef} className="result-container">
           <RecordingCard result={analysisResult} />
+          {showFeedback && <FeedbackWidget onSubmit={handleFeedbackSubmit} />}
         </div>
       )}
 
@@ -91,7 +115,6 @@ function HomePage() {
           <button className="close-btn" onClick={() => setShowCalendar(false)}>
             ✕
           </button>
-
           <div className="calendar-container-homepage">
             <Calendar />
           </div>

@@ -1,5 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { API_CONFIG } from "../../../config";
+import {
+  useUploadRecordingMutation,
+  useGetRecordingInsightsMutation,
+} from "../recordingsApi";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../../auth/authSlice";
+
 
 const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
   const [isRecording, setRecording] = useState(false);
@@ -14,6 +20,9 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isActionInProgress, setIsActionInProgress] = useState(false);
+  const [uploadRecording] = useUploadRecordingMutation();
+  const [getRecordingInsights] = useGetRecordingInsightsMutation();
+  const currentUser = useSelector(selectCurrentUser);
 
   useEffect(() => {
     const checkPermission = async () => {
@@ -163,74 +172,40 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
   };
 
   const saveRecording = async () => {
-  setIsActionInProgress(true);
-  if (audioBlob) {
-    try {
-      setIsLoading(true);
-      setRecordTime(0);
-      setAudioBlob(null);
-      resetRecorder();
+    setIsActionInProgress(true);
+    if (audioBlob) {
+      try {
+        setIsLoading(true);
+        setRecordTime(0);
+        setAudioBlob(null);
+        resetRecorder();
 
-      const formData = new FormData();
-      formData.append(
-        "file",
-        audioBlob,
-        `voice-${new Date().toISOString()}.wav`
-      );
-      formData.append("userID", "-1");
+        const formData = new FormData();
+        formData.append(
+          "file",
+          audioBlob,
+          `voice-${new Date().toISOString()}.wav`
+        );
 
-      console.log('FormData content:');
-      for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-      }
+        formData.append("userID", currentUser?.user_id?.toString() || "-1");
 
-      const response = await fetch(
-        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.RECORDS.UPLOAD}`,
-        {
-          method: "POST",
-          body: formData,
+        const result = await uploadRecording(formData).unwrap();
+
+        if (onResult) {
+          onResult({
+            emotion: result.emotion,
+            summary: result.summary,
+            record_date: new Date(),
+            record_id: result.record_id,
+          });
         }
-      );
 
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
-
-      const result = await response.json();
-      console.log('First response result:', result);
-
-      if (onResult) {
-        onResult({
-          emotion: result.emotion,
-          summary: result.summary,
-          record_date: new Date(),
-        });
-      }
-
-      if (result.text) {
-        try {
-          const insightsRequestData = { 
-            text: result.text, 
-            record_id: result.record_id 
-          };
-          console.log('Second request payload:', insightsRequestData);
-
-          const insightsResponse = await fetch(
-            `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.RECORDS.GET_INSIGHTS}`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(insightsRequestData),
-            }
-          );
-
-          console.log('Second response status:', insightsResponse.status);
-
-          if (insightsResponse.ok) {
-            const insightsResult = await insightsResponse.json();
-            console.log('Second response result:', insightsResult);
+        if (result.text) {
+          try {
+            const insightsResult = await getRecordingInsights({
+              text: result.text,
+              record_id: result.record_id,
+            }).unwrap();
 
             if (onResult) {
               onResult((prev) => ({
@@ -238,26 +213,22 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
                 insights: insightsResult.insights,
               }));
             }
-          } else {
-            const errorResponse = await insightsResponse.text();
-            console.error('Second request failed with response:', errorResponse);
+          } catch (insightsError) {
+            console.error("Error fetching insights:", insightsError);
           }
-        } catch (insightsError) {
-          console.error("Error fetching insights:", insightsError);
         }
+      } catch (error) {
+        console.error("Error during processing:", error);
+        alert("Error during processing:", error);
+      } finally {
+        setAudioBlob(null);
+        setRecordTime(0);
+        resetRecorder();
+        setIsActionInProgress(false);
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error during processing:", error);
-      alert("Error during processing:", error);
-    } finally {
-      setAudioBlob(null);
-      setRecordTime(0);
-      resetRecorder();
-      setIsActionInProgress(false);
-      setIsLoading(false);
     }
-  }
-};
+  };
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)

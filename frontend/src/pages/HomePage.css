@@ -2,46 +2,34 @@
   padding-top: 100px;
   position: relative;
   min-height: 100vh;
- padding: 60px 20px 300px;
-  font-family: 'Intel', sans-serif;
+  padding: 150px 20px 20px;
+  font-family: "Intel", sans-serif;
   background-color: #000;
   color: white;
   overflow: hidden;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.8s ease forwards;
 }
+
+.result-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
 .calendar-container-homepage {
   position: absolute;
-  top: 100px; 
+  top: 100px;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
   max-width: 500px;
   z-index: 1000;
 }
-.home-header {
-  position: fixed;
-  top: 20px;
-  right: 30px; 
-  z-index: 1000;
-}
-.profile-box {
-  position: fixed; 
-  top: 20px; 
-  left: 30px; 
-  z-index: 1000;
-}
-
-.result-header {
-  position: absolute;
-  top: 20px;
-  right: 30px; 
-  z-index: 900;
-}
-
 
 .home-content {
   text-align: center;
@@ -63,7 +51,6 @@
   margin-bottom: 3rem;
 }
 
-
 .prompt-section {
   margin-top: 2rem;
 }
@@ -82,11 +69,10 @@
   font-style: italic;
 }
 
-
 .gradient-ball,
 .gradient-ball-2,
 .gradient-ball-3,
-.gradient-ball-4{
+.gradient-ball-4 {
   position: fixed;
   border-radius: 50%;
   filter: blur(80px);
@@ -127,8 +113,6 @@
   left: 50%;
   transform: translateX(-50%);
 }
-
-
 
 .wave-container {
   position: absolute;
@@ -192,7 +176,6 @@
     transform: translateY(0);
   }
 }
-
 
 .home-page.calendar-mode {
   overflow: hidden;
