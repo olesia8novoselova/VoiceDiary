@@ -15,6 +15,29 @@ function RecordingCard({ result }) {
     }
   );
 
+  const renderInsightSection = (title, content, renderFn) => {
+    if (!content || (Array.isArray(content) && content.length === 0))
+      return null;
+    return (
+      <div className="card-section">
+        <h3>
+          <span className="section-icon">
+            {title === "Emotional Analysis" && "🧠"}
+            {title === "Physical Response" && "💪"}
+            {title === "Coping Strategies" && "🛡️"}
+            {title === "Recommendations" && "💡"}
+          </span>
+          {title}
+        </h3>
+        {renderFn(content)}
+      </div>
+    );
+  };
+
+  const hasCopingStrategies = (strategies) => {
+    return strategies?.effective || strategies?.ineffective;
+  };
+
   return (
     <div className="recording-card">
       <div className="card-header">
@@ -39,137 +62,75 @@ function RecordingCard({ result }) {
         <p className="summary-text">{result.summary}</p>
       </div>
 
-      {/* <div className="card-section">
-        <h3>Emotional Analysis</h3>
-        <div className="insights-grid">
-          <div className="insight-item">
-            <h4>Pattern</h4>
-            <p>{result.insights.emotional_dynamics}</p>
-          </div>
-
-          <div className="insight-item">
-            <h4>Key Triggers</h4>
-            <ul>
-              {result.insights.key_triggers.map((trigger, index) => (
-                <li key={index}>{trigger}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div className="card-section">
-        <h3>Physical Responses</h3>
-        <div className="physical-responses">
-          <div>
-            <span role="img" aria-label="Morning">
-              🌞
-            </span>
-            <p>{result.insights.physical_reactions.morning}</p>
-          </div>
-          <div>
-            <span role="img" aria-label="Afternoon">
-              🌆
-            </span>
-            <p>{result.insights.physical_reactions.afternoon}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="card-section">
-        <h3>Coping Strategies</h3>
-        <div className="strategy-boxes">
-          <div className="strategy successful">
-            <h4>What worked</h4>
-            <p>{result.insights.coping_effectiveness.successful}</p>
-          </div>
-          <div className="strategy unsuccessful">
-            <h4>What didn't</h4>
-            <p>{result.insights.coping_effectiveness.unsuccessful}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="card-section">
-        <h3>Recommendations</h3>
-        <ol className="recommendations-list">
-          {result.insights.recommendations.map((rec, index) => (
-            <li key={index}>
-              <strong>{rec.split(":")[0]}:</strong> {rec.split(":")[1]}
-            </li>
-          ))}
-        </ol>
-      </div> */}
-
-      {result.insights && (
+      {result.insights ? (
         <>
-          <div className="card-section">
-            <h3>Emotional Analysis</h3>
-            <div className="insights-grid">
-              <div className="insight-item">
-                <h4>Pattern</h4>
-                <p>{result.insights.emotional_dynamics}</p>
+          {renderInsightSection(
+            "Emotional Analysis",
+            result.insights.emotional_dynamics,
+            (content) => (
+              <div className="insights-grid">
+                <div className="insight-item">
+                  <h4>📈 Pattern</h4>
+                  <p>{content || "No pattern data available"}</p>
+                </div>
+                {result.insights.key_triggers?.length > 0 && (
+                  <div className="insight-item">
+                    <h4>🔑 Key Triggers</h4>
+                    <ul>
+                      {result.insights.key_triggers.map((trigger, index) => (
+                        <li key={index}>{trigger}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
+            )
+          )}
 
-              <div className="insight-item">
-                <h4>Key Triggers</h4>
-                <ul>
-                  {result.insights.key_triggers.map((trigger, index) => (
-                    <li key={index}>{trigger}</li>
-                  ))}
-                </ul>
+          {renderInsightSection(
+            "Physical Response",
+            result.insights.physical_reaction,
+            (reaction) => (
+              <div className="physical-response">
+                <p>{reaction || "No physical reaction data available"}</p>
+              </div>
+            )
+          )}
+
+          {hasCopingStrategies(result.insights.coping_strategies) && (
+            <div className="card-section">
+              <h3>Coping Strategies</h3>
+              <div className="strategy-boxes">
+                {result.insights.coping_strategies.effective && (
+                  <div className="strategy successful">
+                    <h4>✅ Effective</h4>
+                    <p>{result.insights.coping_strategies.effective}</p>
+                  </div>
+                )}
+                {result.insights.coping_strategies.ineffective && (
+                  <div className="strategy unsuccessful">
+                    <h4>❌ Ineffective</h4>
+                    <p>{result.insights.coping_strategies.ineffective}</p>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
+          )}
 
-          <div className="card-section">
-            <h3>Physical Responses</h3>
-            <div className="physical-responses">
-              <div>
-                <span role="img" aria-label="Morning">
-                  🌞
-                </span>
-                <p>{result.insights.physical_reactions.morning}</p>
-              </div>
-              <div>
-                <span role="img" aria-label="Afternoon">
-                  🌆
-                </span>
-                <p>{result.insights.physical_reactions.afternoon}</p>
-              </div>
+          {result.insights.recommendations?.length > 0 && (
+            <div className="card-section">
+              <h3>Recommendations</h3>
+              <ol className="recommendations-list">
+                {result.insights.recommendations.map((rec, index) => (
+                  <li key={index}>{rec}</li>
+                ))}
+              </ol>
             </div>
-          </div>
-
-          <div className="card-section">
-            <h3>Coping Strategies</h3>
-            <div className="strategy-boxes">
-              <div className="strategy successful">
-                <h4>What worked</h4>
-                <p>{result.insights.coping_effectiveness.successful}</p>
-              </div>
-              <div className="strategy unsuccessful">
-                <h4>What didn't</h4>
-                <p>{result.insights.coping_effectiveness.unsuccessful}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="card-section">
-            <h3>Recommendations</h3>
-            <ol className="recommendations-list">
-              {result.insights.recommendations.map((rec, index) => (
-                <li key={index}>
-                  <strong>{rec.split(":")[0]}:</strong> {rec.split(":")[1]}
-                </li>
-              ))}
-            </ol>
-          </div>
+          )}
         </>
-      )}
-
-      {!result.insights && (
+      ) : (
         <div className="card-section">
-          <p>Loading detailed analysis...</p>
+          <p>Detailed analysis is being processed...</p>
         </div>
       )}
 

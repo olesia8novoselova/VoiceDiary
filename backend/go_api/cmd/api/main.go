@@ -39,7 +39,7 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
     AllowOrigins:     []string{frontendURL, "http://178.205.96.163:8080", "http://178.205.96.163:3000"},
-    AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+    AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
     AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
     ExposeHeaders:    []string{"Content-Length"},
     AllowCredentials: true,
@@ -57,6 +57,7 @@ func main() {
 		userGroup.POST("/logout", middleware.AuthMiddleware(userService), userHandler.Logout)
 		userGroup.GET("/me", middleware.AuthMiddleware(userService), userHandler.Me)
 		userGroup.GET("/:userID/records", recordHandler.GetRecords)
+		userGroup.PATCH("/me", middleware.AuthMiddleware(userService), userHandler.UpdateProfile)
 	}
 
 	// Record-related endpoints
@@ -65,8 +66,8 @@ func main() {
 		recordGroup.GET("/:recordID", recordHandler.GetRecordAnalysis)
 		recordGroup.POST("/upload", recordHandler.UploadRecord)
 		recordGroup.POST("/insights", recordHandler.GetRecordInsights)
-		recordGroup.DELETE("/records/:recordID", recordHandler.DeleteRecord)
-		recordGroup.POST("/records/:recordID/feedback", recordHandler.SetRecordFeedback)
+		recordGroup.DELETE("/:recordID", recordHandler.DeleteRecord)
+		recordGroup.POST("/:recordID/feedback", recordHandler.SetRecordFeedback)
 	}
 
 	r.GET("/swagger/*any",

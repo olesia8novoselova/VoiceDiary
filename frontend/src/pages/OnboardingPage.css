@@ -6,34 +6,6 @@ body {
   overflow-x: hidden;
   position: relative;
 }
-/* body::before,
-body::after,
-body .gradient-ball,
-body .gradient-ball-2,
-body .gradient-ball-3,
-body .gradient-ball-4 body .gradient-ball-5 {
-  content: "";
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(80px);
-  z-index: -1;
-}
-
-body::before {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle at center, #963a49 0%, transparent 70%);
-  top: 300px;
-  left: 100px;
-}
-
-body::after {
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle at center, #02143a 0%, transparent 70%);
-  bottom: 200px;
-  right: 200px;
-} */
 
 .gradient-ball,
 .gradient-ball-2,
