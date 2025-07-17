@@ -1,7 +1,32 @@
 import json
+import re
+from typing import Any
 
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
+
+
+def clean_output(output) -> dict[str, Any]:
+    # удаляем промпт и мусор
+    text = re.sub(r'<<SYS>>.*?<</SYS>>\n?', '', output, flags=re.DOTALL)
+    text = re.sub(r'\[INST\].*?\[/INST\]\n?', '', text, flags=re.DOTALL)
+    normalized_text = (
+        text.replace('\\n', ' ')
+        .replace('\\"', '"')
+        .replace('\\\\', '\\')
+        .strip()
+    )
+
+    json_match = re.search(r'\{.*\}', normalized_text, re.DOTALL)  # находим реальный джсон
+    if not json_match:
+        return {}
+
+    json_str = json_match.group(0)
+
+    try:
+        return json.loads(json_str)
+    except json.JSONDecodeError:
+        return {}
 
 
 class InsightsModel:
@@ -23,45 +48,42 @@ class InsightsModel:
         )
 
     def create_prompt(self, text):
-        return f"""<<SYS>>You are a psychological analysis assistant. Extract insights from text into this exact JSON format:<</SYS>>
+        return """<<SYS>>You are a psychological analysis assistant. Extract insights from text into this exact JSON format. Be specific and concrete.<</SYS>>
 
 [INST]
-Analyze this text and output ONLY valid JSON:
+Analyze the text and output ONLY pure JSON with:
+- Empty strings for missing data
+- Arrays when multiple items possible
+- NO additional text/comments
 
-{{
-    "insights": {{
-        "emotional_dynamics": "Describe emotional shifts concisely",
-        "key_triggers": [
-            "Positive: [specific trigger]",
-            "Negative: [specific trigger]"
-        ],
-        "physical_reaction": "Notable physical response with timing if available",
-        "coping_strategies": {{
-            "effective": "[specific action]",
-            "ineffective": "[specific action]"
-        }},
-        "recommendations": [
-            "Concrete suggestion 1",
-            "Concrete suggestion 2"
-        ]
-    }}
-}}
+Structure EXACTLY:
+```json
+{
+  "insights": {
+    "emotional_dynamics": "",
+    "key_triggers": [],
+    "physical_reaction": "",
+    "coping_strategies": {
+      "effective": "",
+      "ineffective": ""
+    },
+    "recommendations": []
+  }
+}
+```\n\n""" + f"""Text: '''{text}'''
+[/INST] """
 
-Text: '''{text}'''
-[/INST]
-
-Important:
-- Use only the provided fields
-- Be specific and concrete
-- Output must be valid JSON"""
-
-    def analyze_text(self, text, max_new_tokens=500):  # 500, чтобы сильно болтать не начал
-        prompt = self.create_prompt(text)
+    def analyze_text(self, input_text, max_new_tokens=500) -> dict[str, Any]:  # 500, чтобы сильно болтать не начал
+        prompt = self.create_prompt(input_text)
 
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.DEVICE)  # инпут в токены
 
+        # Generate attention mask to fix the warning
+        attention_mask = inputs.attention_mask if 'attention_mask' in inputs else None
+
         output = self.model.generate(
             inputs.input_ids,
+            attention_mask=attention_mask,  # Added attention mask
             max_new_tokens=max_new_tokens,
             temperature=0.2,  # Lower for more deterministic output
             do_sample=True,  # чтобы температура работала
@@ -71,13 +93,4 @@ Important:
 
         full_output = self.tokenizer.decode(output[0], skip_special_tokens=True)  # токены в аутпут
 
-        json_str = full_output.split('{', 1)[1].rsplit('}', 1)[0]
-        json_str = '{' + json_str + '}'
-        if "<<SYS>>" in json_str:
-            json_str = json_str.split("<<SYS>>")[1]
-        if "[SOL]" in json_str:
-            json_str = json_str.split("[SOL]")[1]
-        if "<|im_sep|>" in json_str:
-            json_str = json_str.split("<|im_sep|>")[1]
-        json_data = json.loads(json_str)
-        return json_data
+        return clean_output(full_output)
