@@ -7,11 +7,11 @@ export const recordingsApi = createApi({
     baseUrl: API_CONFIG.BASE_URL,
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
-      console.log('Cookies:', document.cookie);
+      console.log("Cookies:", document.cookie);
       return headers;
     },
   }),
-  tagTypes: ['Recordings'],
+  tagTypes: ["Recordings"],
   endpoints: (builder) => ({
     uploadRecording: builder.mutation({
       query: (formData) => ({
@@ -19,7 +19,7 @@ export const recordingsApi = createApi({
         method: "POST",
         body: formData,
       }),
-      invalidatesTags: ['Recordings'],
+      invalidatesTags: ["Recordings"],
       transformResponse: (response) => {
         console.log("[UPLOAD RECORDING] Server response:", response);
         return response;
@@ -31,10 +31,13 @@ export const recordingsApi = createApi({
     }),
     getRecordings: builder.query({
       query: ({ userId, date, limit }) => ({
-        url: API_CONFIG.ENDPOINTS.USER_RECORDS.GET_ALL.replace(':userID', userId),
+        url: API_CONFIG.ENDPOINTS.USER_RECORDS.GET_ALL.replace(
+          ":userID",
+          userId
+        ),
         params: { date, limit },
       }),
-      providesTags: ['Recordings'],
+      providesTags: ["Recordings"],
       transformResponse: (response) => {
         console.log("[GET RECORDINGS] Success:", response);
         return response;
@@ -49,8 +52,14 @@ export const recordingsApi = createApi({
     }),
     getRecordingAnalysis: builder.query({
       query: (recordId) => ({
-        url: API_CONFIG.ENDPOINTS.RECORDS.GET_ANALYSIS.replace(':recordID', recordId),
+        url: API_CONFIG.ENDPOINTS.RECORDS.GET_ANALYSIS.replace(
+          ":recordID",
+          recordId
+        ),
       }),
+      providesTags: (recordId) => [
+        { type: "Recordings", id: recordId },
+      ],
       transformResponse: (response) => {
         console.log("[GET ANALYSIS] Success:", response);
         return response;
@@ -86,10 +95,10 @@ export const recordingsApi = createApi({
     }),
     deleteRecording: builder.mutation({
       query: (recordId) => ({
-        url: API_CONFIG.ENDPOINTS.RECORDS.DELETE.replace(':recordID', recordId),
+        url: API_CONFIG.ENDPOINTS.RECORDS.DELETE.replace(":recordID", recordId),
         method: "DELETE",
       }),
-      invalidatesTags: ['Recordings'],
+      invalidatesTags: ["Recordings"],
       transformResponse: (response) => {
         console.log("[DELETE RECORDING] Success:", response);
         return response;
@@ -104,14 +113,17 @@ export const recordingsApi = createApi({
     }),
     setRecordingFeedback: builder.mutation({
       query: ({ recordId, feedback }) => ({
-        url: API_CONFIG.ENDPOINTS.RECORDS.SET_FEEDBACK.replace(':recordID', recordId),
+        url: API_CONFIG.ENDPOINTS.RECORDS.SET_FEEDBACK.replace(
+          ":recordID",
+          recordId
+        ),
         method: "POST",
         body: { feedback },
         headers: {
           "Content-Type": "application/json",
         },
       }),
-      invalidatesTags: ['Recordings'],
+      invalidatesTags: ["Recordings"],
       transformResponse: (response) => {
         console.log("[SET FEEDBACK] Success:", response);
         return response;

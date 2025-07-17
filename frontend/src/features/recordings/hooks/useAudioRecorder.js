@@ -206,7 +206,7 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
           try {
             const insightsResult = await getRecordingInsights({
               text: result.text,
-              record_id: result.record_id,
+              // record_id: result.record_id,
             }).unwrap();
 
             if (onResult) {
