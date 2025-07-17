@@ -48,6 +48,10 @@ func (s *RecordService) SaveRecord(ctx context.Context, userID int, emotion stri
 	return repository.SaveRecord(ctx, s.db, userID, emotion, summary)
 }
 
+func (s *RecordService) SaveInsights(ctx context.Context, record_id int, insights string) error {
+	return repository.SaveInsights(ctx, s.db, record_id, insights)
+}
+
 func (s *RecordService) FetchRecordByID(ctx context.Context, recordID int) (*repository.Record, error) {
     return repository.GetRecordByID(ctx, s.db, recordID)
 }

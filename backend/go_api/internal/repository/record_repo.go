@@ -44,6 +44,34 @@ func SaveRecord(ctx context.Context, db *sql.DB, userID int, emotion string, sum
 	return recordID, nil
 }
 
+func SaveInsights(ctx context.Context, db *sql.DB, record_id int, insights string) error {
+	log.Printf("SaveInsights: saving record for recordID %d", record_id)
+
+	query := `
+	    UPDATE record
+	    SET insights = $2
+	    WHERE record_id = $1
+	`
+
+	res, err := db.ExecContext(ctx, query, record_id, insights)
+	if err != nil {
+		log.Printf("SaveInsights: failed to save record, error: %v", err)
+		return err
+	}
+    rowsAffected, err := res.RowsAffected()
+    if err != nil {
+        log.Printf("SaveInsights: failed to get rows affected for record %d", record_id)
+        return err
+    }
+    if rowsAffected == 0 {
+        log.Printf("SaveInsights: no record found with ID %d", record_id)
+        return sql.ErrNoRows
+    }
+
+	log.Printf("SaveInsights: successfully saved insights for recordID %d", record_id)
+	return nil
+}
+
 func GetRecordsByUser(ctx context.Context, db *sql.DB, userID int) ([]Record, error) {
 	log.Printf("GetRecordsByUser: fetching records for userID %d", userID)
 

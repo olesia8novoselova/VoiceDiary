@@ -1,6 +1,7 @@
 package handler
 
 import (
+    "encoding/json"
 	"bytes"
 	"database/sql"
 	"io"
@@ -217,6 +218,27 @@ func (h *RecordHandler) GetRecordInsights(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze text"})
 		return
 	}
+
+    recordIDStr := c.PostForm("recordID")
+    recordID, err := strconv.Atoi(recordIDStr)
+    if err != nil {
+        log.Printf("AnalyzeText: invalid recordtID %s, error: %v", recordIDStr, err)
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid record ID"})
+        return
+    }
+
+    b, err := json.Marshal(result.Insights)
+    insights_str := string(b)
+
+    // Save insights in DB
+    if recordID != -1 {
+        err = h.svc.SaveInsights(c.Request.Context(), recordID, insights_str)
+        if err != nil {
+            log.Printf("UploadRecord: failed to save insights, error: %v", err)
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save insights"})
+            return
+        }
+    }
 
 	c.JSON(http.StatusOK, result.Insights)
 
