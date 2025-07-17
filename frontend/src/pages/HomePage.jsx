@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-
+import { useState, useEffect, useRef } from "react";
 import AudioRecorder from "../features/recordings/components/AudioRecorder";
 import WaveAnimation from "../features/recordings/components/WaveAnimation";
 import RecordingCard from "../features/recordings/components/RecordingCard";
+import FeedbackWidget from "../features/recordings/components/FeedbackWidget";
 import Calendar from "../features/calendar/components/MoodCalendar";
+import Header from "../features/Header/Header";
 import "./HomePage.css";
+import { useSetRecordingFeedbackMutation } from "../features/recordings/recordingsApi";
 
 const prompts = [
   "How was your day?",
@@ -22,19 +23,11 @@ function HomePage() {
   const [isRecording, setIsRecording] = useState(false);
   const [currentPrompt, setCurrentPrompt] = useState("");
   const [analysisResult, setAnalysisResult] = useState(null);
+  const [showFeedback, setShowFeedback] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const resultRef = useRef(null);
-  const [currentDay, setCurrentDay] = useState(1);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const storedDays = JSON.parse(localStorage.getItem("recordedDays") || "[]");
-    const currentMonth = new Date().toISOString().slice(0, 7);
-    const daysThisMonth = storedDays.filter((day) =>
-      day.startsWith(currentMonth)
-    );
-    setCurrentDay(daysThisMonth.length);
-  }, [analysisResult]);
+  const [currentDay] = useState(1);
+  const [setFeedback] = useSetRecordingFeedbackMutation();
 
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * prompts.length);
@@ -54,6 +47,30 @@ function HomePage() {
     }
   }, [analysisResult]);
 
+  const handleRecordingStart = () => {
+    setAnalysisResult(null);
+    setShowFeedback(false);
+    setIsRecording(true);
+  };
+
+  const handleFeedbackSubmit = async (rating) => {
+    try {
+      if (!analysisResult?.record_id) {
+        console.error("No recording ID available for feedback");
+        return;
+      }
+
+      await setFeedback({
+        recordId: analysisResult.record_id,
+        feedback: rating
+      }).unwrap();
+
+      console.log("Feedback submitted successfully:", rating);
+    } catch (error) {
+      console.error("Failed to submit feedback:", error);
+    }
+  };
+
   return (
     <div className={`home-page ${showCalendar ? "calendar-mode" : ""}`}>
       <div className="gradient-ball"></div>
@@ -62,16 +79,10 @@ function HomePage() {
       <div className="gradient-ball-4"></div>
       <div className="gradient-ball-5"></div>
 
-      <div className="result-header">
-        <div className="day-box" onClick={() => setShowCalendar(true)}>
-          <p>Day {currentDay}/30</p>
-          <small>Click to see calendar</small>
-        </div>
-
-        <div className="profile-box" onClick={() => navigate("/profile")}>
-          <p>Your profile</p>
-        </div>
-      </div>
+      <Header
+        currentDay={currentDay}
+        onCalendarToggle={() => setShowCalendar(!showCalendar)}
+      />
 
       <div className="home-content">
         <h1 className="main-title">Your AI Voice Diary</h1>
@@ -81,7 +92,11 @@ function HomePage() {
           <p className="prompt-message">{currentPrompt}</p>
           <AudioRecorder
             setIsRecording={setIsRecording}
-            onResult={setAnalysisResult}
+            onRecordingStart={handleRecordingStart}
+            onResult={(result) => {
+              setAnalysisResult(result);
+              setShowFeedback(true);
+            }}
           />
         </div>
       </div>
@@ -89,8 +104,9 @@ function HomePage() {
       <WaveAnimation className="wave-container" isRecording={isRecording} />
 
       {analysisResult && (
-        <div ref={resultRef}>
+        <div ref={resultRef} className="result-container">
           <RecordingCard result={analysisResult} />
+          {showFeedback && <FeedbackWidget onSubmit={handleFeedbackSubmit} />}
         </div>
       )}
 
@@ -99,7 +115,6 @@ function HomePage() {
           <button className="close-btn" onClick={() => setShowCalendar(false)}>
             ✕
           </button>
-
           <div className="calendar-container-homepage">
             <Calendar />
           </div>
