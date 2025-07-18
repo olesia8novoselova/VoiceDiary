@@ -195,54 +195,51 @@ type InsightsResponse struct {
 // @Failure 400 {object} map[string]string
 // @Router /records/insights [post]
 func (h *RecordHandler) GetRecordInsights(c *gin.Context) {
-	log.Println("GetRecordInsights: received request")
+    log.Println("GetRecordInsights: received request")
 
-	var input struct {
-		Text string `json:"text"`
-	}
-	if err := c.BindJSON(&input); err != nil {
-		log.Printf("GetRecordInsights: invalid JSON body, error: %v", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
-		return
-	}
-
-	if input.Text == "" {
-		log.Println("GetRecordInsights: empty text input")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Text is required"})
-		return
-	}
-
-	result, err := h.svc.AnalyzeText(c.Request.Context(), input.Text)
-	if err != nil {
-		log.Printf("GetRecordInsights: failed to analyze text, error: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze text"})
-		return
-	}
-
-    recordIDStr := c.PostForm("recordID")
-    recordID, err := strconv.Atoi(recordIDStr)
-    if err != nil {
-        log.Printf("AnalyzeText: invalid recordtID %s, error: %v", recordIDStr, err)
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid record ID"})
+    var input struct {
+        Text     string `json:"text"`
+        RecordID int    `json:"recordID"` 
+    }
+    
+    if err := c.BindJSON(&input); err != nil {
+        log.Printf("GetRecordInsights: invalid JSON body, error: %v", err)
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
         return
     }
 
-    b, err := json.Marshal(result.Insights)
-    insights_str := string(b)
+    if input.Text == "" {
+        log.Println("GetRecordInsights: empty text input")
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Text is required"})
+        return
+    }
 
-    // Save insights in DB
-    if recordID != -1 {
-        err = h.svc.SaveInsights(c.Request.Context(), recordID, insights_str)
+    result, err := h.svc.AnalyzeText(c.Request.Context(), input.Text)
+    if err != nil {
+        log.Printf("GetRecordInsights: failed to analyze text, error: %v", err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to analyze text"})
+        return
+    }
+
+    
+    if input.RecordID != -1 { 
+        b, err := json.Marshal(result.Insights)
         if err != nil {
-            log.Printf("UploadRecord: failed to save insights, error: %v", err)
+            log.Printf("GetRecordInsights: failed to marshal insights, error: %v", err)
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process insights"})
+            return
+        }
+        
+        err = h.svc.SaveInsights(c.Request.Context(), input.RecordID, string(b)) 
+        if err != nil {
+            log.Printf("GetRecordInsights: failed to save insights, error: %v", err)
             c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save insights"})
             return
         }
     }
 
-	c.JSON(http.StatusOK, result.Insights)
-
-	log.Println("GetRecordInsights: analysis completed successfully")
+    c.JSON(http.StatusOK, result.Insights)
+    log.Println("GetRecordInsights: analysis completed successfully")
 }
 
 // DeleteRecord deletes a record by its ID.

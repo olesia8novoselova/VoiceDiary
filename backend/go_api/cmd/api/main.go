@@ -48,6 +48,9 @@ func main() {
 	recordHandler := handler.NewRecordHandler(db, cfg.MLServiceURL)
 	userService := service.NewUserService(db)
 	userHandler := handler.NewUserHandler(userService)
+	totalService := service.NewTotalService(db, cfg.MLServiceURL)
+	recordService := service.NewRecordService(db, cfg.MLServiceURL)
+	totalHandler := handler.NewTotalHandler(totalService, recordService)
 
 	// User-related endpoints
 	userGroup := r.Group("/users")
@@ -68,6 +71,12 @@ func main() {
 		recordGroup.POST("/insights", recordHandler.GetRecordInsights)
 		recordGroup.DELETE("/:recordID", recordHandler.DeleteRecord)
 		recordGroup.POST("/:recordID/feedback", recordHandler.SetRecordFeedback)
+	}
+
+	totalGroup := r.Group("/totals")
+	{
+    totalGroup.GET("/:userID", totalHandler.GetTotals)
+    totalGroup.POST("/:userID/recalculate/:date", totalHandler.RecalculateTotal)
 	}
 
 	r.GET("/swagger/*any",

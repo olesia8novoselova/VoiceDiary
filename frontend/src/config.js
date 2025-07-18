@@ -19,6 +19,10 @@ export const API_CONFIG = {
       GET_INSIGHTS: '/records/insights',
       DELETE: '/records/:recordID',
       SET_FEEDBACK: '/records/:recordID/feedback'
+    },
+    TOTALS: {
+      GET: '/totals/:userID',
+      RECALCULATE: '/totals/:userID/recalculate/:date'
     }
   }
 };
