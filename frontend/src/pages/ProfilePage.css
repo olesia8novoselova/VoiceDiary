@@ -217,7 +217,7 @@
   border-bottom: 2px solid #8b5cf6;
 }
 
-.entries-grid {
+/* .entries-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1rem;
@@ -228,4 +228,4 @@
   border-radius: 8px;
   padding: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.05);
-}
+} */
