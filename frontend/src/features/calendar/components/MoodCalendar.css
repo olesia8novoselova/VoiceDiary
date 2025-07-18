@@ -1,6 +1,3 @@
-
-
-
 .gradient-ball,
 .gradient-ball-2,
 .gradient-ball-3,
@@ -47,7 +44,6 @@
   transform: translateX(-50%);
 }
 
-
 .calendar-wrapper {
   max-width: 100%;
   color: white;
@@ -60,7 +56,6 @@
   position: relative;
   z-index: 1;
 }
-
 
 .calendar-header {
   text-align: center;
@@ -101,7 +96,6 @@
   transform: scale(1.1);
 }
 
-
 .day-names {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -111,7 +105,6 @@
   font-size: 0.85rem;
   font-weight: 500;
 }
-
 
 .days-grid {
   display: grid;
@@ -156,7 +149,6 @@
   font-weight: 600;
 }
 
-
 .mood-emoji-main {
   font-size: 1.8rem;
   display: flex;
@@ -167,10 +159,6 @@
   background: none;
   border: none;
 }
-
-/* .day-cell.selected .mood-emoji-main {
-  color: white;
-} */
 
 .empty-day {
   width: 60%;
@@ -183,167 +171,10 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
-
-.voice-note-panel {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.voice-note-panel h3 {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-  color: #fff;
-}
-
-.note-section {
-  margin-bottom: 1.5rem;
-}
-
-.note-content {
-  line-height: 1.6;
-  margin-bottom: 1rem;
-}
-
-
-.mood-summary {
-  font-size: 0.95rem;
-  margin-bottom: 0.5rem;
-  color: rgba(255, 255, 255, 0.9);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.mood-emoji {
-  font-size: 1.5rem;
-  background: transparent;
-  border: none;
-}
-
-.summary-section {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.85);
-  margin-top: 1rem;
-}
-
-.recommendation-section {
-  background: rgba(139, 92, 246, 0.1);
-  border-radius: 8px;
-  padding: 1rem;
-  border-left: 3px solid #8b5cf6;
-  margin-top: 1rem;
-}
-
-.recommendation-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.recommendation-icon {
-  color: #8b5cf6;
-}
-
-.recommendation-header h4 {
-  font-size: 0.95rem;
-  color: #8b5cf6;
-  margin: 0;
-}
-
-.recommendation-text {
-  margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.empty-note {
-  color: rgba(255, 255, 255, 0.5);
-  font-style: italic;
-  text-align: center;
-  padding: 1rem 0;
-}
-
-
-.mood-selector {
-  display: flex;
-  gap: 0.75rem;
-  margin: 1rem 0;
-  flex-wrap: wrap;
-}
-
-.mood-option {
-  border-radius: 50%;
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  transition: transform 0.2s;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-}
-
-.mood-option:hover {
-  transform: scale(1.2);
-}
-
-
-.edit-mood-btn {
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 1.5rem;
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: #fff;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-  margin-left: 0.5rem;
-}
-
-.edit-mood-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.clear-data-btn {
-  padding: 0.3rem 0.6rem;
-  background: rgba(255, 99, 71, 0.2);
-  border: 1px solid rgba(255, 99, 71, 0.3);
-  border-radius: 0.25rem;
-  color: tomato;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.clear-data-btn:hover {
-  background: rgba(255, 99, 71, 0.3);
-}
-
-.panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.mood-emoji-main,
-.mood-emoji,
-.mood-option {
+.mood-emoji-main {
   background: none !important;
   border: none !important;
   box-shadow: none !important;
   outline: none !important;
   padding: 0 !important;
 }
-

@@ -93,4 +93,34 @@ func CallMLServiceWithInsights(ctx context.Context, mlURL string, text string) (
 	return &result, nil
 }
 
+func CallMLServiceWithCombinedText(ctx context.Context, mlURL string, combinedText string) (*AnalysisResult, error) {
+    log.Printf("CallMLServiceWithCombinedText: sending combined text to ML service")
+    
+    payload := map[string]string{"text": combinedText}
+	jsonBytes, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+
+    req, err := http.NewRequestWithContext(ctx, http.MethodPost, mlURL+"/process_text", bytes.NewBuffer(jsonBytes))
+    if err != nil {
+        return nil, err
+    }
+    req.Header.Set("Content-Type", "application/json")
+
+    // отправка запроса
+    resp, err := http.DefaultClient.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    defer resp.Body.Close()
+    // обработка ответа
+    var result AnalysisResult
+    if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+        return nil, err
+    }
+    
+    return &result, nil
+}
+
 
