@@ -12,7 +12,7 @@ const ProfilePage = () => {
   const [logoutApi] = useLogoutMutation();
   
   const user = useSelector(selectCurrentUser);
-  const [activeTab, setActiveTab] = useState("calendar");
+  const [setActiveTab] = useState("calendar");
 
   useGetMeQuery(undefined, { skip: !user });
 
