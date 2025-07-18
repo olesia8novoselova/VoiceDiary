@@ -16,7 +16,7 @@ type Record struct {
 	Emotion string `json:"emotion"`
 	Summary string `json:"summary"`
 	Feedback *int `json:"feedback"` 
-	Insights *map[string]string `json:"insights"` 
+	Insights sql.NullString `json:"insights"` 
 }
 
 const getRecordsByUserSQL = `
