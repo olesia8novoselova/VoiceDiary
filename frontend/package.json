@@ -4,6 +4,7 @@
   "private": true,
   "proxy": "http://localhost:8080",
   "dependencies": {
+    "@craco/craco": "^7.1.0",
     "@reduxjs/toolkit": "^2.8.2",
     "@svgr/webpack": "^8.1.0",
     "@testing-library/dom": "^10.4.0",
@@ -19,15 +20,15 @@
     "web-vitals": "^2.1.4",
     "webpack-dev-server": "^5.2.2"
   },
- "scripts": {
-  "start": "GENERATE_SOURCEMAP=false react-scripts start",
-  "build": "GENERATE_SOURCEMAP=false react-scripts build",
-  "test": "react-scripts test --watchAll=false",
-  "test:watch": "react-scripts test --watchAll",
-  "test:ci": "CI=true react-scripts test --watchAll=false",
-  "test:once": "react-scripts test --watchAll=false",
-  "eject": "react-scripts eject"
-},
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --watchAll=false",
+    "test:watch": "react-scripts test --watchAll",
+    "test:ci": "CI=true react-scripts test --watchAll=false",
+    "test:once": "react-scripts test --watchAll=false",
+    "eject": "react-scripts eject"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
