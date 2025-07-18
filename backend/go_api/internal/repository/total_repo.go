@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 )
@@ -38,44 +39,39 @@ func SaveOrUpdateUserTotal(ctx context.Context, db *sql.DB, userID int, date tim
 }
 
 func GetUserTotalsByDateRange(ctx context.Context, db *sql.DB, userID int, startDate, endDate time.Time) ([]UserTotal, error) {
-    log.Printf("GetUserTotalsByDateRange: fetching totals for user %d from %s to %s", 
-        userID, startDate.Format("2006-01-02"), endDate.Format("2006-01-02"))
+    log.Printf("Querying totals for user %d between %s and %s (as dates)", 
+        userID, 
+        startDate.Format("2006-01-02"), 
+        endDate.Format("2006-01-02"))
 
     query := `
-        SELECT id, user_id, date, emotion, summary
-        FROM user_totals
-        WHERE user_id = $1 AND date BETWEEN $2 AND $3
-        ORDER BY date ASC
-    `
+        SELECT record_id, user_id, record_date, emotion, summary 
+FROM record
+WHERE user_id = $1 
+  AND record_date::date BETWEEN $2::date AND $3::date
+ORDER BY record_date ASC`
+    
     rows, err := db.QueryContext(ctx, query, userID, startDate, endDate)
     if err != nil {
-        return nil, err
+        log.Printf("Query failed: %v", err)
+        return nil, fmt.Errorf("failed to query user totals: %w", err)
     }
     defer rows.Close()
-
+    
     var totals []UserTotal
     for rows.Next() {
         var t UserTotal
-        var emotion, summary sql.NullString
-        
-        if err := rows.Scan(&t.ID, &t.UserID, &t.Date, &emotion, &summary); err != nil {
-            return nil, err
+        err := rows.Scan(&t.ID, &t.UserID, &t.Date, &t.Emotion, &t.Summary)
+        if err != nil {
+            log.Printf("Row scan failed: %v", err)
+            return nil, fmt.Errorf("failed to scan user total: %w", err)
         }
-        
-        // Правильное преобразование NullString в *string
-        if emotion.Valid {
-            val := emotion.String
-            t.Emotion = &val
-        }
-        
-        if summary.Valid {
-            val := summary.String
-            t.Summary = &val
-        }
-        
+        t.Date = time.Date(t.Date.Year(), t.Date.Month(), t.Date.Day(), 0, 0, 0, 0, t.Date.Location())
         totals = append(totals, t)
     }
-
+    
+    log.Printf("Found %d totals for user %d", len(totals), userID)
+    
     return totals, nil
 }
 

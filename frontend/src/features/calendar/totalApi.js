@@ -19,6 +19,10 @@ export const totalsApi = createApi({
       }),
       providesTags: ["Totals"],
       transformResponse: (response) => {
+        if (!response.success) {
+          console.error("[GET TOTALS] Error response:", response);
+          return { success: false, data: [] };
+        }
         console.log("[GET TOTALS] Success:", response);
         return response;
       },
@@ -27,7 +31,10 @@ export const totalsApi = createApi({
           status: response.status,
           data: response.data,
         });
-        return response;
+        return {
+          success: false,
+          error: response.data?.error || "Failed to fetch totals",
+        };
       },
     }),
     recalculateTotals: builder.mutation({

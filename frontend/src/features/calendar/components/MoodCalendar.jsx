@@ -21,26 +21,26 @@ const Calendar = () => {
   const startDate = new Date(year, month, 1).toISOString().split('T')[0];
   const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0];
   
-  const { data: monthlyData } = useGetTotalsQuery(
+  const { data: response } = useGetTotalsQuery(
     { userId, startDate, endDate },
     { skip: !userId }
   );
 
-useEffect(() => {
-  if (monthlyData) {
-    const transformedData = {};
-    if (Array.isArray(monthlyData)) {
-      monthlyData.forEach(day => {
+  useEffect(() => {
+    if (response?.success && response.data) {
+      const transformedData = {};
+      response.data.forEach(day => {
         const dayNumber = new Date(day.date).getDate();
         transformedData[dayNumber] = {
           mood: day.emotion,
           summary: day.summary
         };
       });
+      setDailyData(transformedData);
+    } else {
+      setDailyData({});
     }
-    setDailyData(transformedData);
-  }
-}, [monthlyData]);
+  }, [response]);
 
   const firstDay = new Date(year, month, 1);
   const startDay = (firstDay.getDay() + 6) % 7;
