@@ -1,10 +1,11 @@
 services:
   db:
+    env_file: ".env"
     image: postgres:latest
     restart: always
     environment:
-      POSTGRES_USER: voicediary_user
-      POSTGRES_PASSWORD: voicediary_password
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: voicedb
     ports:
       - "5430:5432"
