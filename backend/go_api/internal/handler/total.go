@@ -21,6 +21,18 @@ func NewTotalHandler(svc *service.TotalService, recordSvc *service.RecordService
 	}
 }
 
+// @Summary Get total
+// @Description  total
+// @Tags         totals
+// @Accept       json
+// @Produce      json
+// @Param        userID      path      int     true   "ID rrrrrr"
+// @Param        start_date  query     string  true   "rr(YYYY-MM-DD)"
+// @Param        end_date    query     string  true   "rrr (YYYY-MM-DD)"
+// @Success      200         {object}  map[string]interface{}
+// @Failure      400         {object}  map[string]interface{}
+// @Failure      500         {object}  map[string]interface{}
+// @Router       /users/{userID}/totals [get]
 func (h *TotalHandler) GetTotals(c *gin.Context) {
     userIDStr := c.Param("userID")
     userID, err := strconv.Atoi(userIDStr)
@@ -90,6 +102,16 @@ func (h *TotalHandler) GetTotals(c *gin.Context) {
     c.JSON(http.StatusOK, response)
 }
 
+// @Summary      Пересчитать показатели за конкретный день
+// @Description  return data
+// @Tags         totals
+// @Accept       json
+// @Produce      json
+// @Param        userID  path      int     true  "ID gggggg"
+// @Param        date    path      string  true  "ggg (YYYY-MM-DD)"
+// @Success      200     {object}  map[string]interface{}
+// @Failure      400     {object}  map[string]interface{}
+// @Router       /users/{userID}/totals/{date}/recalculate [post]
 func (h *TotalHandler) RecalculateTotal(c *gin.Context) {
     userIDStr := c.Param("userID")
     userID, err := strconv.Atoi(userIDStr)
