@@ -28,7 +28,7 @@ func (s *TotalService) UpdateUserTotal(ctx context.Context, userID int, date tim
 }
 
 func (s *TotalService) GetUserTotals(ctx context.Context, userID int, startDate, endDate time.Time) ([]repository.UserTotal, error) {
-	return repository.GetUserTotalsByDateRange(ctx, s.db, userID, startDate, endDate)
+    return repository.GetUserTotalsByDateRange(ctx, s.db, userID, startDate, endDate)
 }
 
 func (s *TotalService) GetCombinedSummary(ctx context.Context, summaries []string) (string, error) {

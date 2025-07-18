@@ -22,35 +22,51 @@ func NewTotalHandler(svc *service.TotalService, recordSvc *service.RecordService
 }
 
 func (h *TotalHandler) GetTotals(c *gin.Context) {
-	userIDStr := c.Param("userID")
-	userID, err := strconv.Atoi(userIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
-	
-	startDateStr := c.Query("start_date")
-	endDateStr := c.Query("end_date")
-	
-	startDate, err := time.Parse("2006-01-02", startDateStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid start date"})
-		return
-	}
-	
-	endDate, err := time.Parse("2006-01-02", endDateStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid end date"})
-		return
-	}
-	
-	// Запрос агрегированных данных из сервиса
-	totals, err := h.svc.GetUserTotals(c.Request.Context(), userID, startDate, endDate)
+    // Получаем и валидируем userID
+    userIDStr := c.Param("userID")
+    userID, err := strconv.Atoi(userIDStr)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+        return
+    }
+
+    // Получаем даты из query параметров
+    startDateStr := c.Query("start_date")
+    endDateStr := c.Query("end_date")
+
+    // Парсим даты
+    startDate, err := time.Parse("2006-01-02", startDateStr)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid start date format, use YYYY-MM-DD"})
+        return
+    }
+
+    endDate, err := time.Parse("2006-01-02", endDateStr)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid end date format, use YYYY-MM-DD"})
+        return
+    }
+
+    // Проверяем что start_date <= end_date
+    if startDate.After(endDate) {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Start date must be before or equal to end date"})
+        return
+    }
+
+    // Ограничиваем максимальный диапазон (например, 1 год)
+    if endDate.Sub(startDate) > 365*24*time.Hour {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Date range cannot exceed 1 year"})
+        return
+    }
+
+    // Получаем данные из сервиса
+    totals, err := h.svc.GetUserTotals(c.Request.Context(), userID, startDate, endDate)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get totals"})
         return
     }
 
+    // Вариант 1: Возвращаем только дни с данными (как у вас было)
     if len(totals) == 0 {
         c.JSON(http.StatusOK, gin.H{
             "message": "No records found for the specified period",
@@ -58,7 +74,8 @@ func (h *TotalHandler) GetTotals(c *gin.Context) {
         })
         return
     }
-
+	
+    // Возвращаем как есть (только дни с данными)
     c.JSON(http.StatusOK, totals)
 }
 
