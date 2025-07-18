@@ -171,6 +171,7 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
     setShowDeleteConfirm(false);
   };
 
+
   const saveRecording = async () => {
     setIsActionInProgress(true);
     if (audioBlob) {
@@ -179,20 +180,17 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
         setRecordTime(0);
         setAudioBlob(null);
         resetRecorder();
-
+  
         const formData = new FormData();
         formData.append(
           "file",
           audioBlob,
           `voice-${new Date().toISOString()}.wav`
         );
-
-        console.log(currentUser);
-
         formData.append("userID", currentUser?.ID?.toString() || "-1");
-
+  
         const result = await uploadRecording(formData).unwrap();
-
+  
         if (onResult) {
           onResult({
             emotion: result.emotion,
@@ -201,14 +199,14 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
             record_id: result.record_id,
           });
         }
-
+  
         if (result.text) {
           try {
             const insightsResult = await getRecordingInsights({
               text: result.text,
-              // record_id: result.record_id,
+              recordID: result.record_id, 
             }).unwrap();
-
+  
             if (onResult) {
               onResult((prev) => ({
                 ...prev,
@@ -221,7 +219,7 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
         }
       } catch (error) {
         console.error("Error during processing:", error);
-        alert("Error during processing:", error);
+        alert("Error during processing: " + error.message);
       } finally {
         setAudioBlob(null);
         setRecordTime(0);
