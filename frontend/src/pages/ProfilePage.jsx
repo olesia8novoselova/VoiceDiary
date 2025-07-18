@@ -12,11 +12,7 @@ const ProfilePage = () => {
   const [logoutApi] = useLogoutMutation();
   
   const user = useSelector(selectCurrentUser);
-  const [activeTab, setActiveTab] = useState("calendar");
-  const [entries] = useState([
-    { id: 1, date: "2023-10-01", mood: "Happy", note: "Good day" },
-    { id: 2, date: "2023-10-02", mood: "Sad", note: "Meeting was tough" },
-  ]);
+  const [setActiveTab] = useState("calendar");
 
   useGetMeQuery(undefined, { skip: !user });
 
@@ -98,36 +94,18 @@ const ProfilePage = () => {
         
         <div className="tabs">
           <button 
-            className={activeTab === "calendar" ? "active" : ""}
+            className="active"
             onClick={() => setActiveTab("calendar")}
           >
             Calendar
           </button>
-          <button 
-            className={activeTab === "entries" ? "active" : ""}
-            onClick={() => setActiveTab("entries")}
-          >
-            Entries
-          </button>
         </div>
         
         <div className="tab-content">
-          {activeTab === "calendar" ? (
-            <div className="calendar-container">
-              <h3>Your Mood Calendar</h3>
-              <Calendar />
-            </div>
-          ) : (
-            <div className="entries-grid">
-              {entries.map((entry) => (
-                <div key={entry.id} className="entry-card">
-                  <p><strong>Date:</strong> {entry.date}</p>
-                  <p><strong>Mood:</strong> {entry.mood}</p>
-                  {entry.note && <p><strong>Note:</strong> {entry.note}</p>}
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="calendar-container">
+            <h3>Your Mood Calendar</h3>
+            <Calendar />
+          </div>
         </div>
       </div>
     </div>
