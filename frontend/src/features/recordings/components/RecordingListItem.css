@@ -1,23 +1,60 @@
 .recording-item {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.02)
+  );
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 15px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
 }
 
+.recording-item:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #a5b4fc, #6366f1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
 .recording-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.recording-item:hover:before {
+  opacity: 1;
 }
 
 .recording-item.expanded {
-  background: rgba(30, 30, 30, 0.8);
-  border-color: rgba(138, 43, 226, 0.3);
+  background: rgba(30, 30, 50, 0.8);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.recording-item .expand-icon {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  width: 20px;
+  height: 20px;
+  color: #aaa;
+  transition: transform 0.3s ease;
+}
+
+.recording-item.expanded .expand-icon {
+  transform: rotate(180deg);
 }
 
 .recording-summary {
@@ -30,271 +67,285 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-bottom: 8px;
   flex-wrap: wrap;
 }
 
 .emotion-badge {
-  padding: 4px 10px;
+  padding: 6px 14px;
   border-radius: 20px;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 600;
   text-transform: capitalize;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
 }
 
 .emotion-badge.happy {
-  background: rgba(46, 204, 113, 0.2);
-  color: #2ecc71;
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.3), rgba(76, 175, 80, 0.3));
+  color: #a5d6a7;
+}
+
+.emotion-badge.surprised {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.3), rgba(255, 193, 7, 0.3));
+  color: #ffe082;
 }
 
 .emotion-badge.sad {
-  background: rgba(52, 152, 219, 0.2);
-  color: #3498db;
+  background: linear-gradient(135deg, rgba(66, 165, 245, 0.3), rgba(100, 181, 246, 0.3));
+  color: #bbdefb;
+}
+
+.emotion-badge.fearful {
+  background: linear-gradient(135deg, rgba(171, 71, 188, 0.3), rgba(186, 104, 200, 0.3));
+  color: #e1bee7;
+}
+
+.emotion-badge.disgust {
+  background: linear-gradient(135deg, rgba(139, 195, 74, 0.3), rgba(174, 213, 129, 0.3));
+  color: #dce775;
 }
 
 .emotion-badge.angry {
-  background: rgba(231, 76, 60, 0.2);
-  color: #e74c3c;
+  background: linear-gradient(135deg, rgba(239, 83, 80, 0.3), rgba(239, 154, 154, 0.3));
+  color: #ffcdd2;
 }
 
 .emotion-badge.neutral {
-  background: rgba(149, 165, 166, 0.2);
-  color: #95a5a6;
+  background: linear-gradient(135deg, rgba(158, 158, 158, 0.3), rgba(189, 189, 189, 0.3));
+  color: #f5f5f5;
 }
 
 .date {
   color: #aaa;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 .feedback {
-  color: #f39c12;
-  font-size: 0.85rem;
+  display: flex;
+  gap: 2px;
+}
+
+.star {
+  color: #555;
+}
+
+.star.filled {
+  color: #8556fa;
 }
 
 .recording-preview p {
   margin: 0;
   color: #ddd;
-  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.recording-item.expanded .recording-preview p {
+  -webkit-line-clamp: unset;
 }
 
 .recording-details {
-  margin-top: 16px;
-  padding-top: 16px;
+  margin-top: 20px;
+  padding-top: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.details-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+.detail-section {
+  margin-bottom: 20px;
 }
 
-.details-header h3 {
+.detail-section h4 {
+  margin-bottom: 12px;
+  color: #a5b4fc;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.insight-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.insight-subsection {
+  margin-top: 12px;
+}
+
+.insight-subsection h5 {
+  color: #cac1f9;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.strategy-container {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.strategy-card {
+  flex: 1;
+  min-width: 200px;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.strategy-card.effective {
+  background: rgba(46, 125, 50, 0.1);
+  border-left: 3px solid #81c784;
+}
+
+.strategy-card.ineffective {
+  background: rgba(239, 83, 80, 0.1);
+  border-left: 3px solid #ef9a9a;
+}
+
+.strategy-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.strategy-header h5 {
   margin: 0;
-  color: #fff;
-  font-size: 1.2rem;
+  font-size: 0.9rem;
+}
+
+.recommendations-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.recommendations-card ol {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.recommendations-card li {
+  margin-bottom: 8px;
+}
+
+.recommendations-card li:last-child {
+  margin-bottom: 0;
+}
+
+.loading-analysis {
+  color: #aaa;
+  text-align: center;
+  padding: 20px;
+}
+
+.loading-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.skeleton-line {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  height: 16px;
+}
+
+.skeleton-line.short { width: 30%; }
+.skeleton-line.medium { width: 60%; }
+.skeleton-line.long { width: 90%; }
+
+.recording-header {
+  cursor: pointer;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
 }
 
 .delete-button {
-  background: rgba(231, 76, 60, 0.2);
-  color: #e74c3c;
-  border: 1px solid rgba(231, 76, 60, 0.3);
-  padding: 6px 12px;
+  background: rgba(239, 83, 80, 0.2);
+  color: #ef5350;
+  border: 1px solid rgba(239, 83, 80, 0.5);
   border-radius: 6px;
-  font-size: 0.85rem;
+  padding: 8px 16px;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .delete-button:hover {
-  background: rgba(231, 76, 60, 0.3);
+  background: rgba(239, 83, 80, 0.3);
 }
 
-.delete-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.delete-confirmation {
-  background: rgba(44, 44, 44, 0.8);
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 16px;
-  border-left: 3px solid #e74c3c;
-}
-
-.delete-confirmation p {
-  margin: 0 0 12px 0;
-  color: #eee;
-}
-
-.confirmation-buttons {
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
-  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-.confirm-button {
-  background: #e74c3c;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  transition: background-color 0.2s;
+.confirm-modal {
+  background: #2a2a3a;
+  padding: 25px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-.confirm-button:hover {
-  background: #c0392b;
+.confirm-modal h3 {
+  margin-top: 0;
+  color: #ff6b6b;
 }
 
-.confirm-button:disabled {
-  background: #e67e7e;
-  cursor: not-allowed;
-}
-
-.cancel-button {
-  background: transparent;
-  color: #aaa;
-  border: 1px solid #555;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  transition: all 0.2s;
-}
-
-.cancel-button:hover {
-  background: rgba(255, 255, 255, 0.05);
+.confirm-modal p {
+  margin-bottom: 25px;
   color: #ddd;
 }
 
-.error-message {
-  background: rgba(231, 76, 60, 0.15);
-  border-left: 3px solid #e74c3c;
-  padding: 10px 15px;
-  border-radius: 6px;
-  margin-bottom: 16px;
+.modal-actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  animation: fadeIn 0.3s ease-out;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
-.error-message span {
-  color: #ff9999;
-  font-size: 0.85rem;
-}
-
-.dismiss-error-button {
-  background: transparent;
+.cancel-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ddd;
   border: none;
-  color: #ff9999;
-  font-size: 1.2rem;
+  border-radius: 6px;
+  padding: 8px 16px;
   cursor: pointer;
-  padding: 0 0 0 10px;
-  line-height: 1;
+  transition: all 0.2s ease;
 }
 
-.dismiss-error-button:hover {
-  color: #fff;
+.cancel-button:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
-.detail-section {
-  margin-bottom: 16px;
+.confirm-delete-button {
+  background: rgba(239, 83, 80, 0.8);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.detail-section h4 {
-  margin: 0 0 8px 0;
-  color: #8a2be2;
-  font-size: 1rem;
-}
-
-.detail-section p, 
-.detail-section ul, 
-.detail-section ol {
-  margin: 0;
-  color: #ccc;
-  line-height: 1.6;
-}
-
-.detail-section ul, 
-.detail-section ol {
-  padding-left: 20px;
-}
-
-.loading-analysis {
-  color: #aaa;
-  font-style: italic;
-  text-align: center;
-  padding: 16px 0;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.emotion-badge {
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-
-.emotion-badge.happy {
-  background: rgba(46, 204, 113, 0.2);
-  color: #2ecc71;
-  border: 1px solid rgba(46, 204, 113, 0.3);
-}
-
-
-.emotion-badge.sad {
-  background: rgba(52, 152, 219, 0.2);
-  color: #3498db;
-  border: 1px solid rgba(52, 152, 219, 0.3);
-}
-
-
-.emotion-badge.angry {
-  background: rgba(231, 76, 60, 0.2);
-  color: #e74c3c;
-  border: 1px solid rgba(231, 76, 60, 0.3);
-}
-
-
-.emotion-badge.neutral {
-  background: rgba(149, 165, 166, 0.2);
-  color: #95a5a6;
-  border: 1px solid rgba(149, 165, 166, 0.3);
-}
-
-
-.emotion-badge.disgust {
-  background: rgba(127, 140, 0, 0.2);
-  color: #8B8D00;
-  border: 1px solid rgba(127, 140, 0, 0.3);
-}
-
-
-.emotion-badge.fearful {
-  background: rgba(243, 156, 18, 0.2);
-  color: #f39c12;
-  border: 1px solid rgba(243, 156, 18, 0.3);
-}
-
-
-.emotion-badge.surprised {
-  background: rgba(155, 89, 182, 0.2);
-  color: #9b59b6;
-  border: 1px solid rgba(155, 89, 182, 0.3);
+.confirm-delete-button:hover {
+  background: rgba(239, 83, 80, 1);
 }

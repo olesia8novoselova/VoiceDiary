@@ -177,13 +177,32 @@ func (h *RecordHandler) GetRecordAnalysis(c *gin.Context) {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Record not found"})
         return
     }
-    c.JSON(http.StatusOK, record)
 
+    var insightsMap map[string]any
+    if record.Insights.Valid && record.Insights.String != "" {
+        if err := json.Unmarshal([]byte(record.Insights.String), &insightsMap); err != nil {
+            log.Printf("GetRecordAnalysis: failed to unmarshal insights for record %d, error: %v", recordID, err)
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse insights"})
+            return
+        }
+    }
+
+    response := gin.H{
+        "record_id":    record.ID,
+        "user_id":     record.UserID,
+        "record_date":  record.RecordDate,
+        "emotion":      record.Emotion,
+        "summary":      record.Summary,
+        "feedback":     record.Feedback,
+        "insights":    insightsMap["insights"].(map[string]any),
+    }
+
+    c.JSON(http.StatusOK, response)
     log.Printf("GetRecordAnalysis: successfully fetched record with ID %d", recordID)
 }
 
 type InsightsResponse struct {
-    Insights map[string]interface{} `json:"insights"`
+    Insights map[string]any `json:"insights"`
 }
 
 // GetRecordInsights returns insights for a specific record.
