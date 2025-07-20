@@ -3,7 +3,6 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import OnboardingPage from '../pages/OnboardingPage';
 import '@testing-library/jest-dom';
 
-
 jest.mock('../features/Header/Header', () => () => <div>Header</div>);
 jest.mock('../features/recordings/components/AudioRecorder', () => ({ 
   setIsRecording, onRecordingStart, onResult 
@@ -20,11 +19,6 @@ jest.mock('../features/recordings/components/WaveAnimation', () => ({ isRecordin
 ));
 jest.mock('../features/recordings/components/RecordingCard', () => ({ result }) => (
   <div className="recording-card">RecordingCard: {result.emotion}</div>
-));
-jest.mock('../features/recordings/components/FeedbackWidget', () => ({ onSubmit }) => (
-  <div className="feedback-container">
-    <button onClick={() => onSubmit(5)}>Submit Feedback</button>
-  </div>
 ));
 
 describe('OnboardingPage', () => {
@@ -51,33 +45,17 @@ describe('OnboardingPage', () => {
     expect(screen.getByText('Mood Calendar')).toBeInTheDocument();
   });
 
-
-
   it('handles recording start and shows wave animation', () => {
     render(<OnboardingPage />);
     fireEvent.click(screen.getByText('Start Recording'));
     expect(screen.getByText('WaveAnimation recording')).toBeInTheDocument();
   });
 
-  it('displays recording card and feedback after getting result', () => {
+  it('displays recording card after getting result', () => {
     render(<OnboardingPage />);
     fireEvent.click(screen.getByText('Mock Result'));
-    
     expect(screen.getByText('RecordingCard: happy')).toBeInTheDocument();
-    expect(screen.getByText('Submit Feedback')).toBeInTheDocument();
   });
-
-  it('handles feedback submission', () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    render(<OnboardingPage />);
-    fireEvent.click(screen.getByText('Mock Result'));
-    fireEvent.click(screen.getByText('Submit Feedback'));
-    
-    expect(consoleSpy).toHaveBeenCalledWith('Feedback submitted:', 5);
-    consoleSpy.mockRestore();
-  });
-
-
 
   it('matches snapshot', () => {
     const { asFragment } = render(<OnboardingPage />);
