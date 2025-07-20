@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 
@@ -262,4 +263,31 @@ func UpdateRecordEmotion(ctx context.Context, db *sql.DB, recordID int, emotion 
         return sql.ErrNoRows
     }
     return nil
+}
+
+func GetConsecutiveRecordingDays(ctx context.Context, db *sql.DB, userID int) (int, error) {
+    query := `
+        WITH dates AS (
+            SELECT DISTINCT DATE(record_date) as day 
+            FROM record 
+            WHERE user_id = $1
+            ORDER BY day DESC
+        ),
+        grouped_dates AS (
+            SELECT 
+                day,
+                day - ROW_NUMBER() OVER (ORDER BY day) * INTERVAL '1 day' as grp
+            FROM dates
+        )
+        SELECT COUNT(*) as consecutive_days
+        FROM grouped_dates
+        WHERE grp = (SELECT grp FROM grouped_dates LIMIT 1)
+    `
+    
+    var count int
+    err := db.QueryRowContext(ctx, query, userID).Scan(&count)
+    if err != nil {
+        return 0, fmt.Errorf("failed to get consecutive days: %w", err)
+    }
+    return count, nil
 }

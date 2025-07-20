@@ -375,3 +375,41 @@ func (h *RecordHandler) UpdateEmotion(c *gin.Context) {
 
     c.JSON(http.StatusOK, gin.H{"message": "Emotion updated successfully"})
 }
+
+// @Summary Get consecutive recording days
+// @Description Returns how many days in a row the user has recorded voice messages
+// @Tags totals
+// @Accept json
+// @Produce json
+// @Param userID path int true "User ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /users/{userID}/consecutive-days [get]
+func (h *RecordHandler) GetConsecutiveRecordingDays(c *gin.Context) {
+    userIDStr := c.Param("userID")
+    userID, err := strconv.Atoi(userIDStr)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{
+            "success": false,
+            "error":   "Invalid user ID",
+        })
+        return
+    }
+
+    days, err := h.svc.GetConsecutiveRecordingDays(c.Request.Context(), userID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{
+            "success": false,
+            "error":   "Failed to get consecutive days",
+        })
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{
+        "success": true,
+        "data": gin.H{
+            "consecutive_days": days,
+        },
+    })
+}
