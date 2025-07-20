@@ -81,12 +81,12 @@
   transition: all 0.2s ease;
 }
 
-.emotion-badge.happy {
+.emotion-badge.joy {
   background: linear-gradient(135deg, rgba(46, 125, 50, 0.3), rgba(76, 175, 80, 0.3));
   color: #a5d6a7;
 }
 
-.emotion-badge.surprised {
+.emotion-badge.surprise {
   background: linear-gradient(135deg, rgba(255, 152, 0, 0.3), rgba(255, 193, 7, 0.3));
   color: #ffe082;
 }
@@ -96,7 +96,7 @@
   color: #bbdefb;
 }
 
-.emotion-badge.fearful {
+.emotion-badge.fear {
   background: linear-gradient(135deg, rgba(171, 71, 188, 0.3), rgba(186, 104, 200, 0.3));
   color: #e1bee7;
 }
@@ -106,7 +106,7 @@
   color: #dce775;
 }
 
-.emotion-badge.angry {
+.emotion-badge.anger {
   background: linear-gradient(135deg, rgba(239, 83, 80, 0.3), rgba(239, 154, 154, 0.3));
   color: #ffcdd2;
 }

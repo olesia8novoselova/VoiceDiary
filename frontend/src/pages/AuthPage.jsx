@@ -38,9 +38,9 @@ function AuthPage() {
     dispatch(setError(null));
 
     try {
-      let response;
+      // let response;
       if (isLogin) {
-        response = await login({
+        await login({
           login: formData.email,
           password: formData.password,
         }).unwrap();
@@ -48,7 +48,7 @@ function AuthPage() {
         // console.log(userData);
         dispatch(setCredentials(userData));
       } else {
-        response = await register({
+        await register({
           login: formData.email,
           password: formData.password,
           nickname: formData.username,

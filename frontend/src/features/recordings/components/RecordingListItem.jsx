@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import "./RecordingListItem.css";
 import { useGetRecordingAnalysisQuery } from "../recordingsApi";
 import { useDeleteRecordingMutation } from "../recordingsApi";
@@ -29,26 +30,26 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
     "MMM d, yyyy - h:mm a"
   );
 
-  const dateForRecalculation = format(
-    new Date(recording.record_date),
-    "yyyy-MM-dd"
-  );
-
   const displayRecording =
     isExpanded && fullAnalysis ? { ...recording, ...fullAnalysis } : recording;
 
   const handleDelete = async () => {
     try {
-      await deleteRecording(recording.record_id).unwrap();
+      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       
+      const recordDate = parseISO(recording.record_date);
+      const zonedDate = toZonedTime(recordDate, userTimeZone);
+      const utcDate = format(zonedDate, "yyyy-MM-dd");
+      
+      await deleteRecording(recording.record_id).unwrap();
       await recalculateTotals({
         userId: recording.user_id, 
-        date: dateForRecalculation
+        date: utcDate
       }).unwrap();
       
       setShowDeleteConfirm(false);
     } catch (err) {
-      console.error("Failed to delete recording or recalculate totals:", err);
+      console.error("Failed to delete recording:", err);
     }
   };
 
@@ -81,17 +82,17 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
       aria-expanded={isExpanded}
     >
       <div className="recording-header" onClick={onToggleExpand}>
-        <svg 
-          className="expand-icon" 
-          viewBox="0 0 24 24" 
-          fill="none" 
+        <svg
+          className="expand-icon"
+          viewBox="0 0 24 24"
+          fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <path 
-            d="M7 10L12 15L17 10" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
+          <path
+            d="M7 10L12 15L17 10"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
             strokeLinejoin="round"
           />
         </svg>
@@ -108,8 +109,13 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
               displayRecording.feedback !== null && (
                 <span className="feedback">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <span key={i} className={`star ${i < displayRecording.feedback ? 'filled' : ''}`}>
-                      {i < displayRecording.feedback ? '★' : '☆'}
+                    <span
+                      key={i}
+                      className={`star ${
+                        i < displayRecording.feedback ? "filled" : ""
+                      }`}
+                    >
+                      {i < displayRecording.feedback ? "★" : "☆"}
                     </span>
                   ))}
                 </span>
@@ -161,7 +167,9 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
                 )
               )}
 
-              {hasCopingStrategies(displayRecording.insights?.coping_strategies) &&
+              {hasCopingStrategies(
+                displayRecording.insights?.coping_strategies
+              ) &&
                 renderInsightSection(
                   "Coping Strategies",
                   displayRecording.insights?.coping_strategies,
@@ -205,7 +213,7 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
                 )}
 
               <div className="buttons">
-                <button 
+                <button
                   className="delete"
                   onClick={() => setShowDeleteConfirm(true)}
                 >
@@ -221,18 +229,18 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
         <div className="modal-overlay">
           <div className="confirm-modal">
             <h3>Confirm Deletion</h3>
-            <p>Are you sure you want to delete this recording? This action cannot be undone.</p>
+            <p>
+              Are you sure you want to delete this recording? This action cannot
+              be undone.
+            </p>
             <div className="modal-actions">
-              <button 
+              <button
                 className="cancel-button"
                 onClick={() => setShowDeleteConfirm(false)}
               >
                 Cancel
               </button>
-              <button 
-                className="confirm-delete-button"
-                onClick={handleDelete}
-              >
+              <button className="confirm-delete-button" onClick={handleDelete}>
                 Delete
               </button>
             </div>
