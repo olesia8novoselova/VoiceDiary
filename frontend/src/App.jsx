@@ -4,7 +4,6 @@ import { store } from "./app/store";
 import { useState } from "react";
 import OnboardingPage from "./pages/OnboardingPage";
 import AuthPage from "./pages/AuthPage";
-import ResultPage from "./pages/ResultPage";
 import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
@@ -39,7 +38,6 @@ return (
                 <Route path="/homepage" element={<HomePage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/profile/settings" element={<SettingsPage />} />
-                <Route path="/result" element={<ResultPage />} />
                 <Route path="/journal" element={<JournalPage />} />
               </Route>
 
