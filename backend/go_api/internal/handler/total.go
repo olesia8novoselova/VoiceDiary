@@ -142,22 +142,8 @@ func (h *TotalHandler) RecalculateTotal(c *gin.Context) {
         return
     }
 
-    totals, err := h.svc.GetUserTotals(c.Request.Context(), userID, date, date)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{
-            "success": false,
-            "error":   "Failed to verify recalculation",
-        })
-        return
-    }
-
     response := gin.H{
         "success": true,
-        "data":    totals,
-    }
-
-    if len(totals) == 0 {
-        response["message"] = "No records found for the specified date"
     }
 
     c.JSON(http.StatusOK, response)

@@ -45,11 +45,11 @@ func GetUserTotalsByDateRange(ctx context.Context, db *sql.DB, userID int, start
         endDate.Format("2006-01-02"))
 
     query := `
-        SELECT record_id, user_id, record_date, emotion, summary 
-FROM record
+        SELECT id, user_id, date, emotion, summary 
+FROM user_totals
 WHERE user_id = $1 
-  AND record_date::date BETWEEN $2::date AND $3::date
-ORDER BY record_date ASC`
+  AND date::date BETWEEN $2::date AND $3::date
+ORDER BY date ASC`
     
     rows, err := db.QueryContext(ctx, query, userID, startDate, endDate)
     if err != nil {
