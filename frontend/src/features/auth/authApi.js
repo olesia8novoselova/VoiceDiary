@@ -7,9 +7,9 @@ export const authApi = createApi({
     baseUrl: API_CONFIG.BASE_URL,
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
-    console.log('Cookies:', document.cookie);
-    return headers;
-  },
+      console.log("Cookies:", document.cookie);
+      return headers;
+    },
   }),
   endpoints: (builder) => ({
     register: builder.mutation({
@@ -115,6 +115,24 @@ export const authApi = createApi({
         return response;
       },
     }),
+    deleteAccount: builder.mutation({
+      query: () => ({
+        url: API_CONFIG.ENDPOINTS.AUTH.DELETE_ACCOUNT,
+        method: "DELETE",
+        credentials: "include",
+      }),
+      transformResponse: (response) => {
+        console.log("[DELETE ACCOUNT] Success:", response);
+        return response;
+      },
+      transformErrorResponse: (response) => {
+        console.error("[DELETE ACCOUNT] Error:", {
+          status: response.status,
+          data: response.data,
+        });
+        return response;
+      },
+    }),
   }),
 });
 
@@ -124,4 +142,5 @@ export const {
   useGetMeQuery,
   useLogoutMutation,
   useUpdateProfileMutation,
+  useDeleteAccountMutation,
 } = authApi;

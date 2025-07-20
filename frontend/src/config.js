@@ -8,7 +8,8 @@ export const API_CONFIG = {
       REGISTER: '/users/register',
       ME: '/users/me',
       LOGOUT: '/users/logout',
-      UPDATE_PROFILE: '/users/me'
+      UPDATE_PROFILE: '/users/me',
+      DELETE_ACCOUNT: '/users/me'
     },
     USER_RECORDS: {
       GET_ALL: '/users/:userID/records'

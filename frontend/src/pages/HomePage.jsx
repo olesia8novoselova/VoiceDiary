@@ -62,7 +62,7 @@ function HomePage() {
 
       await setFeedback({
         recordId: analysisResult.record_id,
-        feedback: rating
+        feedback: rating,
       }).unwrap();
 
       console.log("Feedback submitted successfully:", rating);
@@ -111,11 +111,17 @@ function HomePage() {
       )}
 
       {showCalendar && (
-        <div className="calendar-overlay">
-          <button className="close-btn" onClick={() => setShowCalendar(false)}>
-            ✕
+        <div className="calendar-slide-panel">
+          <button
+            className="close-btn"
+            onClick={() => setShowCalendar(false)}
+            aria-label="Close calendar"
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </svg>
           </button>
-          <div className="calendar-container-homepage">
+          <div className="calendar-container">
             <Calendar />
           </div>
         </div>
