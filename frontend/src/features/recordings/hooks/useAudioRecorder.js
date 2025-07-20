@@ -5,7 +5,7 @@ import {
 } from "../recordingsApi";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../auth/authSlice";
-
+import { useRecalculateTotalsMutation } from "../../calendar/totalApi";
 
 const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
   const [isRecording, setRecording] = useState(false);
@@ -23,6 +23,7 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
   const [uploadRecording] = useUploadRecordingMutation();
   const [getRecordingInsights] = useGetRecordingInsightsMutation();
   const currentUser = useSelector(selectCurrentUser);
+  const [recalculateTotals] = useRecalculateTotalsMutation();
 
   useEffect(() => {
     const checkPermission = async () => {
@@ -171,7 +172,6 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
     setShowDeleteConfirm(false);
   };
 
-
   const saveRecording = async () => {
     setIsActionInProgress(true);
     if (audioBlob) {
@@ -180,7 +180,7 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
         setRecordTime(0);
         setAudioBlob(null);
         resetRecorder();
-  
+
         const formData = new FormData();
         formData.append(
           "file",
@@ -188,9 +188,9 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
           `voice-${new Date().toISOString()}.wav`
         );
         formData.append("userID", currentUser?.ID?.toString() || "-1");
-  
+
         const result = await uploadRecording(formData).unwrap();
-  
+
         if (onResult) {
           onResult({
             emotion: result.emotion,
@@ -199,14 +199,14 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
             record_id: result.record_id,
           });
         }
-  
+
         if (result.text) {
           try {
             const insightsResult = await getRecordingInsights({
               text: result.text,
-              recordID: result.record_id, 
+              recordID: result.record_id,
             }).unwrap();
-  
+
             if (onResult) {
               onResult((prev) => ({
                 ...prev,
@@ -216,6 +216,14 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
           } catch (insightsError) {
             console.error("Error fetching insights:", insightsError);
           }
+        }
+
+        if (currentUser?.ID) {
+          const today = new Date().toISOString().split("T")[0];
+          await recalculateTotals({
+            userId: currentUser?.ID?.toString() || "-1",
+            date: today,
+          }).unwrap();
         }
       } catch (error) {
         console.error("Error during processing:", error);
