@@ -191,9 +191,9 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
                   )
                 )}
 
-              <div className="action-buttons">
+              <div className="buttons">
                 <button 
-                  className="delete-button"
+                  className="delete"
                   onClick={() => setShowDeleteConfirm(true)}
                 >
                   Delete Recording
@@ -204,7 +204,6 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="modal-overlay">
           <div className="confirm-modal">

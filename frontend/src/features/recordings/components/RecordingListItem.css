@@ -263,13 +263,13 @@
   cursor: pointer;
 }
 
-.action-buttons {
+.buttons {
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
 }
 
-.delete-button {
+.delete {
   background: rgba(239, 83, 80, 0.2);
   color: #ef5350;
   border: 1px solid rgba(239, 83, 80, 0.5);
@@ -280,7 +280,7 @@
   transition: all 0.2s ease;
 }
 
-.delete-button:hover {
+.delete:hover {
   background: rgba(239, 83, 80, 0.3);
 }
 
