@@ -1,18 +1,31 @@
+
+
 import { useState, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import './MoodCalendar.css';
 import DayPopup from './DayPopup';
 import { MoodIcon } from './MoodIcon';
-import { useGetTotalsQuery } from '../totalApi';
+import { useGetTotalsQuery, useUpdateMoodMutation } from '../totalApi';
 import { useSelector } from 'react-redux';
 
 const dayNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+const moodOptions = [
+  { value: 'happy', emoji: '😊', label: 'Happy', color: '#2ed573' },
+  { value: 'surprised', emoji: '😲', label: 'Surprised', color: '#2ed573' },
+  { value: 'sad', emoji: '😢', label: 'Sad', color: '#bdd5ee' },
+  { value: 'fearful', emoji: '😨', label: 'Fearful', color: '#bdd5ee' },
+  { value: 'disgust', emoji: '🤢', label: 'Disgust', color: '#bdd5ee' },
+  { value: 'angry', emoji: '😠', label: 'Angry', color: '#ff4757' },
+  { value: 'neutral', emoji: '😐', label: 'Neutral', color: '#ffa500' }
+];
 
 const Calendar = () => {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(today);
   const [selectedDay, setSelectedDay] = useState(today.getDate());
   const [dailyData, setDailyData] = useState({});
+  const [isEditingMood, setIsEditingMood] = useState(false);
   
   const userId = useSelector(state => state.auth.user?.ID);
   
@@ -21,10 +34,12 @@ const Calendar = () => {
   const startDate = new Date(year, month, 1).toISOString().split('T')[0];
   const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0];
   
-  const { data: response } = useGetTotalsQuery(
+  const { data: response, refetch } = useGetTotalsQuery(
     { userId, startDate, endDate },
     { skip: !userId }
   );
+
+  const [updateMood] = useUpdateMoodMutation();
 
   useEffect(() => {
     if (response?.success && response.data) {
@@ -56,6 +71,7 @@ const Calendar = () => {
   const handleDayClick = (day) => {
     if (day) {
       setSelectedDay(day);
+      setIsEditingMood(false);
     }
   };
 
@@ -64,8 +80,39 @@ const Calendar = () => {
     newDate.setMonth(newDate.getMonth() + increment);
     setCurrentDate(newDate);
     setSelectedDay(null);
+    setIsEditingMood(false);
   };
 
+
+const handleUpdateMood = async (mood) => {
+  if (!selectedDay || !userId) return;
+
+  const date = new Date(year, month, selectedDay).toISOString().split('T')[0];
+  
+  try {
+    await updateMood({
+      userId,
+      date,
+      emotion: mood
+    }).unwrap();
+
+ 
+    setDailyData(prev => ({
+      ...prev,
+      [selectedDay]: {
+        ...(prev[selectedDay] || {}),
+        mood: mood
+      }
+    }));
+
+
+    setIsEditingMood(false);
+
+    await refetch();
+  } catch (error) {
+    console.error('Failed to update mood:', error);
+  }
+};
   const currentDayData = selectedDay ? dailyData[selectedDay] : null;
 
   return (
@@ -123,11 +170,15 @@ const Calendar = () => {
       </div>
 
       <DayPopup 
-        currentDayData={currentDayData}
-        selectedDay={selectedDay}
-        monthName={monthName}
-        year={year}
-      />
+  currentDayData={currentDayData}
+  selectedDay={selectedDay}
+  monthName={monthName}
+  year={year}
+  isEditingMood={isEditingMood}          
+  setIsEditingMood={setIsEditingMood}  
+  onUpdateMood={handleUpdateMood}      
+  moodOptions={moodOptions}   
+/>
     </div>
   );
 };

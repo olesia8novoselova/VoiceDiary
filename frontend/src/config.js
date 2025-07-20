@@ -22,7 +22,8 @@ export const API_CONFIG = {
     },
     TOTALS: {
       GET: '/totals/:userID',
-      RECALCULATE: '/totals/:userID/recalculate/:date'
+      RECALCULATE: '/totals/:userID/recalculate/:date',
+    
     }
   }
 };
