@@ -25,8 +25,7 @@ func SaveOrUpdateUserTotal(ctx context.Context, db *sql.DB, userID int, date tim
 		ON CONFLICT (user_id, date) 
 		DO UPDATE SET 
 			emotion = EXCLUDED.emotion,
-			summary = EXCLUDED.summary,
-			updated_at = NOW()
+			summary = EXCLUDED.summary
 	`
 	_, err := db.ExecContext(ctx, query, userID, date, emotion, summary)
 	if err != nil {

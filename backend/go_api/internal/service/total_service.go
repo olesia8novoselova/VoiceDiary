@@ -1,14 +1,15 @@
 package service
 
 import (
-	"context"
-	"database/sql"
-	"log"
-	"strings"
-	"time"
+    "context"
+    "database/sql"
+    "fmt"
+    "log"
+    "strings"
+    "time"
 
-	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/client"
-	"github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/repository"
+    "github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/client"
+    "github.com/IU-Capstone-Project-2025/VoiceDiary/backend/go_api/internal/repository"
 )
 
 type TotalService struct {
@@ -97,44 +98,48 @@ func (s *TotalService) calculateDominantEmotion(emotionCount map[string]int) str
 	return topEmotions[0]
 }
 
-// Вычисляем доминирующую эмоцию за день на основе всех записей
 func (s *TotalService) CalculateDailyTotal(ctx context.Context, userID int, date time.Time) error {
     log.Printf("CalculateDailyTotal: calculating for user %d on %s", userID, date.Format("2006-01-02"))
-
-    // Получаем все записи пользователя за указанную дату
-    records, err := repository.GetRecordsStartingFromDate(ctx, s.db, userID, date, 0)
+    
+    records, err := repository.GetRecordsByDate(ctx, s.db, userID, date, 0)
     if err != nil {
-        return err
+        return fmt.Errorf("failed to get records: %w", err)
     }
 
     if len(records) == 0 {
-        log.Printf("CalculateDailyTotal: no records found for user %d on date %s", userID, date.Format("2006-01-02"))
-        // Удаляем существующую запись total, если она есть
-        err := repository.DeleteUserTotal(ctx, s.db, userID, date)
-        if err != nil && err != sql.ErrNoRows {
-            return err
+        log.Printf("No records found for date %s, deleting total if exists", date.Format("2006-01-02"))
+        if err := repository.DeleteUserTotal(ctx, s.db, userID, date); err != nil && err != sql.ErrNoRows {
+            return fmt.Errorf("failed to delete total: %w", err)
         }
         return nil
     }
 
-    // Остальная логика остается без изменений
     emotionCount := make(map[string]int)
-    var allSummaries []string
-
+    var summaries []string
+    
     for _, record := range records {
-        emotionCount[record.Emotion]++
-        allSummaries = append(allSummaries, record.Summary)
+        if record.Emotion != "" {
+            emotionCount[record.Emotion]++
+        }
+        if record.Summary != "" {
+            summaries = append(summaries, record.Summary)
+        }
     }
 
-    // общая эмоция
-    Emotion := s.calculateDominantEmotion(emotionCount)
-
-    // Генерируем общий summary
-    summary, err := s.GetCombinedSummary(ctx, allSummaries)
-    if err != nil {
-        return err
+    dominantEmotion := s.calculateDominantEmotion(emotionCount)
+    
+    var combinedSummary string
+    if len(summaries) > 0 {
+        combinedSummary, err = s.GetCombinedSummary(ctx, summaries)
+        if err != nil {
+            return fmt.Errorf("failed to get combined summary: %w", err)
+        }
     }
 
-    // Сохраняем результат
-    return s.UpdateUserTotal(ctx, userID, date, Emotion, summary)
+    if err := repository.SaveOrUpdateUserTotal(ctx, s.db, userID, date, dominantEmotion, combinedSummary); err != nil {
+        return fmt.Errorf("failed to save total: %w", err)
+    }
+
+    log.Printf("Successfully calculated total for user %d on %s", userID, date.Format("2006-01-02"))
+    return nil
 }
