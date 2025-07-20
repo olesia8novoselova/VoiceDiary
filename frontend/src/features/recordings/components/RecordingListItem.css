@@ -91,7 +91,7 @@
   color: #ffe082;
 }
 
-.emotion-badge.sad {
+.emotion-badge.sadness {
   background: linear-gradient(135deg, rgba(66, 165, 245, 0.3), rgba(100, 181, 246, 0.3));
   color: #bbdefb;
 }

@@ -46,7 +46,7 @@ function RecordingCard({ result }) {
           className={`emotion-pill ${
             ["happy", "surprised"].includes(result.emotion)
               ? "positive"
-              : ["sad", "fearful", "disgust"].includes(result.emotion)
+              : ["sadness", "fearful", "disgust"].includes(result.emotion)
               ? "negative"
               : ["angry"].includes(result.emotion)
               ? "aggressive"
