@@ -12,7 +12,8 @@ export const API_CONFIG = {
       DELETE_ACCOUNT: '/users/me'
     },
     USER_RECORDS: {
-      GET_ALL: '/users/:userID/records'
+      GET_ALL: '/users/:userID/records',
+      GET_CONSECUTIVE_DAYS: '/records/users/:userID/consecutive-days'
     },
     RECORDS: {
       UPLOAD: '/records/upload',

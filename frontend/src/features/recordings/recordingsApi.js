@@ -7,7 +7,7 @@ export const recordingsApi = createApi({
     baseUrl: API_CONFIG.BASE_URL,
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
-      console.log("Cookies:", document.cookie);
+      // console.log("Cookies:", document.cookie);
       return headers;
     },
   }),
@@ -21,11 +21,11 @@ export const recordingsApi = createApi({
       }),
       invalidatesTags: ["Recordings"],
       transformResponse: (response) => {
-        console.log("[UPLOAD RECORDING] Server response:", response);
+        // console.log("[UPLOAD RECORDING] Server response:", response);
         return response;
       },
       transformErrorResponse: (response) => {
-        console.error("[UPLOAD RECORDING] Server error:", response);
+        // console.error("[UPLOAD RECORDING] Server error:", response);
         return response;
       },
     }),
@@ -39,14 +39,14 @@ export const recordingsApi = createApi({
       }),
       providesTags: ["Recordings"],
       transformResponse: (response) => {
-        console.log("[GET RECORDINGS] Success:", response);
+        // console.log("[GET RECORDINGS] Success:", response);
         return response;
       },
       transformErrorResponse: (response) => {
-        console.error("[GET RECORDINGS] Error:", {
-          status: response.status,
-          data: response.data,
-        });
+        // console.error("[GET RECORDINGS] Error:", {
+        //   status: response.status,
+        //   data: response.data,
+        // });
         return response;
       },
     }),
@@ -57,18 +57,16 @@ export const recordingsApi = createApi({
           recordId
         ),
       }),
-      providesTags: (recordId) => [
-        { type: "Recordings", id: recordId },
-      ],
+      providesTags: (recordId) => [{ type: "Recordings", id: recordId }],
       transformResponse: (response) => {
-        console.log("[GET ANALYSIS] Success:", response);
+        // console.log("[GET ANALYSIS] Success:", response);
         return response;
       },
       transformErrorResponse: (response) => {
-        console.error("[GET ANALYSIS] Error:", {
-          status: response.status,
-          data: response.data,
-        });
+        // console.error("[GET ANALYSIS] Error:", {
+        //   status: response.status,
+        //   data: response.data,
+        // });
         return response;
       },
     }),
@@ -82,14 +80,14 @@ export const recordingsApi = createApi({
         },
       }),
       transformResponse: (response) => {
-        console.log("[GET INSIGHTS] Success:", response);
+        // console.log("[GET INSIGHTS] Success:", response);
         return response;
       },
       transformErrorResponse: (response) => {
-        console.error("[GET INSIGHTS] Error:", {
-          status: response.status,
-          data: response.data,
-        });
+        // console.error("[GET INSIGHTS] Error:", {
+        //   status: response.status,
+        //   data: response.data,
+        // });
         return response;
       },
     }),
@@ -100,14 +98,14 @@ export const recordingsApi = createApi({
       }),
       invalidatesTags: ["Recordings"],
       transformResponse: (response) => {
-        console.log("[DELETE RECORDING] Success:", response);
+        // console.log("[DELETE RECORDING] Success:", response);
         return response;
       },
       transformErrorResponse: (response) => {
-        console.error("[DELETE RECORDING] Error:", {
-          status: response.status,
-          data: response.data,
-        });
+        // console.error("[DELETE RECORDING] Error:", {
+        //   status: response.status,
+        //   data: response.data,
+        // });
         return response;
       },
     }),
@@ -125,16 +123,25 @@ export const recordingsApi = createApi({
       }),
       invalidatesTags: ["Recordings"],
       transformResponse: (response) => {
-        console.log("[SET FEEDBACK] Success:", response);
+        // console.log("[SET FEEDBACK] Success:", response);
         return response;
       },
       transformErrorResponse: (response) => {
-        console.error("[SET FEEDBACK] Error:", {
-          status: response.status,
-          data: response.data,
-        });
+        // console.error("[SET FEEDBACK] Error:", {
+        //   status: response.status,
+        //   data: response.data,
+        // });
         return response;
       },
+    }),
+    getConsecutiveDays: builder.query({
+      query: (userId) => ({
+        url: API_CONFIG.ENDPOINTS.USER_RECORDS.GET_CONSECUTIVE_DAYS.replace(
+          ":userID",
+          userId
+        ),
+      }),
+      providesTags: ["ConsecutiveDays"],
     }),
   }),
 });
@@ -146,4 +153,5 @@ export const {
   useGetRecordingInsightsMutation,
   useDeleteRecordingMutation,
   useSetRecordingFeedbackMutation,
+  useGetConsecutiveDaysQuery,
 } = recordingsApi;

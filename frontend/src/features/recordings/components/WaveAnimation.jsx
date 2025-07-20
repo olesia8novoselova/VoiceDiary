@@ -189,7 +189,7 @@ analyserRef.current = audioContextRef.current.createAnalyser();
           try {
             await audioContextRef.current.close();
           } catch (e) {
-            console.log("AudioContext close error:", e);
+            // console.log("AudioContext close error:", e);
           }
         }
 

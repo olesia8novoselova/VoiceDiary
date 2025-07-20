@@ -20,17 +20,17 @@ export const totalsApi = createApi({
       providesTags: ["Totals"],
       transformResponse: (response) => {
         if (!response.success) {
-          console.error("[GET TOTALS] Error response:", response);
+          // console.error("[GET TOTALS] Error response:", response);
           return { success: false, data: [] };
         }
-        console.log("[GET TOTALS] Success:", response);
+        // console.log("[GET TOTALS] Success:", response);
         return response;
       },
       transformErrorResponse: (response) => {
-        console.error("[GET TOTALS] Error:", {
-          status: response.status,
-          data: response.data,
-        });
+        // console.error("[GET TOTALS] Error:", {
+        //   status: response.status,
+        //   data: response.data,
+        // });
         return {
           success: false,
           error: response.data?.error || "Failed to fetch totals",
@@ -46,14 +46,14 @@ export const totalsApi = createApi({
       }),
       invalidatesTags: ["Totals"],
       transformResponse: (response) => {
-        console.log("[RECALCULATE TOTALS] Success:", response);
+        // console.log("[RECALCULATE TOTALS] Success:", response);
         return response;
       },
       transformErrorResponse: (response) => {
-        console.error("[RECALCULATE TOTALS] Error:", {
-          status: response.status,
-          data: response.data,
-        });
+        // console.error("[RECALCULATE TOTALS] Error:", {
+        //   status: response.status,
+        //   data: response.data,
+        // });
         return response;
       },
     }),

@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import "./RecordingListItem.css";
 import { useGetRecordingAnalysisQuery } from "../recordingsApi";
 import { useDeleteRecordingMutation } from "../recordingsApi";
+import { useRecalculateTotalsMutation } from "../../calendar/totalApi";
 
 function LoadingSkeleton() {
   return (
@@ -17,6 +18,7 @@ function LoadingSkeleton() {
 function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteRecording] = useDeleteRecordingMutation();
+  const [recalculateTotals] = useRecalculateTotalsMutation();
   const { data: fullAnalysis, isLoading: isAnalysisLoading } =
     useGetRecordingAnalysisQuery(recording.record_id, {
       skip: !isExpanded,
@@ -27,15 +29,26 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
     "MMM d, yyyy - h:mm a"
   );
 
+  const dateForRecalculation = format(
+    new Date(recording.record_date),
+    "yyyy-MM-dd"
+  );
+
   const displayRecording =
     isExpanded && fullAnalysis ? { ...recording, ...fullAnalysis } : recording;
 
   const handleDelete = async () => {
     try {
       await deleteRecording(recording.record_id).unwrap();
+      
+      await recalculateTotals({
+        userId: recording.user_id, 
+        date: dateForRecalculation
+      }).unwrap();
+      
       setShowDeleteConfirm(false);
     } catch (err) {
-      console.error("Failed to delete recording:", err);
+      console.error("Failed to delete recording or recalculate totals:", err);
     }
   };
 

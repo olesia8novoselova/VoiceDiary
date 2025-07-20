@@ -45,7 +45,7 @@ function AuthPage() {
           password: formData.password,
         }).unwrap();
         const { data: userData } = await refetchMe();
-        console.log(userData);
+        // console.log(userData);
         dispatch(setCredentials(userData));
       } else {
         response = await register({
@@ -53,7 +53,7 @@ function AuthPage() {
           password: formData.password,
           nickname: formData.username,
         }).unwrap();
-        console.log(response);
+        // console.log(response);
         await login({
           login: formData.email,
           password: formData.password,

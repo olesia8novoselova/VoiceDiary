@@ -26,7 +26,6 @@ function HomePage() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const resultRef = useRef(null);
-  const [currentDay] = useState(1);
   const [setFeedback] = useSetRecordingFeedbackMutation();
 
   useEffect(() => {
@@ -65,7 +64,7 @@ function HomePage() {
         feedback: rating,
       }).unwrap();
 
-      console.log("Feedback submitted successfully:", rating);
+      // console.log("Feedback submitted successfully:", rating);
     } catch (error) {
       console.error("Failed to submit feedback:", error);
     }
@@ -80,7 +79,6 @@ function HomePage() {
       <div className="gradient-ball-5"></div>
 
       <Header
-        currentDay={currentDay}
         onCalendarToggle={() => setShowCalendar(!showCalendar)}
       />
 

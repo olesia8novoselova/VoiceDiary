@@ -37,7 +37,7 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
           updatePermissionState(permissionStatus.state);
         };
       } catch (err) {
-        console.log("Permission API not supported, using default flow");
+        // console.log("Permission API not supported, using default flow");
       }
     };
 
