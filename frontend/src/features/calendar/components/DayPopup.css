@@ -4,100 +4,127 @@
   background: rgba(255, 255, 255, 0.03);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.voice-note-panel h3 {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-  color: #fff;
+.voice-note-panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
 }
 
-.note-section {
+.popup-header {
   margin-bottom: 1.5rem;
 }
 
-.note-content {
-  line-height: 1.6;
-  margin-bottom: 1rem;
+.popup-header h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.75rem;
+  color: #fff;
+  font-weight: 500;
 }
 
-.mood-summary {
-  font-size: 0.95rem;
-  margin-bottom: 0.5rem;
-  color: rgba(255, 255, 255, 0.9);
+.divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  width: 100%;
+}
+
+.mood-section {
+  margin-bottom: 1.5rem;
+}
+
+.mood-section h4,
+.summary-section h4 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mood-display {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
-.mood-emoji {
-  font-size: 1.5rem;
-  background: transparent;
-  border: none;
-}
-
-.summary-section {
+.emotion-pill {
+  padding: 6px 15px;
+  border-radius: 20px;
   font-size: 0.9rem;
+  font-weight: 600;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  text-transform: capitalize;
+}
+
+.emotion-pill.positive {
+  background: rgba(46, 213, 115, 0.15);
+  color: #2ed573;
+  border-color: rgba(46, 213, 115, 0.3);
+}
+
+.emotion-pill.negative {
+  background: rgba(108, 122, 137, 0.15);
+  color: #bdd5ee;
+  border-color: rgba(108, 122, 137, 0.3);
+}
+
+.emotion-pill.aggressive {
+  background: rgba(255, 71, 87, 0.15);
+  color: #ff4757;
+  border-color: rgba(255, 71, 87, 0.3);
+}
+
+.emotion-pill.neutral {
+  background: rgba(255, 165, 0, 0.15);
+  color: #ffa500;
+  border-color: rgba(255, 165, 0, 0.3);
+}
+
+.summary-text {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 1rem;
+  line-height: 1.6;
+}
+
+.summary-text p {
+  margin: 0;
   color: rgba(255, 255, 255, 0.85);
-  margin-top: 1rem;
 }
 
 .empty-note {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.7);
   font-style: italic;
   text-align: center;
-  padding: 1rem 0;
-}
-
-.mood-selector {
+  padding: 2rem 0;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
   display: flex;
-  gap: 0.75rem;
-  margin: 1rem 0;
-  flex-wrap: wrap;
-}
-
-.mood-option {
-  border-radius: 50%;
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  transition: transform 0.2s;
-  background: transparent;
+}
+
+.empty-note p {
+  margin-bottom: 1rem;
+}
+
+.add-note-cta {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
   border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: white;
   cursor: pointer;
-}
-
-.mood-option:hover {
-  transform: scale(1.2);
-}
-
-.edit-mood-btn {
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 1.5rem;
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: #fff;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
+  margin-top: 12px;
   transition: all 0.3s ease;
-  margin-left: 0.5rem;
+  font-size: 0.9rem;
 }
 
-.edit-mood-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.mood-emoji {
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
-  padding: 0 !important;
+.add-note-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
