@@ -61,6 +61,7 @@ func main() {
 		userGroup.GET("/me", middleware.AuthMiddleware(userService), userHandler.Me)
 		userGroup.GET("/:userID/records", recordHandler.GetRecords)
 		userGroup.PATCH("/me", middleware.AuthMiddleware(userService), userHandler.UpdateProfile)
+		userGroup.DELETE("/me", middleware.AuthMiddleware(userService), userHandler.DeleteAccount)
 	}
 
 	// Record-related endpoints
@@ -71,6 +72,7 @@ func main() {
 		recordGroup.POST("/insights", recordHandler.GetRecordInsights)
 		recordGroup.DELETE("/:recordID", recordHandler.DeleteRecord)
 		recordGroup.POST("/:recordID/feedback", recordHandler.SetRecordFeedback)
+		recordGroup.PATCH("/:recordID/emotion", recordHandler.UpdateEmotion)
 	}
 
 	totalGroup := r.Group("/totals")

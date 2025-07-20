@@ -67,3 +67,7 @@ func (s *RecordService) DeleteRecordByID(ctx context.Context, recordID int) erro
 func (s *RecordService) UpdateRecordFeedback(ctx context.Context, recordID int, feedback int) error {
     return repository.UpdateRecordFeedback(ctx, s.db, recordID, feedback)
 }
+
+func (s *RecordService) UpdateEmotion(ctx context.Context, recordID int, emotion string) error {
+    return repository.UpdateRecordEmotion(ctx, s.db, recordID, emotion)
+}

@@ -251,3 +251,15 @@ func UpdateRecordFeedback(ctx context.Context, db *sql.DB, recordID int, feedbac
     log.Printf("UpdateRecordFeedback: successfully updated feedback for record %d", recordID)
     return nil
 }
+
+func UpdateRecordEmotion(ctx context.Context, db *sql.DB, recordID int, emotion string) error {
+    query := `UPDATE record SET emotion = $1 WHERE record_id = $2`
+    res, err := db.ExecContext(ctx, query, emotion, recordID)
+    if err != nil {
+        return err
+    }
+    if rows, _ := res.RowsAffected(); rows == 0 {
+        return sql.ErrNoRows
+    }
+    return nil
+}

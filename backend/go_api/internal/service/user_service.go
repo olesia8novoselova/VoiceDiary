@@ -56,3 +56,10 @@ func (s *UserService) UpdateUserProfile(ctx context.Context, userID int, login, 
 func (s *UserService) UserExists(ctx context.Context, login string) (bool, error) {
     return repository.UserExists(ctx, s.db, login)
 }
+
+func (s *UserService) DeleteUserAccount(ctx context.Context, userID int) error {
+    if err := repository.DeleteUserAndData(ctx, s.db, userID); err != nil {
+        return err
+    }
+    return nil
+}

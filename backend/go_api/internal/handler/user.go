@@ -238,3 +238,40 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
     }
     c.JSON(http.StatusOK, updatedUser)
 }
+
+// @Summary Delete current user account
+// @Description Deletes the user, all their records, and session.
+// @Tags users
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /users/me [delete]
+func (h *UserHandler) DeleteAccount(c *gin.Context) {
+    userObj, exists := c.Get("user")
+    if !exists {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "Not authorized"})
+        return
+    }
+    user, ok := userObj.(*repository.User)
+    if !ok {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user object"})
+        return
+    }
+
+    if err := h.svc.DeleteUserAccount(c.Request.Context(), user.ID); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete account"})
+        return
+    }
+
+    http.SetCookie(c.Writer, &http.Cookie{
+        Name:     "session_token",
+        Value:    "",
+        Path:     "/",
+        Expires:  time.Unix(0, 0),
+        MaxAge:   -1,
+        HttpOnly: true,
+        SameSite: http.SameSiteLaxMode,
+    })
+
+    c.JSON(http.StatusOK, gin.H{"message": "Account deleted successfully"})
+}

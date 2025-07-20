@@ -162,3 +162,34 @@ func UserExists(ctx context.Context, db *sql.DB, login string) (bool, error) {
     }
     return count > 0, nil
 }
+
+func DeleteUserAndData(ctx context.Context, db *sql.DB, userID int) error {
+    log.Printf("DeleteUserAndData: deleting user %d and related data", userID)
+
+    tx, err := db.BeginTx(ctx, nil)
+    if err != nil {
+        return err
+    }
+
+    defer func() {
+        if p := recover(); p != nil {
+            tx.Rollback()
+            panic(p)
+        }
+    }()
+
+    queries := []string{
+        `DELETE FROM session WHERE user_id = $1`,
+        `DELETE FROM record WHERE user_id = $1`,
+        `DELETE FROM "user" WHERE user_id = $1`,
+    }
+
+    for _, q := range queries {
+        if _, err := tx.ExecContext(ctx, q, userID); err != nil {
+            tx.Rollback()
+            return err
+        }
+    }
+
+    return tx.Commit()
+}

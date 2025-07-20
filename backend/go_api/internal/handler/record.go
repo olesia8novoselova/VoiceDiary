@@ -341,3 +341,37 @@ func (h *RecordHandler) SetRecordFeedback(c *gin.Context) {
     c.JSON(http.StatusOK, gin.H{"message": "Feedback set successfully"})
     log.Printf("SetRecordFeedback: successfully updated feedback for record %d", recordID)
 }
+
+// @Summary Update emotion for a record
+// @Description Updates the emotion field of a record by ID
+// @Tags records
+// @Accept json
+// @Produce json
+// @Param recordID path int true "Record ID"
+// @Param body body map[string]string true "Emotion payload"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Router /records/{recordID}/emotion [patch]
+func (h *RecordHandler) UpdateEmotion(c *gin.Context) {
+    recordIDStr := c.Param("recordID")
+    recordID, err := strconv.Atoi(recordIDStr)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid record ID"})
+        return
+    }
+
+    var payload struct {
+        Emotion string `json:"emotion"`
+    }
+    if err := c.ShouldBindJSON(&payload); err != nil || payload.Emotion == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or missing emotion"})
+        return
+    }
+
+    if err := h.svc.UpdateEmotion(c.Request.Context(), recordID, payload.Emotion); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update emotion"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Emotion updated successfully"})
+}
