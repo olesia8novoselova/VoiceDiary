@@ -7,7 +7,7 @@ export const authApi = createApi({
     baseUrl: API_CONFIG.BASE_URL,
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
-      console.log("Cookies:", document.cookie);
+      // console.log("Cookies:", document.cookie);
       return headers;
     },
   }),
@@ -22,11 +22,11 @@ export const authApi = createApi({
         },
       }),
       transformResponse: (response) => {
-        console.log("[REGISTER] Server response:", response);
+        // console.log("[REGISTER] Server response:", response);
         return response;
       },
       transformErrorResponse: (response) => {
-        console.error("[REGISTER] Server error:", response);
+        // console.error("[REGISTER] Server error:", response);
         return response;
       },
     }),
@@ -40,18 +40,18 @@ export const authApi = createApi({
         },
       }),
       transformResponse: (response) => {
-        console.log("[LOGIN] Success:", {
-          endpoint: API_CONFIG.ENDPOINTS.AUTH.LOGIN,
-          response,
-        });
+        // console.log("[LOGIN] Success:", {
+        //   endpoint: API_CONFIG.ENDPOINTS.AUTH.LOGIN,
+        //   response,
+        // });
         return response;
       },
       transformErrorResponse: (response) => {
-        console.error("[LOGIN] Error:", {
-          endpoint: API_CONFIG.ENDPOINTS.AUTH.LOGIN,
-          status: response.status,
-          data: response.data,
-        });
+        // console.error("[LOGIN] Error:", {
+        //   endpoint: API_CONFIG.ENDPOINTS.AUTH.LOGIN,
+        //   status: response.status,
+        //   data: response.data,
+        // });
         return response;
       },
     }),
@@ -61,14 +61,14 @@ export const authApi = createApi({
         credentials: "include",
       }),
       transformResponse: (response) => {
-        console.log("[ME] User data:", response);
+        // console.log("[ME] User data:", response);
         return response;
       },
       transformErrorResponse: (response) => {
-        console.error("[ME] Error fetching user:", {
-          status: response.status,
-          data: response.data,
-        });
+        // console.error("[ME] Error fetching user:", {
+        //   status: response.status,
+        //   data: response.data,
+        // });
         return response;
       },
     }),
@@ -82,14 +82,14 @@ export const authApi = createApi({
         },
       }),
       transformResponse: (response) => {
-        console.log("[LOGOUT] Success:", response);
+        // console.log("[LOGOUT] Success:", response);
         return response;
       },
       transformErrorResponse: (response) => {
-        console.error("[LOGOUT] Error:", {
-          status: response.status,
-          data: response.data,
-        });
+        // console.error("[LOGOUT] Error:", {
+        //   status: response.status,
+        //   data: response.data,
+        // });
         return response;
       },
     }),
@@ -104,14 +104,14 @@ export const authApi = createApi({
         credentials: "include",
       }),
       transformResponse: (response) => {
-        console.log("[UPDATE PROFILE] Success:", response);
+        // console.log("[UPDATE PROFILE] Success:", response);
         return response;
       },
       transformErrorResponse: (response) => {
-        console.error("[UPDATE PROFILE] Error:", {
-          status: response.status,
-          data: response.data,
-        });
+        // console.error("[UPDATE PROFILE] Error:", {
+        //   status: response.status,
+        //   data: response.data,
+        // });
         return response;
       },
     }),
@@ -122,14 +122,14 @@ export const authApi = createApi({
         credentials: "include",
       }),
       transformResponse: (response) => {
-        console.log("[DELETE ACCOUNT] Success:", response);
+        // console.log("[DELETE ACCOUNT] Success:", response);
         return response;
       },
       transformErrorResponse: (response) => {
-        console.error("[DELETE ACCOUNT] Error:", {
-          status: response.status,
-          data: response.data,
-        });
+        // console.error("[DELETE ACCOUNT] Error:", {
+        //   status: response.status,
+        //   data: response.data,
+        // });
         return response;
       },
     }),

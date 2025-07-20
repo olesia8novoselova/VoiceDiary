@@ -73,6 +73,7 @@ func main() {
 		recordGroup.DELETE("/:recordID", recordHandler.DeleteRecord)
 		recordGroup.POST("/:recordID/feedback", recordHandler.SetRecordFeedback)
 		recordGroup.PATCH("/:recordID/emotion", recordHandler.UpdateEmotion)
+		recordGroup.GET("/users/:userID/consecutive-days", recordHandler.GetConsecutiveRecordingDays)
 	}
 
 	totalGroup := r.Group("/totals")

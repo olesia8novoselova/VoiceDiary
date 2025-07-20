@@ -37,7 +37,7 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
           updatePermissionState(permissionStatus.state);
         };
       } catch (err) {
-        console.log("Permission API not supported, using default flow");
+        // console.log("Permission API not supported, using default flow");
       }
     };
 
@@ -219,10 +219,10 @@ const useAudioRecorder = ({ setIsRecording, onRecordingStart, onResult }) => {
         }
 
         if (currentUser?.ID) {
-          const today = new Date().toISOString().split("T")[0];
+          const todayUTC = new Date().toISOString().split('T')[0];
           await recalculateTotals({
             userId: currentUser?.ID?.toString() || "-1",
-            date: today,
+            date: todayUTC,
           }).unwrap();
         }
       } catch (error) {

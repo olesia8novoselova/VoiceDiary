@@ -38,22 +38,22 @@ function AuthPage() {
     dispatch(setError(null));
 
     try {
-      let response;
+      // let response;
       if (isLogin) {
-        response = await login({
+        await login({
           login: formData.email,
           password: formData.password,
         }).unwrap();
         const { data: userData } = await refetchMe();
-        console.log(userData);
+        // console.log(userData);
         dispatch(setCredentials(userData));
       } else {
-        response = await register({
+        await register({
           login: formData.email,
           password: formData.password,
           nickname: formData.username,
         }).unwrap();
-        console.log(response);
+        // console.log(response);
         await login({
           login: formData.email,
           password: formData.password,

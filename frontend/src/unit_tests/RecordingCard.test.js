@@ -5,7 +5,7 @@ import '@testing-library/jest-dom';
 
 describe('RecordingCard Component', () => {
   const mockResult = {
-    emotion: 'happy',
+    emotion: 'joy',
     summary: 'You were feeling joyful and energetic today.',
     record_date: '2023-07-15T14:30:00Z',
     insights: {
@@ -32,8 +32,8 @@ describe('RecordingCard Component', () => {
     render(<RecordingCard result={mockResult} />);
     
     expect(screen.getByText('Your Emotional Report')).toBeInTheDocument();
-    expect(screen.getByText('happy')).toBeInTheDocument();
-    expect(screen.getByText('happy')).toHaveClass('positive');
+    expect(screen.getByText('joy')).toBeInTheDocument();
+    expect(screen.getByText('joy')).toHaveClass('positive');
     
     expect(screen.getByText('Summary')).toBeInTheDocument();
     expect(screen.getByText(/joyful and energetic today/)).toBeInTheDocument();
@@ -64,12 +64,12 @@ describe('RecordingCard Component', () => {
 
   test('applies correct emotion pill class for different emotions', () => {
     const emotions = [
-      { emotion: 'happy', expectedClass: 'positive' },
-      { emotion: 'surprised', expectedClass: 'positive' },
-      { emotion: 'sad', expectedClass: 'negative' },
-      { emotion: 'fearful', expectedClass: 'negative' },
+      { emotion: 'joy', expectedClass: 'positive' },
+      { emotion: 'surprise', expectedClass: 'positive' },
+      { emotion: 'sadness', expectedClass: 'negative' },
+      { emotion: 'fear', expectedClass: 'negative' },
       { emotion: 'disgust', expectedClass: 'negative' },
-      { emotion: 'angry', expectedClass: 'aggressive' },
+      { emotion: 'anger', expectedClass: 'aggressive' },
       { emotion: 'neutral', expectedClass: 'neutral' }
     ];
 

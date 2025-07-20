@@ -44,11 +44,11 @@ function RecordingCard({ result }) {
         <h2>Your Emotional Report</h2>
         <span
           className={`emotion-pill ${
-            ["happy", "surprised"].includes(result.emotion)
+            ["joy", "surprise"].includes(result.emotion)
               ? "positive"
-              : ["sad", "fearful", "disgust"].includes(result.emotion)
+              : ["sadness", "fear", "disgust"].includes(result.emotion)
               ? "negative"
-              : ["angry"].includes(result.emotion)
+              : ["anger"].includes(result.emotion)
               ? "aggressive"
               : "neutral"
           }`}

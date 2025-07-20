@@ -71,3 +71,7 @@ func (s *RecordService) UpdateRecordFeedback(ctx context.Context, recordID int, 
 func (s *RecordService) UpdateEmotion(ctx context.Context, recordID int, emotion string) error {
     return repository.UpdateRecordEmotion(ctx, s.db, recordID, emotion)
 }
+
+func (s *RecordService) GetConsecutiveRecordingDays(ctx context.Context, userID int) (int, error) {
+    return repository.GetConsecutiveRecordingDays(ctx, s.db, userID)
+}
