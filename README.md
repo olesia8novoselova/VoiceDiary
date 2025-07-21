@@ -17,7 +17,7 @@ Voice Diary is an innovative application that enables users to record voice entr
 - **API Development**: RESTful endpoints
 
 #### 🐍 AI Service (Python)
-- **🎙🎧📝 Transcription**: Whisper Small/Medium
+- **🎙🎧 Transcription**: Whisper Small/Medium
 - **🔊🧠 Emotion from Voice**: Whisper Large V3 (fine-tuned) 😠🎶  
 - **📝💭 Emotion from Text**: Emotion english distilroberta base  
 - **📰📚 Summary**: Bart-large-cnn-samsum 
