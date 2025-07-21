@@ -1,11 +1,11 @@
 emotion_map_audio_to_text = {
-    "Angry": "anger",
-    "Disgust": "disgust",
-    "Fearful": "fear",
-    "Happy": "joy",
-    "Neutral": "neutral",
-    "Sad": "sadness",
-    "Surprised": "surprise"
+    "angry": "anger",
+    "disgust": "disgust",
+    "fearful": "fear",
+    "happy": "joy",
+    "neutral": "neutral",
+    "sad": "sadness",
+    "surprised": "surprise"
 }
 
 similarity = {
@@ -18,8 +18,8 @@ similarity = {
     'surprise':  {'anger': 0.6, 'disgust': 0.5, 'fear': 0.8, 'sadness': 0.0, 'joy': 0.9, 'neutral': 0.2, 'surprise': 1.0},
 }
 
-def combine_emotions(audio_emotion: str, text_emotion: str, similarity: dict, weight_audio: float = 0.5, weight_text: float = 0.5) -> str:
-    audio_emotion = emotion_map_audio_to_text[audio_emotion]
+def combine_emotions(audio_emotion: str, text_emotion: str, weight_audio: float = 0.5, weight_text: float = 0.5) -> str:
+    audio_emotion = emotion_map_audio_to_text[audio_emotion.lower()]
     score = {}
 
     for target_emotion in similarity:
@@ -28,10 +28,3 @@ def combine_emotions(audio_emotion: str, text_emotion: str, similarity: dict, we
         score[target_emotion] = audio_score + text_score
 
     return max(score, key=score.get)
-
-#Данилка вставь сюда вывод моделек люблю тебя пипец
-audio = "Happy"
-text = "surprise"
-
-final_emotion = combine_emotions(audio, text, similarity, weight_audio=0.4, weight_text=0.6)
-print(final_emotion)

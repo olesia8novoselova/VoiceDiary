@@ -38,7 +38,7 @@ func main() {
 	frontendURL := os.Getenv("FRONTEND")
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-    AllowOrigins:     []string{frontendURL, "http://178.205.96.163:8080", "http://178.205.96.163:3000"},
+    AllowOrigins:     []string{frontendURL, "https://go_api", "http://178.205.96.163:8080", "http://178.205.96.163:3000", "https://178.205.96.163:3000", "https://178.205.96.163", "https://178.205.96.163:80", "https://178.205.96.163:443", "https://178.205.96.163:8080"},
     AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
     AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
     ExposeHeaders:    []string{"Content-Length"},
@@ -89,7 +89,7 @@ func main() {
 )
 
 	log.Printf("Starting server on port %s\n", cfg.ListenAddr)
-	if err := r.Run(cfg.ListenAddr); err != nil {
+	if err := r.RunTLS(cfg.ListenAddr, "localhost.crt", "localhost.key"); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }

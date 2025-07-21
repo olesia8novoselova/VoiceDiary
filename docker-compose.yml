@@ -1,11 +1,24 @@
 services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./frontend/build:/usr/share/nginx/html
+      - ./nginx/ssl:/etc/ssl
+    depends_on:
+      - frontend
+      - go_api
+      - python_api
+
   db:
-    env_file: ".env"
     image: postgres:latest
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: voicediary_user
+      POSTGRES_PASSWORD: voicediary_password
       POSTGRES_DB: voicedb
     ports:
       - "5430:5432"
@@ -17,10 +30,10 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
     ports:
       - "80:80"
-    volumes:
-      - .:/app/frontend
     command: nginx -g "daemon off;"
 
   go_api:
@@ -32,13 +45,14 @@ services:
       - db
     environment:
       DATABASE_URL: postgres://voicediary_user:voicediary_password@db:5432/voicedb?sslmode=disable
+    volumes:
+      - ./backend/go_api:/app
     ports:
       - "8080:8080"
-    volumes:
-      - .:/app
     command: ./go_api
 
   python_api:
+    env_file: ".env"
     build:
       context: ./backend/python_api
       dockerfile: Dockerfile
@@ -49,10 +63,10 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [ gpu ]
-    ports:
-      - "5000:5000"
     volumes:
       - .:/app
+    ports:
+      - "5000:5000"
     command: uvicorn backend.python_api.app:app --host python_api --port 5000 --log-level debug
 
 volumes:

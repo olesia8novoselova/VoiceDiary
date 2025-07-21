@@ -30,9 +30,19 @@ class TranscriptionModel:
         transcription = self.get_transcription(audio_path)
         summary = self.summarizer(
             transcription,
-            min_length=20,
-            max_length=50,
+            min_length=10,
+            max_length=150,
             do_sample=False
         )[0]["summary_text"]
 
         return transcription, summary
+
+    def get_summarization_from_text(self, text: str):
+        summary = self.summarizer(
+            text,
+            min_length=10,
+            max_length=150,
+            do_sample=False
+        )[0]["summary_text"]
+
+        return summary

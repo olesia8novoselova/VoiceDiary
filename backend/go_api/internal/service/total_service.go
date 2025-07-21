@@ -56,12 +56,12 @@ func (s *TotalService) calculateDominantEmotion(emotionCount map[string]int) str
 
 	// Определим противоположные эмоции
 	oppositeEmotions := map[string]string{
-		"happy":   "sad",
-		"sad":     "happy",
-		"angry":   "calm",
-		"calm":    "angry",
-		"excited": "bored",
-		"bored":   "excited",
+		"joy":      "sadness",
+		"sadness":  "joy",
+		"anger":    "calm",
+		"calm":     "anger",
+		"excited":  "bored",
+		"bored":    "excited",
 	}
 
 	// Найдем максимальное количество

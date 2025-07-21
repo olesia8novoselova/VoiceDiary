@@ -10,7 +10,7 @@ class TextEmotionRecognitionModel:
         self.tokenizer = AutoTokenizer.from_pretrained(self.MODEL_NAME)
         self.model = AutoModelForSequenceClassification.from_pretrained(self.MODEL_NAME)
 
-    def predict_emotion(self, text):
+    def predict_emotion(self, text) -> tuple[str, list]:
         inputs = self.tokenizer(text, return_tensors="pt", truncation=True)
         with torch.no_grad():
             outputs = self.model(**inputs)

@@ -12,5 +12,4 @@ RUN apk update && apk upgrade && apk add --no-cache ca-certificates
 WORKDIR /root/
 
 COPY --from=builder /app/go_api .
-
-CMD ["./go_api"]
+COPY --from=builder /app/certs/ .
