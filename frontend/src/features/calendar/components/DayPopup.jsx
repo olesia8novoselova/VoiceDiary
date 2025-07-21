@@ -2,12 +2,12 @@ import './DayPopup.css';
 import { useNavigate } from 'react-router-dom';
 
 const moodOptions = [
-  { value: 'happy', label: 'Happy', class: 'positive' },
-  { value: 'surprised', label: 'Surprised', class: 'positive' },
-  { value: 'sad', label: 'Sad', class: 'negative' },
-  { value: 'fearful', label: 'Fearful', class: 'negative' },
+  { value: 'joy', label: 'Joy', class: 'positive' },
+  { value: 'surprise', label: 'Surprise', class: 'positive' },
+  { value: 'sadness', label: 'Sadness', class: 'negative' },
+  { value: 'fear', label: 'Fear', class: 'negative' },
   { value: 'disgust', label: 'Disgust', class: 'negative' },
-  { value: 'angry', label: 'Angry', class: 'aggressive' },
+  { value: 'anger', label: 'Anger', class: 'aggressive' },
   { value: 'neutral', label: 'Neutral', class: 'neutral' }
 ];
 

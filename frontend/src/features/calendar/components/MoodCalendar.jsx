@@ -25,10 +25,16 @@ const Calendar = () => {
   const startDate = new Date(year, month, 1).toISOString().split("T")[0];
   const endDate = new Date(year, month + 1, 0).toISOString().split("T")[0];
 
-  const { data: response } = useGetTotalsQuery(
+  const { data: response, refetch } = useGetTotalsQuery(
     { userId, startDate, endDate },
     { skip: !userId }
   );
+
+  useEffect(() => {
+    if (userId) {
+      refetch();
+    }
+  }, [userId, refetch]);
 
   useEffect(() => {
     if (response?.success && response.data) {
@@ -39,6 +45,7 @@ const Calendar = () => {
           mood: day.emotion,
           summary: day.summary,
         };
+        console.log(day.emotion, day.summary);
       });
       setDailyData(transformedData);
     } else {

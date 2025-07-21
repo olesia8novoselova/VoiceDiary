@@ -5,9 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
-	"log"
 )
 
 type AnalysisResult struct {
@@ -15,6 +15,11 @@ type AnalysisResult struct {
 	Summary string `json:"summary"`
 	Text string `json:"text"`
 	Insights map[string]any `json:"insights"`
+}
+
+type CombinedData struct {
+  Emotion string `json:"emotion"`
+  Summary string `json:"summary"`
 }
 
 func CallMLService(ctx context.Context, mlURL string, fileBytes []byte) (*AnalysisResult, error) {
@@ -93,8 +98,8 @@ func CallMLServiceWithInsights(ctx context.Context, mlURL string, text string) (
 	return &result, nil
 }
 
-func CallMLServiceWithCombinedText(ctx context.Context, mlURL string, combinedText string) (*AnalysisResult, error) {
-    log.Printf("CallMLServiceWithCombinedText: sending combined text to ML service")
+func CallMLServiceWithCombinedText(ctx context.Context, mlURL string, combinedText string) (*CombinedData, error) {
+    log.Printf("CallMLServiceWithCombinedText: sending combined text to ML service, text: %s", combinedText)
 
     payload := map[string]string{"text": combinedText}
     jsonBytes, err := json.Marshal(payload)
@@ -126,20 +131,18 @@ func CallMLServiceWithCombinedText(ctx context.Context, mlURL string, combinedTe
         log.Printf("CallMLServiceWithCombinedText: ML returned emotion (ignored by Go): %v", em)
     }
 
-    // Extract remaining fields safely
     summary, _ := raw["summary"].(string)
-    text, _ := raw["text"].(string)
-    insights, _ := raw["insights"].(map[string]any)
+	emotion, _ := raw["emotion"].(string)
 
-    result := &AnalysisResult{
-        Emotion:  "", // not used — final emotion will be calculated later
+    result := &CombinedData{
+        Emotion:  emotion,
         Summary:  summary,
-        Text:     text,
-        Insights: insights,
     }
+
+	log.Printf("CallMLServiceWithCombinedText: ML returned summary: %s", summary)
+	log.Printf("CallMLServiceWithCombinedText: ML returned emotion: %s", emotion)
 
     log.Printf("CallMLServiceWithCombinedText: successfully parsed ML summary")
     return result, nil
 }
-
 
