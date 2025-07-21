@@ -18,6 +18,7 @@ Voice Diary is an innovative application that enables users to record voice entr
 
 #### 🐍 AI Service (Python)
 - **Emotion Analysis**:
+
 | Component        | Model Used                | Task                             |
 |------------------|---------------------------|----------------------------------|
 | Transcription     | Whisper Small/Medium      | Speech-to-text                   |
