@@ -11,9 +11,6 @@ jobs:
   build-test-push:
     name: Build, Test and Push Docker Image
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend/go_api
 
     steps:
       # 1. Checkout source code
@@ -53,7 +50,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile
+          file: backend/go_api/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
