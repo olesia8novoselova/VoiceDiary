@@ -4,9 +4,9 @@
 
 # Table of Contents
 - [🎯 Objective](#-objective)
-- [📦 Models Used (MVP)](#-models-used-mvp)
-- 1. 🎤 [Fine-tuned Whisper Large V3 - Emotion Recognition](#1--fine-tuned-whisper-large-v3---emotion-recognition-from-voice-speech-audio)
-- 2. 📝 [Whisper Models - Transcription (Voice to Text)](#2--whisper-large-v3---transcription-voice-to-text)
+- [📦 Models Used](#-models-used-mvp)
+- 1. 📝 [Whisper Models - Transcription (Voice to Text)](#1--whisper-large-v3---transcription-voice-to-text)
+- 2. 🎤 [Fine-tuned Whisper Large V3 - Emotion Recognition](#2--fine-tuned-whisper-large-v3---emotion-recognition-from-voice-speech-audio)
 - 3. 💬 [Fine-tuned BART SAMSum - Text Summarization](#3--fine-tuned-bart-based-model-samsum---text-based-summary)
 - 4. 🤖 [OpenHermes-2.5-Mistral-7B - Psychological Insights](#4--openhermes-25-mistral-7b---psychological-insight-extraction-from-text)
 - [🔮 Future Plans](#-future-plans)
@@ -18,36 +18,9 @@
 The goal of the ML component is to accurately detect emotions in users' voice recordings and extract meaningful summaries from the transcribed text. The insights are used to track emotional patterns and provide helpful psychological feedback.
 
 
-## 📦 Models Used (MVP)
+## 📦 Models Used
 
-### 1. 🎤 Fine-tuned Whisper Large V3 - Emotion Recognition from Voice (Speech Audio)
-
-We use a **fine-tuned Whisper Large V3** model to classify emotions from raw voice recordings.
-
-#### ⚙️ Preprocessing
-- **Audio Loading**: Using Librosa to load `.wav` files.
-- **Feature Extraction**: Whisper's feature extractor is applied for normalization and formatting.
-
-#### 🧠 Model Details
-- **Base Model**: `openai/whisper-large-v3`
-- **Task**: Audio classification
-- **Output**: Emotion labels (`Angry`, `Disgust`, `Fearful`, `Happy`, `Neutral`, `Sad`, `Surprised`)
-
-> The **'calm'** emotion was excluded from training due to underrepresentation.
-
-#### 📊 Evaluation Metrics
-| Metric     | Value   |
-|------------|---------|
-| Loss       | 0.5008  |
-| Accuracy   | 0.9199  |
-| Precision  | 0.9230  |
-| Recall     | 0.9199  |
-| F1 Score   | 0.9198  |
-
-> The model performs well in distinguishing between multiple emotional states in speech.
-
-
-### 2. 📝 Whisper Large V3* - Transcription (Voice to Text)
+### 1. 📝 Whisper Large V3* - Transcription (Voice to Text)
 
 We use **Whisper** models for transcribing user voice recordings into text. The choice of model depends on the language and desired balance between speed and accuracy.
 
@@ -79,6 +52,31 @@ We use **Whisper** models for transcribing user voice recordings into text. The 
 
 The transcribed text is then forwarded to a text-based analysis module for tasks such as emotion extraction, summarization, and supportive feedback (currently under development).
 
+### 2. 🎤 Fine-tuned Whisper Large V3 - Emotion Recognition from Voice (Speech Audio)
+
+We use a **fine-tuned Whisper Large V3** model to classify emotions from raw voice recordings.
+
+#### ⚙️ Preprocessing
+- **Audio Loading**: Using Librosa to load `.wav` files.
+- **Feature Extraction**: Whisper's feature extractor is applied for normalization and formatting.
+
+#### 🧠 Model Details
+- **Base Model**: `openai/whisper-large-v3`
+- **Task**: Audio classification
+- **Output**: Emotion labels (`Angry`, `Disgust`, `Fearful`, `Happy`, `Neutral`, `Sad`, `Surprised`)
+
+> The **'calm'** emotion was excluded from training due to underrepresentation.
+
+#### 📊 Evaluation Metrics
+| Metric     | Value   |
+|------------|---------|
+| Loss       | 0.5008  |
+| Accuracy   | 0.9199  |
+| Precision  | 0.9230  |
+| Recall     | 0.9199  |
+| F1 Score   | 0.9198  |
+
+> The model performs well in distinguishing between multiple emotional states in speech.
 
 ### 3. 💬 Fine-tuned BART-based model SAMSum - Text-Based summary
 We use a **fine-tuned BART-based model** to generate short summaries from transcribed user voice recordings. This helps distill lengthy or unstructured speech into clear, meaningful insights — ideal for daily reflection and psychological tracking.
@@ -277,22 +275,15 @@ Run the fine-tuned Whisper Large V3 model for audio emotion classification:
 ```bash
 python test_whisper_er.py
 ```
-#### 3. 🔊 Wav2Vec2 (Optional Speech Recognition Model)
 
-If testing with Wav2Vec2-based models:
-```bash
-pip install speechbrain
-python test_Wav2Vec2.py
-```
-
-#### 4. 📝 Samsum
+#### 3. 📝 Samsum
 
 If testing with Samsum models:
 ```bash
 python samsum_text_summary.py
 ```
 
-#### 5. 🤖  Mistral OpenHermes
+#### 4. 🤖  Mistral OpenHermes
 
 ```bash
 pip install accelerate sentencepiece
