@@ -32,21 +32,70 @@ func (s *TotalService) GetUserTotals(ctx context.Context, userID int, startDate,
     return repository.GetUserTotalsByDateRange(ctx, s.db, userID, startDate, endDate)
 }
 
-func (s *TotalService) GetCombinedData(ctx context.Context, summaries []string) (*client.CombinedData, error) {
+func (s *TotalService) GetCombinedSummary(ctx context.Context, summaries []string) (string, error) {
 	log.Printf("GetCombinedSummary: sending %d summaries to ML service", len(summaries))
 
-	// Объединяем все данные через разделитель
+	// Объединяем все summary через разделитель
 	combinedText := strings.Join(summaries, "\n---\n")
 
 	// Отправляем в ML-сервис
 	result, err := client.CallMLServiceWithCombinedText(ctx, s.mlURL, combinedText)
 	if err != nil {
-		log.Printf("GetCombinedSummary: failed to get combined data, error: %v", err)
-		return nil, err
+		log.Printf("GetCombinedSummary: failed to get combined summary, error: %v", err)
+		return "", err
 	}
 
-	log.Printf("GetCombinedSummary: successfully received combined data")
-	return result, nil
+	log.Printf("GetCombinedSummary: successfully received combined summary")
+	return result.Summary, nil
+}
+
+func (s *TotalService) calculateDominantEmotion(emotionCount map[string]int) string {
+	if len(emotionCount) == 0 {
+        return ""
+    }
+
+	// Определим противоположные эмоции
+	oppositeEmotions := map[string]string{
+		"joy":      "sadness",
+		"sadness":  "joy",
+		"anger":    "calm",
+		"calm":     "anger",
+		"excited":  "bored",
+		"bored":    "excited",
+	}
+
+	// Найдем максимальное количество
+	maxCount := 0
+	for _, count := range emotionCount {
+		if count > maxCount {
+			maxCount = count
+		}
+	}
+
+	// Соберем все эмоции с максимальным количеством
+	var topEmotions []string
+	for emotion, count := range emotionCount {
+		if count == maxCount {
+			topEmotions = append(topEmotions, emotion)
+		}
+	}
+
+	// Если только одна эмоция лидирует
+	if len(topEmotions) == 1 {
+		return topEmotions[0]
+	}
+
+	// Проверим, есть ли среди лидеров противоположные эмоции
+	for i, emotion1 := range topEmotions {
+		for _, emotion2 := range topEmotions[i+1:] {
+			if oppositeEmotions[emotion1] == emotion2 {
+				return "neutral" // Возвращаем neutral при противоречии
+			}
+		}
+	}
+
+	// Если противоположных нет, возвращаем первую из лидирующих
+	return topEmotions[0]
 }
 
 func (s *TotalService) CalculateDailyTotal(ctx context.Context, userID int, date time.Time) error {
@@ -65,19 +114,29 @@ func (s *TotalService) CalculateDailyTotal(ctx context.Context, userID int, date
         return nil
     }
 
-	summaries := make([]string, len(records))
-	for i, record := range records {
-		summaries[i] = record.Summary
-	}
-
-    // Получаем combinedData (эмоцию и саммари) из ML сервиса
-    result, err := s.GetCombinedData(ctx, summaries)
-    if err != nil {
-        return fmt.Errorf("failed to get combined data from ML service: %w", err)
+    emotionCount := make(map[string]int)
+    var summaries []string
+    
+    for _, record := range records {
+        if record.Emotion != "" {
+            emotionCount[record.Emotion]++
+        }
+        if record.Summary != "" {
+            summaries = append(summaries, record.Summary)
+        }
     }
 
-    // Сохраняем результат в базу
-    if err := repository.SaveOrUpdateUserTotal(ctx, s.db, userID, date, result.Emotion, result.Summary); err != nil {
+    dominantEmotion := s.calculateDominantEmotion(emotionCount)
+    
+    var combinedSummary string
+    if len(summaries) > 0 {
+        combinedSummary, err = s.GetCombinedSummary(ctx, summaries)
+        if err != nil {
+            return fmt.Errorf("failed to get combined summary: %w", err)
+        }
+    }
+
+    if err := repository.SaveOrUpdateUserTotal(ctx, s.db, userID, date, dominantEmotion, combinedSummary); err != nil {
         return fmt.Errorf("failed to save total: %w", err)
     }
 
