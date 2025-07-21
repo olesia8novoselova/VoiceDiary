@@ -35,8 +35,8 @@ func (s *TotalService) GetUserTotals(ctx context.Context, userID int, startDate,
 func (s *TotalService) GetCombinedSummary(ctx context.Context, summaries []string) (string, error) {
 	log.Printf("GetCombinedSummary: sending %d summaries to ML service", len(summaries))
 
-	// Объединяем все summary через разделитель
-	combinedText := strings.Join(summaries, "\n---\n")
+	// Объединяем все данные через разделитель
+	combinedText := strings.Join(summaries, "\n")
 
 	// Отправляем в ML-сервис
 	result, err := client.CallMLServiceWithCombinedText(ctx, s.mlURL, combinedText)

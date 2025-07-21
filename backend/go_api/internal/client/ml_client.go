@@ -126,16 +126,12 @@ func CallMLServiceWithCombinedText(ctx context.Context, mlURL string, combinedTe
         log.Printf("CallMLServiceWithCombinedText: ML returned emotion (ignored by Go): %v", em)
     }
 
-    // Extract remaining fields safely
     summary, _ := raw["summary"].(string)
-    text, _ := raw["text"].(string)
-    insights, _ := raw["insights"].(map[string]any)
+	emotion, _ := raw["emotion"].(string)
 
-    result := &AnalysisResult{
-        Emotion:  "", // not used — final emotion will be calculated later
+    result := &CombinedData{
+        Emotion:  emotion,
         Summary:  summary,
-        Text:     text,
-        Insights: insights,
     }
 
     log.Printf("CallMLServiceWithCombinedText: successfully parsed ML summary")
