@@ -3,6 +3,11 @@ import "./RecordingCard.css";
 function RecordingCard({ result }) {
   if (!result) return null;
 
+  const capitalizeFirst = (str) => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   const formattedDate = new Date(result.record_date).toLocaleDateString(
     "en-US",
     {
@@ -59,7 +64,7 @@ function RecordingCard({ result }) {
 
       <div className="card-section">
         <h3>Summary</h3>
-        <p className="summary-text">{result.summary}</p>
+        <p className="summary-text">{capitalizeFirst(result.summary)}</p>
       </div>
 
       {result.insights ? (
@@ -71,14 +76,14 @@ function RecordingCard({ result }) {
               <div className="insights-grid">
                 <div className="insight-item">
                   <h4>📈 Pattern</h4>
-                  <p>{content || "No pattern data available"}</p>
+                  <p>{capitalizeFirst(content) || "No pattern data available"}</p>
                 </div>
                 {result.insights.key_triggers?.length > 0 && (
                   <div className="insight-item">
                     <h4>🔑 Key Triggers</h4>
                     <ul>
                       {result.insights.key_triggers.map((trigger, index) => (
-                        <li key={index}>{trigger}</li>
+                        <li key={index}>{capitalizeFirst(trigger)}</li>
                       ))}
                     </ul>
                   </div>
@@ -92,7 +97,7 @@ function RecordingCard({ result }) {
             result.insights.physical_reaction,
             (reaction) => (
               <div className="physical-response">
-                <p>{reaction || "No physical reaction data available"}</p>
+                <p>{capitalizeFirst(reaction) || "No physical reaction data available"}</p>
               </div>
             )
           )}
@@ -104,13 +109,13 @@ function RecordingCard({ result }) {
                 {result.insights.coping_strategies.effective && (
                   <div className="strategy successful">
                     <h4>✅ Effective</h4>
-                    <p>{result.insights.coping_strategies.effective}</p>
+                    <p>{capitalizeFirst(result.insights.coping_strategies.effective)}</p>
                   </div>
                 )}
                 {result.insights.coping_strategies.ineffective && (
                   <div className="strategy unsuccessful">
                     <h4>❌ Ineffective</h4>
-                    <p>{result.insights.coping_strategies.ineffective}</p>
+                    <p>{capitalizeFirst(result.insights.coping_strategies.ineffective)}</p>
                   </div>
                 )}
               </div>
@@ -122,7 +127,7 @@ function RecordingCard({ result }) {
               <h3>Recommendations</h3>
               <ol className="recommendations-list">
                 {result.insights.recommendations.map((rec, index) => (
-                  <li key={index}>{rec}</li>
+                  <li key={index}>{capitalizeFirst(rec)}</li>
                 ))}
               </ol>
             </div>

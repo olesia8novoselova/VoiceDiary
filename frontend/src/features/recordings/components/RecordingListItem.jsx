@@ -25,6 +25,11 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
       skip: !isExpanded,
     });
 
+  const capitalizeFirst = (str) => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   const formattedDate = format(
     new Date(recording.record_date),
     "MMM d, yyyy - h:mm a"
@@ -122,7 +127,7 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
               )}
           </div>
           <div className="recording-preview">
-            <p>{displayRecording.summary}</p>
+            <p>{capitalizeFirst(displayRecording.summary)}</p>
           </div>
         </div>
       </div>
@@ -140,14 +145,14 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
                 displayRecording.insights?.emotional_dynamics,
                 (content) => (
                   <div className="insight-card">
-                    <p>{content || "No emotional dynamics data available"}</p>
+                    <p>{capitalizeFirst(content) || "No emotional dynamics data available"}</p>
                     {displayRecording.insights?.key_triggers?.length > 0 && (
                       <div className="insight-subsection">
                         <h5>Key Triggers</h5>
                         <ul>
                           {displayRecording.insights.key_triggers.map(
                             (trigger, index) => (
-                              <li key={index}>{trigger}</li>
+                              <li key={index}>{capitalizeFirst(trigger)}</li>
                             )
                           )}
                         </ul>
@@ -162,7 +167,7 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
                 displayRecording.insights?.physical_reaction,
                 (reaction) => (
                   <div className="insight-card">
-                    <p>{reaction || "No physical reaction data available"}</p>
+                    <p>{capitalizeFirst(reaction) || "No physical reaction data available"}</p>
                   </div>
                 )
               )}
@@ -181,7 +186,7 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
                             <span className="strategy-icon">✅</span>
                             <h5>Effective</h5>
                           </div>
-                          <p>{strategies.effective}</p>
+                          <p>{capitalizeFirst(strategies.effective)}</p>
                         </div>
                       )}
                       {strategies.ineffective && (
@@ -190,7 +195,7 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
                             <span className="strategy-icon">❌</span>
                             <h5>Ineffective</h5>
                           </div>
-                          <p>{strategies.ineffective}</p>
+                          <p>{capitalizeFirst(strategies.ineffective)}</p>
                         </div>
                       )}
                     </div>
@@ -205,7 +210,7 @@ function RecordingListItem({ recording, isExpanded, onToggleExpand }) {
                     <div className="recommendations-card">
                       <ol>
                         {recommendations.map((rec, index) => (
-                          <li key={index}>{rec}</li>
+                          <li key={index}>{capitalizeFirst(rec)}</li>
                         ))}
                       </ol>
                     </div>
