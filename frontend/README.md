@@ -6,10 +6,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 - [Project Setup with Docker](#project-setup-with-docker)
   - [Prerequisites](#prerequisites)
-  - [🐳 Quick Start with Docker](#-quick-start-with-docker)
-- [🔥 Development Mode with Docker](#-development-mode-with-docker)
-- [📦 Available Scripts](#-available-scripts)
-- [🤝 Contributing](#-contributing)
+  - [Quick Start with Docker](#-quick-start-with-docker)
+- [Development Mode with Docker](#-development-mode-with-docker)
+- [Available Scripts](#-available-scripts)
+- [Contributing](#-contributing)
   - [Guidelines:](#guidelines)
 
 ## Project Setup with Docker
