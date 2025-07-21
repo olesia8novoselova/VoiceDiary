@@ -17,6 +17,11 @@ type AnalysisResult struct {
 	Insights map[string]any `json:"insights"`
 }
 
+type CombinedData struct {
+	Emotion string `json:"emotion"`
+	Summary string `json:"summary"`
+}
+
 func CallMLService(ctx context.Context, mlURL string, fileBytes []byte) (*AnalysisResult, error) {
 	log.Printf("CallMLService: sending request to ML service at %s", mlURL)
 
@@ -93,7 +98,7 @@ func CallMLServiceWithInsights(ctx context.Context, mlURL string, text string) (
 	return &result, nil
 }
 
-func CallMLServiceWithCombinedText(ctx context.Context, mlURL string, combinedText string) (*AnalysisResult, error) {
+func CallMLServiceWithCombinedText(ctx context.Context, mlURL string, combinedText string) (*CombinedData, error) {
     log.Printf("CallMLServiceWithCombinedText: sending combined text to ML service")
     
     payload := map[string]string{"text": combinedText}
@@ -115,7 +120,7 @@ func CallMLServiceWithCombinedText(ctx context.Context, mlURL string, combinedTe
     }
     defer resp.Body.Close()
     // обработка ответа
-    var result AnalysisResult
+    var result CombinedData
     if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
         return nil, err
     }
