@@ -1,10 +1,10 @@
 const moodOptions = [
-  { value: 'happy', emoji: '😊', label: 'Happy', color: '#2ed573' },
-  { value: 'surprised', emoji: '😲', label: 'Surprised', color: '#2ed573' },
-  { value: 'sad', emoji: '😢', label: 'Sad', color: '#bdd5ee' },
-  { value: 'fearful', emoji: '😨', label: 'Fearful', color: '#bdd5ee' },
+  { value: 'joy', emoji: '😊', label: 'Joy', color: '#2ed573' },
+  { value: 'surprise', emoji: '😲', label: 'Surprise', color: '#2ed573' },
+  { value: 'sadness', emoji: '😢', label: 'Sadness', color: '#bdd5ee' },
+  { value: 'fear', emoji: '😨', label: 'Fear', color: '#bdd5ee' },
   { value: 'disgust', emoji: '🤢', label: 'Disgust', color: '#bdd5ee' },
-  { value: 'angry', emoji: '😠', label: 'Angry', color: '#ff4757' },
+  { value: 'anger', emoji: '😠', label: 'Anger', color: '#ff4757' },
   { value: 'neutral', emoji: '😐', label: 'Neutral', color: '#ffa500' }
 ];
 

@@ -45,6 +45,7 @@ const Calendar = () => {
           mood: day.emotion,
           summary: day.summary,
         };
+        console.log(day.emotion, day.summary);
       });
       setDailyData(transformedData);
     } else {
