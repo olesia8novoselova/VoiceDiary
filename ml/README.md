@@ -10,6 +10,7 @@
 - 3. 💬 [Fine-tuned BART SAMSum - Text Summarization](#3--fine-tuned-bart-based-model-samsum---text-based-summary)
 - 4. 💭 [Emotion-english-distilroberta-base - Emotion Recognition](#4--Emotion-english-distilroberta-base---emotion-recognition-from-text)
 - 5. 🤖 [OpenHermes-2.5-Mistral-7B - Psychological Insights](#5--openhermes-25-mistral-7b---psychological-insight-extraction-from-text)
+- [😊🤝 Emotion Fusion Approach](#-Emotion-Fusion-Approach)
 - [🔮 Future Plans](#-future-plans)
 - [📌 Summary](#-summary)
 - [🔧 Setup & Installation](#-setup--installation)
@@ -200,6 +201,18 @@ We use the [`j-hartmann/emotion-english-distilroberta-base`](https://huggingface
 - **Specific Instructions**: "Be specific and concrete" improves output quality
 - **Format Enforcement**: "Output must be valid JSON" reduces errors
 - **Context Isolation**: [INST] tags help the model understand task boundaries
+
+## 😊🤝 Emotion Fusion Approach
+
+This method combines emotion predictions from two models: an audio-based model 🎧 and a text-based model ✍️, using a custom similarity matrix 🔍 and weighted fusion ⚖️.
+
+The similarity matrix, personally developed 🛠️, quantifies semantic closeness between emotions based on psychological insights 🧠💡.
+
+By weighting and integrating the outputs, the fusion accounts for cases where vocal tone 🎶 and spoken content 📜 differ — for example, happy speech 😄 with sad content 😢 — inferring the most plausible underlying emotion 🤔💭.
+
+With this fusion approach, we approximate human ability 👤🧩 to interpret mixed signals and understand the true emotional state ❤️🎭 behind voice and words 🗣️📝.
+
+This method improves emotion recognition accuracy 📈 by capturing subtle interactions between voice and text signals, reflecting complex human emotional expression 🌈✨.
 
 ## 🔮 Future Plans
 
