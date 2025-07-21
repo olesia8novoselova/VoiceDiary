@@ -214,6 +214,9 @@ With this fusion approach, we approximate human ability 👤🧩 to interpret mi
 
 This method improves emotion recognition accuracy 📈 by capturing subtle interactions between voice and text signals, reflecting complex human emotional expression 🌈✨.
 
+![Emotion Similarity Matrix](emotion_sim_matrix.png "Similarity Matrix")
+![Emotion Similarity Matrix](emotion_simm_matrix.png "Similarity Matrix")
+
 ## 🔮 Future Plans
 
 We are actively working to enhance the ML component of the Voice Diary app:
@@ -323,7 +326,7 @@ python test_whisper_er.py
 python samsum_text_summary.py
 ```
 
-### 4. 💭 Emotion english distilroberta base
+#### 4. 💭 Emotion english distilroberta base
 ```bash
 hartman_emotion_from_text.py
 ```
