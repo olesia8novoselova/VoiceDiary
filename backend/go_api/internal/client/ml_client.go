@@ -100,12 +100,12 @@ func CallMLServiceWithInsights(ctx context.Context, mlURL string, text string) (
 
 func CallMLServiceWithCombinedText(ctx context.Context, mlURL string, combinedText string) (*CombinedData, error) {
     log.Printf("CallMLServiceWithCombinedText: sending combined text to ML service")
-    
+
     payload := map[string]string{"text": combinedText}
-	jsonBytes, err := json.Marshal(payload)
-	if err != nil {
-		return nil, err
-	}
+    jsonBytes, err := json.Marshal(payload)
+    if err != nil {
+        return nil, err
+    }
 
     req, err := http.NewRequestWithContext(ctx, http.MethodPost, mlURL+"/process_text", bytes.NewBuffer(jsonBytes))
     if err != nil {
@@ -113,19 +113,34 @@ func CallMLServiceWithCombinedText(ctx context.Context, mlURL string, combinedTe
     }
     req.Header.Set("Content-Type", "application/json")
 
-    // отправка запроса
     resp, err := http.DefaultClient.Do(req)
     if err != nil {
         return nil, err
     }
     defer resp.Body.Close()
-    // обработка ответа
-    var result CombinedData
-    if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+
+    // Decode as generic map to avoid binding to emotion type
+    var raw map[string]any
+    if err := json.NewDecoder(resp.Body).Decode(&raw); err != nil {
+        log.Printf("CallMLServiceWithCombinedText: failed to decode response, error: %v", err)
         return nil, err
     }
-    
-    return &result, nil
+
+    // log emotion if present
+    if em, ok := raw["emotion"]; ok {
+        log.Printf("CallMLServiceWithCombinedText: ML returned emotion (ignored by Go): %v", em)
+    }
+
+    summary, _ := raw["summary"].(string)
+	emotion, _ := raw["emotion"].(string)
+
+    result := &CombinedData{
+        Emotion:  emotion,
+        Summary:  summary,
+    }
+
+    log.Printf("CallMLServiceWithCombinedText: successfully parsed ML summary")
+    return result, nil
 }
 
 

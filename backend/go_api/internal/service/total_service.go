@@ -36,7 +36,7 @@ func (s *TotalService) GetCombinedData(ctx context.Context, summaries []string) 
 	log.Printf("GetCombinedSummary: sending %d summaries to ML service", len(summaries))
 
 	// Объединяем все данные через разделитель
-	combinedText := strings.Join(summaries, "\n---\n")
+	combinedText := strings.Join(summaries, "\n")
 
 	// Отправляем в ML-сервис
 	result, err := client.CallMLServiceWithCombinedText(ctx, s.mlURL, combinedText)

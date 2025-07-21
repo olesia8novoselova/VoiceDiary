@@ -89,7 +89,7 @@ func main() {
 )
 
 	log.Printf("Starting server on port %s\n", cfg.ListenAddr)
-	if err := r.RunTLS(cfg.ListenAddr, "localhost.crt", "localhost.key"); err != nil {
+	if err := r.Run(cfg.ListenAddr); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }
