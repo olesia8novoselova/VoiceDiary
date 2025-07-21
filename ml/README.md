@@ -275,22 +275,15 @@ Run the fine-tuned Whisper Large V3 model for audio emotion classification:
 ```bash
 python test_whisper_er.py
 ```
-#### 3. 🔊 Wav2Vec2 (Optional Speech Recognition Model)
 
-If testing with Wav2Vec2-based models:
-```bash
-pip install speechbrain
-python test_Wav2Vec2.py
-```
-
-#### 4. 📝 Samsum
+#### 3. 📝 Samsum
 
 If testing with Samsum models:
 ```bash
 python samsum_text_summary.py
 ```
 
-#### 5. 🤖  Mistral OpenHermes
+#### 4. 🤖  Mistral OpenHermes
 
 ```bash
 pip install accelerate sentencepiece
