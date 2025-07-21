@@ -58,5 +58,5 @@ async def get_insights(base: Base):
 async def get_summary(base: Base):
     return {
         "summary": transcription_model.get_summarization_from_text(base.text),
-        "emotion": text_emotion_recognition_model.predict_emotion(base.text),
+        "emotion": text_emotion_recognition_model.predict_emotion(base.text)[0],
     }
