@@ -8,8 +8,8 @@
 - 1. 📝 [Whisper Models - Transcription (Voice to Text)](#1--whisper-large-v3---transcription-voice-to-text)
 - 2. 🎤 [Fine-tuned Whisper Large V3 - Emotion Recognition](#2--fine-tuned-whisper-large-v3---emotion-recognition-from-voice-speech-audio)
 - 3. 💬 [Fine-tuned BART SAMSum - Text Summarization](#3--fine-tuned-bart-based-model-samsum---text-based-summary)
-- 4. 🤖 [OpenHermes-2.5-Mistral-7B - Psychological Insights](#4--openhermes-25-mistral-7b---psychological-insight-extraction-from-text)
-- [🔮 Future Plans](#-future-plans)
+- 4. 💭 [j-hartmann/emotion-english-distilroberta-base - Emotion Recognition](#4--openhermes-25-mistral-7b---psychological-insight-extraction-from-text)
+- 5. 🤖 [OpenHermes-2.5-Mistral-7B - Psychological Insights](#5--openhermes-25-mistral-7b---psychological-insight-extraction-from-text)
 - [📌 Summary](#-summary)
 - [🔧 Setup & Installation](#-setup--installation)
 
@@ -119,7 +119,55 @@ The generated summary is later used in downstream modules (e.g., LLM-based refle
 
 > This summarization step is already **fully deployed and in active use** as part of the Voice Diary MVP.
 
-### 4. 🤖 OpenHermes-2.5-Mistral-7B - Psychological Insight Extraction from Text
+
+### 4. 💭 j-hartmann/emotion-english-distilroberta-base - Emotion Recognition from Text
+
+We use the [`j-hartmann/emotion-english-distilroberta-base`](https://huggingface.co/j-hartmann/emotion-english-distilroberta-base) model to detect emotional tone in transcribed text or generated summaries.
+
+#### ⚙️ Preprocessing
+- **Input**: Cleaned text from Whisper transcription or SAMSum summarization.
+- **Tokenization**: Uses HuggingFace tokenizer (`DistilRobertaTokenizerFast`).
+- **Max Length**: Up to 512 tokens per input.
+
+#### 🧠 Model Details
+- **Base Model**: `distilroberta-base`
+- **Task**: Text classification (Emotion Recognition)
+- **Fine-tuned on**: English datasets for emotion classification
+- **Output Labels**: `joy`, `sadness`, `anger`, `fear`, `surprise`, `disgust`, `neutral`
+
+#### 📊 Evaluation Metrics
+| Metric         | Value (avg.) |
+|----------------|--------------|
+| Accuracy       | ~0.92        |
+| F1 Score       | ~0.91        |
+| Inference Time | ~30ms / input |
+
+> Performance may vary depending on the text length and emotional expressiveness. Works best for reflective or dialogue-like text typical for diary entries.
+
+#### 🚀 Current Strategy
+1. **Apply after transcription or summarization** to extract emotional tone.
+2. **Store predicted emotion label** as part of the diary metadata.
+3. **Fuse with audio-based emotion** for richer emotional tracking.
+
+
+## 📌 Summary
+
+| Component           | Model Used                                | Task                             | Status        |
+|---------------------|---------------------------------------------|----------------------------------|---------------|
+| Emotion from Voice  | Whisper Large V3 (fine-tuned)              | Audio emotion classification     | ✅ In Use      |
+| Transcription       | Whisper Small/Medium                       | Speech-to-text                   | ✅ In Use      |
+| Summary             | SAMSum                                     | Text summary                     | ✅ In Use      |
+| Emotional feedback  | OpenHermes-2.5-Mistral-7B                  | Psychological insight generation | ✅ In Use      |
+| Emotion from Text   | j-hartmann/emotion-english-distilroberta-base | Text emotion classification      | ✅ In Use      |
+## 🔮 Future Plans
+
+We are actively working to enhance the ML component of the Voice Diary app:
+
+- **Multimodal Emotion Fusion**: Combine insights from both **voice** and **text** to improve overall emotion recognition accuracy.
+- **Richer Psychological Responses**: Make AI-generated feedback more helpful, empathetic, and tailored.
+- **Multilingual Support**: Further improve performance across different languages and accents.
+
+### 5. 🤖 OpenHermes-2.5-Mistral-7B - Psychological Insight Extraction from Text
 
 #### Models Evaluated
 
@@ -169,14 +217,6 @@ The generated summary is later used in downstream modules (e.g., LLM-based refle
 - **Format Enforcement**: "Output must be valid JSON" reduces errors
 - **Context Isolation**: [INST] tags help the model understand task boundaries
 
-
-## 🔮 Future Plans
-
-We are actively working to enhance the ML component of the Voice Diary app:
-
-- **Multimodal Emotion Fusion**: Combine insights from both **voice** and **text** to improve overall emotion recognition accuracy.
-- **Richer Psychological Responses**: Make AI-generated feedback more helpful, empathetic, and tailored.
-- **Multilingual Support**: Further improve performance across different languages and accents.
 
 
 ## 📌 Summary
