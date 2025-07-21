@@ -9,8 +9,6 @@ Voice Diary is an innovative application that enables users to record voice entr
 - **Framework**: React
 - **State Management**: Redux
 - **UI/UX Design**: Figma-designed interface
-- **Audio Processing**: tba
-- **Visualization**: tba
 
 ### ⚙️ Backend Services
 #### 🐹 Core Service (Go)
@@ -20,9 +18,9 @@ Voice Diary is an innovative application that enables users to record voice entr
 
 #### 🐍 AI Service (Python)
 - **Emotion Analysis**:
-  - tba
+  - 
 - **NLP Processing**:
-  - tba
+  - 
 - **API Framework**: FastAPI
 
 ### 🗄️ Infrastructure
@@ -48,16 +46,6 @@ Voice Diary is an innovative application that enables users to record voice entr
 - Docker
 
 ### Installation
-```bash
-# Clone repository
-git clone https://github.com/IU-Capstone-Project-2025/VoiceDiary.git
-cd voice-diary
+- See installation in the special files for frontend and backend
 
-# Install frontend dependencies
-cd frontend && npm install && npm start
 
-# Setup backend
-#to be added later
-
-# Install AI service requirements
-#to be added later
